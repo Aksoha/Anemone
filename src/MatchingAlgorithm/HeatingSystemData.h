@@ -4,5 +4,5 @@ struct HeatingSystemData
 {
 	double Key;
 	double Resistance;
-	double Frequency;
+	double Inductance;
 };

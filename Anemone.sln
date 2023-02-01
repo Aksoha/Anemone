@@ -19,10 +19,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MatchingAlgorithm", "src\Ma
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F2E08F7B-8F89-47D0-A399-B2ADA24FD835}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MatchingAlgorithm.Tests", "tests\MatchingAlgorithm.Tests\MatchingAlgorithm.Tests.vcxproj", "{7264B2E2-8AA8-4064-96F3-5281B1B0F84B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatchingAlgorithm.Wrapper", "src\MatchingAlgorithm.Wrapper\MatchingAlgorithm.Wrapper.csproj", "{379D83D8-811D-44D7-ADFA-8E98717E31C1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA656114-A667-4C72-955F-37A5BA38A9EC} = {DA656114-A667-4C72-955F-37A5BA38A9EC}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatchingAlgorithm.Tests", "tests\MatchingAlgorithm.Tests\MatchingAlgorithm.Tests.csproj", "{6130E40D-BED8-4166-AD24-4E7D3A4870D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,21 +42,30 @@ Global
 		{DA656114-A667-4C72-955F-37A5BA38A9EC}.Release|x64.Build.0 = Release|x64
 		{DA656114-A667-4C72-955F-37A5BA38A9EC}.Release|x86.ActiveCfg = Release|Win32
 		{DA656114-A667-4C72-955F-37A5BA38A9EC}.Release|x86.Build.0 = Release|Win32
-		{7264B2E2-8AA8-4064-96F3-5281B1B0F84B}.Debug|x64.ActiveCfg = Debug|x64
-		{7264B2E2-8AA8-4064-96F3-5281B1B0F84B}.Debug|x64.Build.0 = Debug|x64
-		{7264B2E2-8AA8-4064-96F3-5281B1B0F84B}.Debug|x86.ActiveCfg = Debug|Win32
-		{7264B2E2-8AA8-4064-96F3-5281B1B0F84B}.Debug|x86.Build.0 = Debug|Win32
-		{7264B2E2-8AA8-4064-96F3-5281B1B0F84B}.Release|x64.ActiveCfg = Release|x64
-		{7264B2E2-8AA8-4064-96F3-5281B1B0F84B}.Release|x64.Build.0 = Release|x64
-		{7264B2E2-8AA8-4064-96F3-5281B1B0F84B}.Release|x86.ActiveCfg = Release|Win32
-		{7264B2E2-8AA8-4064-96F3-5281B1B0F84B}.Release|x86.Build.0 = Release|Win32
+		{379D83D8-811D-44D7-ADFA-8E98717E31C1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{379D83D8-811D-44D7-ADFA-8E98717E31C1}.Debug|x64.Build.0 = Debug|Any CPU
+		{379D83D8-811D-44D7-ADFA-8E98717E31C1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{379D83D8-811D-44D7-ADFA-8E98717E31C1}.Debug|x86.Build.0 = Debug|Any CPU
+		{379D83D8-811D-44D7-ADFA-8E98717E31C1}.Release|x64.ActiveCfg = Release|Any CPU
+		{379D83D8-811D-44D7-ADFA-8E98717E31C1}.Release|x64.Build.0 = Release|Any CPU
+		{379D83D8-811D-44D7-ADFA-8E98717E31C1}.Release|x86.ActiveCfg = Release|Any CPU
+		{379D83D8-811D-44D7-ADFA-8E98717E31C1}.Release|x86.Build.0 = Release|Any CPU
+		{6130E40D-BED8-4166-AD24-4E7D3A4870D2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6130E40D-BED8-4166-AD24-4E7D3A4870D2}.Debug|x64.Build.0 = Debug|Any CPU
+		{6130E40D-BED8-4166-AD24-4E7D3A4870D2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6130E40D-BED8-4166-AD24-4E7D3A4870D2}.Debug|x86.Build.0 = Debug|Any CPU
+		{6130E40D-BED8-4166-AD24-4E7D3A4870D2}.Release|x64.ActiveCfg = Release|Any CPU
+		{6130E40D-BED8-4166-AD24-4E7D3A4870D2}.Release|x64.Build.0 = Release|Any CPU
+		{6130E40D-BED8-4166-AD24-4E7D3A4870D2}.Release|x86.ActiveCfg = Release|Any CPU
+		{6130E40D-BED8-4166-AD24-4E7D3A4870D2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DA656114-A667-4C72-955F-37A5BA38A9EC} = {05AEB28A-FB37-4153-8FD5-2D93A931D1E7}
-		{7264B2E2-8AA8-4064-96F3-5281B1B0F84B} = {F2E08F7B-8F89-47D0-A399-B2ADA24FD835}
+		{379D83D8-811D-44D7-ADFA-8E98717E31C1} = {05AEB28A-FB37-4153-8FD5-2D93A931D1E7}
+		{6130E40D-BED8-4166-AD24-4E7D3A4870D2} = {F2E08F7B-8F89-47D0-A399-B2ADA24FD835}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B7C3DFE-1EA2-424D-934B-388E7A485DA8}

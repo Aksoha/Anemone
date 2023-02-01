@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="HeatingSystem.h" />
     <ClInclude Include="HeatingSystemData.h" />
+    <ClInclude Include="interop\export.h" />
     <ClInclude Include="LlcTopology.h" />
     <ClInclude Include="Matching.h" />
     <ClInclude Include="MatchingParameter.h" />
@@ -33,6 +34,9 @@
     <ClCompile Include="LlcTopology.cpp" />
     <ClCompile Include="Matching.cpp" />
     <ClCompile Include="SweepParameter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="interop\HeatingSystemExport.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -2,7 +2,7 @@
 #include "HeatingSystem.h"
 #include "Topology.h"
 
-class LlcTopology final : public Topology
+class LlcTopology : public Topology
 {
 public:
 	double Inductance;
@@ -11,7 +11,7 @@ public:
 	
 	[[nodiscard]] double Resistance(double frequency, double temperature) const override;
 	[[nodiscard]] double Reactance(double frequency, double temperature) const override;
-	[[nodiscard]] std::complex<double> Impedance(double frequency, double temperature) const override;
+	[[nodiscard]] double Impedance(double frequency, double temperature) const override;
 	[[nodiscard]] double ParallelReactance(double frequency, double temperature) const;
 
 private:

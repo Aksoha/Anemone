@@ -1,5 +1,6 @@
 ﻿#include "LlcTopology.h"
 
+#include <complex>
 #include <numbers>
 
 double AngularFrequency(const double frequency)
@@ -50,14 +51,14 @@ double LlcTopology::Reactance(const double frequency, const double temperature) 
 }
 
 
-std::complex<double> LlcTopology::Impedance(const double frequency, const double temperature) const
+double LlcTopology::Impedance(const double frequency, const double temperature) const
 {
 	const auto resistance = Resistance(frequency, temperature);
 	const auto reactance = Reactance(frequency, temperature);
 	
 	auto const z = std::complex(resistance, reactance);
 
-	return z;
+	return abs(z);
 	
 }
 

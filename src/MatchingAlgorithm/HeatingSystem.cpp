@@ -1,14 +1,21 @@
 #include "HeatingSystem.h"
 
-HeatingSystem::HeatingSystem(const HeatingSystemParameters& resistanceFrequency,
-							 const HeatingSystemParameters& inductanceFrequency,
-							 const HeatingSystemParameters& resistanceTemperature,
-							 const HeatingSystemParameters& inductanceTemperature)
+#include <complex>
+
+HeatingSystem::HeatingSystem(const std::vector<HeatingSystemData>& frequency, const std::vector<HeatingSystemData>&
+							 temperature)
 {
-	_resistanceFrequency = resistanceFrequency;
-	_inductanceFrequency = inductanceFrequency;
-	_resistanceTemperature = resistanceTemperature;
-	_inductanceTemperature = inductanceTemperature;
+	for(auto [Key, Resistance, Inductance] : frequency)
+	{
+		_resistanceFrequency.insert({Key, Resistance});
+		_inductanceFrequency.insert({Key, Inductance});
+	}
+
+	for(auto [Key, Resistance, Inductance] : temperature)
+	{
+		_resistanceTemperature.insert({Key, Resistance});
+		_inductanceTemperature.insert({Key, Inductance});
+	}
 }
 
 
@@ -22,7 +29,7 @@ double HeatingSystem::Inductance(const double frequency, const double temperatur
 	return _inductanceFrequency.at(frequency) * _inductanceTemperature.at(temperature);
 }
 
-std::complex<double> HeatingSystem::Impedance(const double frequency, const double temperature) const
+double HeatingSystem::Impedance(const double frequency, const double temperature) const
 {
-	return std::complex{Resistance(frequency, temperature), Inductance(frequency, temperature)};
+	return abs(std::complex{Resistance(frequency, temperature), Inductance(frequency, temperature)});
 }

@@ -1,6 +1,7 @@
 #pragma once
-#include <complex>
 #include <unordered_map>
+
+#include "HeatingSystemData.h"
 
 using HeatingSystemParameters = std::unordered_map<double, double>;
 
@@ -13,11 +14,8 @@ private:
 	HeatingSystemParameters _inductanceTemperature;
 
 public:
-	HeatingSystem(const HeatingSystemParameters& resistanceFrequency, const HeatingSystemParameters& inductanceFrequency,
-				  const HeatingSystemParameters& resistanceTemperature, const HeatingSystemParameters& inductanceTemperature);
-
-
+	HeatingSystem(const std::vector<HeatingSystemData>& frequency, const std::vector<HeatingSystemData>& temperature);
 	[[nodiscard]] double Resistance(double frequency, double temperature) const;
 	[[nodiscard]] double Inductance(double frequency, double temperature) const;
-	[[nodiscard]] std::complex<double> Impedance(double frequency, double temperature) const;
+	[[nodiscard]] double Impedance(double frequency, double temperature) const;
 };
