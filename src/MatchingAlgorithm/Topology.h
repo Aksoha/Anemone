@@ -9,5 +9,6 @@ public:
 	[[nodiscard]] virtual double Reactance(double frequency, double temperature) const = 0;
 	[[nodiscard]] virtual std::complex<double> Impedance(double frequency, double temperature) const = 0;
 
-	virtual ~Topology() = 0;
+protected:
+	Topology() = default;
 };
