@@ -1,8 +1,5 @@
-using System.Runtime.InteropServices;
+﻿namespace MatchingAlgorithm;
 
-namespace MatchingAlgorithm.Wrapper;
-
-[StructLayout(LayoutKind.Sequential)]
 public struct HeatingSystemData
 {
     public double Key;

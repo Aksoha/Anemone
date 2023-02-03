@@ -1,5 +1,4 @@
 using System.Collections;
-using MatchingAlgorithm.Wrapper;
 
 namespace MatchingAlgorithm.Tests;
 
@@ -19,14 +18,14 @@ public class HeatingSystemTests
 
         // act
         var actualResistance = hs.Resistance(frequency, temperature);
-        var actualInductance = hs.Inductance(frequency, temperature);
+        var actualInductance = hs.Reactance(frequency, temperature);
         var actualImpedance = hs.Impedance(frequency, temperature);
 
         // assert
 
         Assert.Equal(data.ExpectedResistance, actualResistance);
         Assert.Equal(data.ExpectedInductance, actualInductance);
-        Assert.Equal(data.ExpectedImpedance, actualImpedance);
+        Assert.Equal(data.ExpectedImpedance, actualImpedance.Magnitude);
     }
 
     [Fact]
@@ -42,9 +41,9 @@ public class HeatingSystemTests
             hs.Resistance(0, 0);
         }
 
-        void GetInductance()
+        void GetReactance()
         {
-            hs.Inductance(0, 0);
+            hs.Reactance(0, 0);
         }
 
         void GetImpedance()
@@ -54,43 +53,9 @@ public class HeatingSystemTests
 
 
         // assert
-        Assert.ThrowsAny<ArgumentOutOfRangeException>(GetResistance);
-        Assert.ThrowsAny<ArgumentOutOfRangeException>(GetInductance);
-        Assert.ThrowsAny<ArgumentOutOfRangeException>(GetImpedance);
-    }
-
-    [Fact]
-    public void Dispose()
-    {
-        // arrange
-        var inputData = new List<HeatingSystemData>
-        {
-            new()
-        };
-        var hs = new HeatingSystem(inputData, inputData);
-        hs.Dispose();
-
-
-        // act
-        void GetResistance()
-        {
-            hs.Resistance(0, 0);
-        }
-
-        void GetInductance()
-        {
-            hs.Inductance(0, 0);
-        }
-
-        void GetImpedance()
-        {
-            hs.Impedance(0, 0);
-        }
-
-        // assert
-        Assert.ThrowsAny<ObjectDisposedException>(GetResistance);
-        Assert.ThrowsAny<ObjectDisposedException>(GetInductance);
-        Assert.ThrowsAny<ObjectDisposedException>(GetImpedance);
+        Assert.ThrowsAny<KeyNotFoundException>(GetResistance);
+        Assert.ThrowsAny<KeyNotFoundException>(GetReactance);
+        Assert.ThrowsAny<KeyNotFoundException>(GetImpedance);
     }
 }
 

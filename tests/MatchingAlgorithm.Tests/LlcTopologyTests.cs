@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using MatchingAlgorithm.Wrapper;
+using MatchingAlgorithm.Llc;
 using Xunit.Sdk;
 
 namespace MatchingAlgorithm.Tests;
@@ -45,53 +45,10 @@ public class LlcTopologyTests
 
         AssertWithRelativeTolerance(data.ExpectedResistance, actualResistance, data.Tolerance);
         AssertWithRelativeTolerance(data.ExpectedReactance, actualReactance, data.Tolerance);
-        AssertWithRelativeTolerance(data.ExpectedImpedance, actualImpedance, data.Tolerance);
+        AssertWithRelativeTolerance(data.ExpectedImpedance, actualImpedance.Magnitude, data.Tolerance);
         AssertWithRelativeTolerance(data.ExpectedParallelReactance, actualParallelReactance, data.Tolerance);
     }
-
-
-    [Fact]
-    public void Dispose()
-    {
-        // arrange
-
-        var inputData = new List<HeatingSystemData>
-        {
-            new() {Key = 0, Resistance = 0, Inductance = 0}
-        };
-        var hs = new HeatingSystem(inputData, inputData);
-        var llc = new LlcTopology(hs);
-        llc.Dispose();
-
-
-        // act
-        void GetResistance()
-        {
-            llc.Resistance(0, 0);
-        }
-
-        void GetReactance()
-        {
-            llc.Reactance(0, 0);
-        }
-
-        void GetImpedance()
-        {
-            llc.Impedance(0, 0);
-        }
-
-        void GetParallelReactance()
-        {
-            llc.ParallelReactance(0, 0);
-        }
-
-
-        // assert
-        Assert.ThrowsAny<ObjectDisposedException>(GetResistance);
-        Assert.ThrowsAny<ObjectDisposedException>(GetReactance);
-        Assert.ThrowsAny<ObjectDisposedException>(GetImpedance);
-        Assert.ThrowsAny<ObjectDisposedException>(GetParallelReactance);
-    }
+    
 
 
     private static void AssertWithRelativeTolerance(double expected, double actual, double tolerance)

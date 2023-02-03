@@ -22,11 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\MatchingAlgorithm.Wrapper\MatchingAlgorithm.Wrapper.csproj" />
+      <ProjectReference Include="..\..\src\MatchingAlgorithm\MatchingAlgorithm.csproj" />
     </ItemGroup>
-
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command="copy &quot;$(SolutionDir)x64\$(ConfigurationName)\MatchingAlgorithm.dll&quot; &quot;$(ProjectDir)$(OutDir)&quot;" />
-    </Target>
     
 </Project>
