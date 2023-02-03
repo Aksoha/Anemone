@@ -1,7 +1,6 @@
 ﻿namespace MatchingAlgorithm;
 
-public interface IEnergyMatching<TParameter, TResult>
-    where TParameter : MatchingParameter where TResult : MatchingResult
+public interface IEnergyMatching<TResult> where TResult : MatchingResult
 {
-    IEnumerable<TResult> EnergyMatching(TParameter parameters);
+    IEnumerable<TResult> EnergyMatching();
 }

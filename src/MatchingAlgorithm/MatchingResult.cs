@@ -8,6 +8,7 @@ public class MatchingResult
     public required double Reactance { get; set; }
     public required Complex Impedance { get; set; }
     public required double Frequency { get; set; }
+    public required double Temperature { get; set; }
     public required double Voltage { get; set; }
     public required double Current { get; set; }
     public required double Power { get; set; }
