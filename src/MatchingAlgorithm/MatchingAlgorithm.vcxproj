@@ -19,27 +19,256 @@
         </ProjectConfiguration>
     </ItemGroup>
     <ItemGroup>
-        <ClInclude Include="HeatingSystem.h"/>
-        <ClInclude Include="HeatingSystemData.h"/>
-        <ClInclude Include="interop\export.h"/>
-        <ClInclude Include="interop\HeatingSystemExport.h"/>
-        <ClInclude Include="interop\LlcTopologyExport.h"/>
-        <ClInclude Include="LlcTopology.h"/>
-        <ClInclude Include="Matching.h"/>
-        <ClInclude Include="MatchingParameter.h"/>
-        <ClInclude Include="MatchingResult.h"/>
-        <ClInclude Include="SweepParameter.h"/>
-        <ClInclude Include="Topology.h"/>
+        <ClInclude Include="ElectricCalculator.h" />
+        <ClInclude Include="HeatingSystem.h" />
+        <ClInclude Include="HeatingSystemData.h" />
+        <ClInclude Include="interop\export.h" />
+        <ClInclude Include="interop\HeatingSystemExport.h" />
+        <ClInclude Include="Llc\FrequencyReactancePair.h" />
+        <ClInclude Include="Llc\InductanceRange.h" />
+        <ClInclude Include="Llc\interop\LlcMatchingExport.h" />
+        <ClInclude Include="Llc\interop\LlcTopologyExport.h" />
+        <ClInclude Include="Llc\LlcMatching.h" />
+        <ClInclude Include="Llc\LlcMatchingParameter.h" />
+        <ClInclude Include="Llc\LlcMatchingResult.h" />
+        <ClInclude Include="Llc\LlcTopology.h" />
+        <ClInclude Include="Matching.h" />
+        <ClInclude Include="MatchingParameter.h" />
+        <ClInclude Include="MatchingResult.h" />
+        <ClInclude Include="SolutionNotFound.h" />
+        <ClInclude Include="SweepParameter.h" />
+        <ClInclude Include="Topology.h" />
     </ItemGroup>
     <ItemGroup>
-        <ClCompile Include="HeatingSystem.cpp"/>
-        <ClCompile Include="interop\LlcTopologyExport.cpp"/>
-        <ClCompile Include="LlcTopology.cpp"/>
-        <ClCompile Include="Matching.cpp"/>
-        <ClCompile Include="SweepParameter.cpp"/>
+        <ClCompile Include="ElectricCalculator.cpp" />
+        <ClCompile Include="HeatingSystem.cpp" />
+        <ClCompile Include="Llc\InductanceRange.cpp">
+          <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
+          <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+          <Optimization>Disabled</Optimization>
+          <SupportJustMyCode>true</SupportJustMyCode>
+          <AssemblerOutput>NoListing</AssemblerOutput>
+          <AssemblerListingLocation>x64\Debug\</AssemblerListingLocation>
+          <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
+          <BrowseInformation>false</BrowseInformation>
+          <BrowseInformationFile>x64\Debug\</BrowseInformationFile>
+          <CompileAs>Default</CompileAs>
+          <ConformanceMode>true</ConformanceMode>
+          <DiagnosticsFormat>Column</DiagnosticsFormat>
+          <DisableLanguageExtensions>false</DisableLanguageExtensions>
+          <ErrorReporting>Prompt</ErrorReporting>
+          <ExpandAttributedSource>false</ExpandAttributedSource>
+          <ExceptionHandling>Sync</ExceptionHandling>
+          <EnableASAN>false</EnableASAN>
+          <EnableFuzzer>false</EnableFuzzer>
+          <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+          <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+          <FloatingPointModel>Precise</FloatingPointModel>
+          <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+          <GenerateModuleDependencies>false</GenerateModuleDependencies>
+          <GenerateSourceDependencies>false</GenerateSourceDependencies>
+          <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+          <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+          <IntrinsicFunctions>false</IntrinsicFunctions>
+          <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
+          <LanguageStandard>stdcpp20</LanguageStandard>
+          <LanguageStandard_C>Default</LanguageStandard_C>
+          <MinimalRebuild>false</MinimalRebuild>
+          <ModuleDependenciesFile>x64\Debug\</ModuleDependenciesFile>
+          <ModuleOutputFile>x64\Debug\</ModuleOutputFile>
+          <OmitDefaultLibName>false</OmitDefaultLibName>
+          <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+          <WholeProgramOptimization>false</WholeProgramOptimization>
+          <ObjectFileName>x64\Debug\</ObjectFileName>
+          <CallingConvention>Cdecl</CallingConvention>
+          <ProgramDataBaseFileName>x64\Debug\vc143.pdb</ProgramDataBaseFileName>
+          <PrecompiledHeader>NotUsing</PrecompiledHeader>
+          <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+          <PrecompiledHeaderOutputFile>x64\Debug\MatchingAlgorithm.pch</PrecompiledHeaderOutputFile>
+          <PreprocessToFile>false</PreprocessToFile>
+          <PreprocessKeepComments>false</PreprocessKeepComments>
+          <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+          <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+          <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+          <ShowIncludes>false</ShowIncludes>
+          <SourceDependenciesFile>x64\Debug\</SourceDependenciesFile>
+          <SuppressStartupBanner>true</SuppressStartupBanner>
+          <BufferSecurityCheck>true</BufferSecurityCheck>
+          <SmallerTypeCheck>false</SmallerTypeCheck>
+          <SpectreMitigation>false</SpectreMitigation>
+          <StructMemberAlignment>Default</StructMemberAlignment>
+          <TrackerLogDirectory>x64\Debug\Matching.da656114.tlog\</TrackerLogDirectory>
+          <TranslateIncludes>false</TranslateIncludes>
+          <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
+          <TreatWarningAsError>false</TreatWarningAsError>
+          <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+          <UseFullPaths>true</UseFullPaths>
+          <WarningLevel>Level3</WarningLevel>
+          <XMLDocumentationFileName>x64\Debug\</XMLDocumentationFileName>
+          <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+          <IntelJCCErratum>false</IntelJCCErratum>
+          <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
+          <ExternalWarningLevel>InheritWarningLevel</ExternalWarningLevel>
+          <TreatExternalTemplatesAsInternal>true</TreatExternalTemplatesAsInternal>
+          <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
+          <PreprocessorDefinitions>_DEBUG;ANEMONE_EXPORTS;_WINDOWS;_USRDLL;_WINDLL;_UNICODE;UNICODE;</PreprocessorDefinitions>
+          <SDLCheck>true</SDLCheck>
+          <LinkCompiled>true</LinkCompiled>
+        </ClCompile>
+        <ClCompile Include="Llc\interop\LlcMatchingExport.cpp" />
+        <ClCompile Include="Llc\interop\LlcTopologyExport.cpp">
+          <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
+          <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+          <Optimization>Disabled</Optimization>
+          <SupportJustMyCode>true</SupportJustMyCode>
+          <AssemblerOutput>NoListing</AssemblerOutput>
+          <AssemblerListingLocation>x64\Debug\</AssemblerListingLocation>
+          <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
+          <BrowseInformation>false</BrowseInformation>
+          <BrowseInformationFile>x64\Debug\</BrowseInformationFile>
+          <CompileAs>Default</CompileAs>
+          <ConformanceMode>true</ConformanceMode>
+          <DiagnosticsFormat>Column</DiagnosticsFormat>
+          <DisableLanguageExtensions>false</DisableLanguageExtensions>
+          <ErrorReporting>Prompt</ErrorReporting>
+          <ExpandAttributedSource>false</ExpandAttributedSource>
+          <ExceptionHandling>Sync</ExceptionHandling>
+          <EnableASAN>false</EnableASAN>
+          <EnableFuzzer>false</EnableFuzzer>
+          <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+          <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+          <FloatingPointModel>Precise</FloatingPointModel>
+          <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+          <GenerateModuleDependencies>false</GenerateModuleDependencies>
+          <GenerateSourceDependencies>false</GenerateSourceDependencies>
+          <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+          <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+          <IntrinsicFunctions>false</IntrinsicFunctions>
+          <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
+          <LanguageStandard>stdcpp20</LanguageStandard>
+          <LanguageStandard_C>Default</LanguageStandard_C>
+          <MinimalRebuild>false</MinimalRebuild>
+          <ModuleDependenciesFile>x64\Debug\</ModuleDependenciesFile>
+          <ModuleOutputFile>x64\Debug\</ModuleOutputFile>
+          <OmitDefaultLibName>false</OmitDefaultLibName>
+          <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+          <WholeProgramOptimization>false</WholeProgramOptimization>
+          <ObjectFileName>x64\Debug\</ObjectFileName>
+          <CallingConvention>Cdecl</CallingConvention>
+          <ProgramDataBaseFileName>x64\Debug\vc143.pdb</ProgramDataBaseFileName>
+          <PrecompiledHeader>NotUsing</PrecompiledHeader>
+          <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+          <PrecompiledHeaderOutputFile>x64\Debug\MatchingAlgorithm.pch</PrecompiledHeaderOutputFile>
+          <PreprocessToFile>false</PreprocessToFile>
+          <PreprocessKeepComments>false</PreprocessKeepComments>
+          <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+          <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+          <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+          <ShowIncludes>false</ShowIncludes>
+          <SourceDependenciesFile>x64\Debug\</SourceDependenciesFile>
+          <SuppressStartupBanner>true</SuppressStartupBanner>
+          <BufferSecurityCheck>true</BufferSecurityCheck>
+          <SmallerTypeCheck>false</SmallerTypeCheck>
+          <SpectreMitigation>false</SpectreMitigation>
+          <StructMemberAlignment>Default</StructMemberAlignment>
+          <TrackerLogDirectory>x64\Debug\Matching.da656114.tlog\</TrackerLogDirectory>
+          <TranslateIncludes>false</TranslateIncludes>
+          <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
+          <TreatWarningAsError>false</TreatWarningAsError>
+          <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+          <UseFullPaths>true</UseFullPaths>
+          <WarningLevel>Level3</WarningLevel>
+          <XMLDocumentationFileName>x64\Debug\</XMLDocumentationFileName>
+          <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+          <IntelJCCErratum>false</IntelJCCErratum>
+          <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
+          <ExternalWarningLevel>InheritWarningLevel</ExternalWarningLevel>
+          <TreatExternalTemplatesAsInternal>true</TreatExternalTemplatesAsInternal>
+          <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
+          <PreprocessorDefinitions>_DEBUG;ANEMONE_EXPORTS;_WINDOWS;_USRDLL;_WINDLL;_UNICODE;UNICODE;</PreprocessorDefinitions>
+          <SDLCheck>true</SDLCheck>
+          <LinkCompiled>true</LinkCompiled>
+        </ClCompile>
+        <ClCompile Include="Llc\LlcMatching.cpp" />
+        <ClCompile Include="Llc\LlcTopology.cpp">
+          <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
+          <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+          <Optimization>Disabled</Optimization>
+          <SupportJustMyCode>true</SupportJustMyCode>
+          <AssemblerOutput>NoListing</AssemblerOutput>
+          <AssemblerListingLocation>x64\Debug\</AssemblerListingLocation>
+          <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
+          <BrowseInformation>false</BrowseInformation>
+          <BrowseInformationFile>x64\Debug\</BrowseInformationFile>
+          <CompileAs>Default</CompileAs>
+          <ConformanceMode>true</ConformanceMode>
+          <DiagnosticsFormat>Column</DiagnosticsFormat>
+          <DisableLanguageExtensions>false</DisableLanguageExtensions>
+          <ErrorReporting>Prompt</ErrorReporting>
+          <ExpandAttributedSource>false</ExpandAttributedSource>
+          <ExceptionHandling>Sync</ExceptionHandling>
+          <EnableASAN>false</EnableASAN>
+          <EnableFuzzer>false</EnableFuzzer>
+          <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+          <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+          <FloatingPointModel>Precise</FloatingPointModel>
+          <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+          <GenerateModuleDependencies>false</GenerateModuleDependencies>
+          <GenerateSourceDependencies>false</GenerateSourceDependencies>
+          <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+          <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+          <IntrinsicFunctions>false</IntrinsicFunctions>
+          <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
+          <LanguageStandard>stdcpp20</LanguageStandard>
+          <LanguageStandard_C>Default</LanguageStandard_C>
+          <MinimalRebuild>false</MinimalRebuild>
+          <ModuleDependenciesFile>x64\Debug\</ModuleDependenciesFile>
+          <ModuleOutputFile>x64\Debug\</ModuleOutputFile>
+          <OmitDefaultLibName>false</OmitDefaultLibName>
+          <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+          <WholeProgramOptimization>false</WholeProgramOptimization>
+          <ObjectFileName>x64\Debug\</ObjectFileName>
+          <CallingConvention>Cdecl</CallingConvention>
+          <ProgramDataBaseFileName>x64\Debug\vc143.pdb</ProgramDataBaseFileName>
+          <PrecompiledHeader>NotUsing</PrecompiledHeader>
+          <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+          <PrecompiledHeaderOutputFile>x64\Debug\MatchingAlgorithm.pch</PrecompiledHeaderOutputFile>
+          <PreprocessToFile>false</PreprocessToFile>
+          <PreprocessKeepComments>false</PreprocessKeepComments>
+          <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+          <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+          <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+          <ShowIncludes>false</ShowIncludes>
+          <SourceDependenciesFile>x64\Debug\</SourceDependenciesFile>
+          <SuppressStartupBanner>true</SuppressStartupBanner>
+          <BufferSecurityCheck>true</BufferSecurityCheck>
+          <SmallerTypeCheck>false</SmallerTypeCheck>
+          <SpectreMitigation>false</SpectreMitigation>
+          <StructMemberAlignment>Default</StructMemberAlignment>
+          <TrackerLogDirectory>x64\Debug\Matching.da656114.tlog\</TrackerLogDirectory>
+          <TranslateIncludes>false</TranslateIncludes>
+          <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
+          <TreatWarningAsError>false</TreatWarningAsError>
+          <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+          <UseFullPaths>true</UseFullPaths>
+          <WarningLevel>Level3</WarningLevel>
+          <XMLDocumentationFileName>x64\Debug\</XMLDocumentationFileName>
+          <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+          <IntelJCCErratum>false</IntelJCCErratum>
+          <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
+          <ExternalWarningLevel>InheritWarningLevel</ExternalWarningLevel>
+          <TreatExternalTemplatesAsInternal>true</TreatExternalTemplatesAsInternal>
+          <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
+          <PreprocessorDefinitions>_DEBUG;ANEMONE_EXPORTS;_WINDOWS;_USRDLL;_WINDLL;_UNICODE;UNICODE;</PreprocessorDefinitions>
+          <SDLCheck>true</SDLCheck>
+          <LinkCompiled>true</LinkCompiled>
+        </ClCompile>
+        <ClCompile Include="Matching.cpp" />
+        <ClCompile Include="SolutionNotFound.cpp" />
+        <ClCompile Include="SweepParameter.cpp" />
     </ItemGroup>
     <ItemGroup>
-        <ClCompile Include="interop\HeatingSystemExport.cpp"/>
+        <ClCompile Include="interop\HeatingSystemExport.cpp" />
     </ItemGroup>
     <PropertyGroup Label="Globals">
         <VCProjectVersion>16.0</VCProjectVersion>
@@ -48,7 +277,7 @@
         <RootNamespace>MatchingAlgorithm</RootNamespace>
         <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     </PropertyGroup>
-    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
+    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
         <ConfigurationType>DynamicLibrary</ConfigurationType>
         <UseDebugLibraries>true</UseDebugLibraries>
@@ -75,24 +304,24 @@
         <WholeProgramOptimization>true</WholeProgramOptimization>
         <CharacterSet>Unicode</CharacterSet>
     </PropertyGroup>
-    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props"/>
+    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
     <ImportGroup Label="ExtensionSettings">
     </ImportGroup>
     <ImportGroup Label="Shared">
     </ImportGroup>
     <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     </ImportGroup>
     <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     </ImportGroup>
     <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     </ImportGroup>
     <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     </ImportGroup>
-    <PropertyGroup Label="UserMacros"/>
+    <PropertyGroup Label="UserMacros" />
     <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
         <ClCompile>
             <WarningLevel>Level3</WarningLevel>
@@ -163,7 +392,7 @@
             <EnableUAC>false</EnableUAC>
         </Link>
     </ItemDefinitionGroup>
-    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
+    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
     <ImportGroup Label="ExtensionTargets">
     </ImportGroup>
 </Project>

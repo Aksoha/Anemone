@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include <memory>
 
-#include "HeatingSystem.h"
-#include "Topology.h"
+#include "../HeatingSystem.h"
+#include "../Topology.h"
 
 class LlcTopology final : public Topology
 {
@@ -18,4 +18,5 @@ public:
 
 private:
 	std::shared_ptr<HeatingSystem> _heatingSystem;
+	
 };

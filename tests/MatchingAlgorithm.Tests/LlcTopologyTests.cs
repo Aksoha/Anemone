@@ -16,12 +16,19 @@ public class LlcTopologyTests
 
         var hs = new HeatingSystem(new[]
             {
-                new HeatingSystemData(frequency, data.FrequencyData.resistance, data.FrequencyData.inductance)
+                new HeatingSystemData
+                {
+                    Key = frequency, Resistance = data.FrequencyData.resistance,
+                    Inductance = data.FrequencyData.inductance
+                }
             },
             new[]
             {
-                new HeatingSystemData(temperature, data.TemperatureData.resistance,
-                    data.TemperatureData.inductance)
+                new HeatingSystemData
+                {
+                    Key = temperature, Resistance = data.TemperatureData.resistance,
+                    Inductance = data.TemperatureData.inductance
+                }
             });
 
 
@@ -50,7 +57,7 @@ public class LlcTopologyTests
 
         var inputData = new List<HeatingSystemData>
         {
-            new(0, 0, 0)
+            new() {Key = 0, Resistance = 0, Inductance = 0}
         };
         var hs = new HeatingSystem(inputData, inputData);
         var llc = new LlcTopology(hs);

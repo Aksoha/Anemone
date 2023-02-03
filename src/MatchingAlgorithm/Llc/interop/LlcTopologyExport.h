@@ -1,7 +1,7 @@
 ﻿#pragma once
 #pragma once
-#include "export.h"
 #include "../LlcTopology.h"
+#include "../../interop/export.h"
 
 DLL_EXPORT LlcTopology* LlcTopology_Create(HeatingSystem* heatingSystem, double inductance, double capacitance);
 DLL_EXPORT void LlcTopology_Dispose(const LlcTopology* llc);

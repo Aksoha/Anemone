@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <memory>
 #include <vector>
 #include <numbers>
 
@@ -12,10 +13,7 @@ using vector = std::vector<double>;
 template <class T>
 concept IsTopology = std::is_base_of_v<Topology, T>;
 
-template <class T>
-concept IsParameter = std::is_base_of_v<MatchingParameter, T>;
-
-template <IsParameter TParameter, IsTopology TTopology>
+template <IsTopology TTopology>
 class Matching
 {
 protected:
@@ -23,19 +21,19 @@ protected:
 	const vector _temperature;
 	const vector _turnRatio;
 
-	double _voltageLimit;
-	double _currentLimit;
-	double _expectedPower;
+	const double _voltageLimit;
+	const double _currentLimit;
+	const double _expectedPower;
 
-	const TTopology _topology;
+	std::shared_ptr<TTopology> _topology;
 
 	const double _nominalResistance;
 
-	Matching(TParameter& data, TTopology& topology);
+	Matching(const MatchingParameter& data, std::shared_ptr<TTopology> topology);
 };
 
-template <IsParameter TParameter, IsTopology TTopology>
-Matching<TParameter, TTopology>::Matching(TParameter& data, TTopology& topology)
+template <IsTopology TTopology>
+Matching<TTopology>::Matching(const MatchingParameter& data,  std::shared_ptr<TTopology> topology)
 	: _frequency(static_cast<vector>(data.Frequency)),
 	  _temperature(static_cast<vector>(data.Temperature)),
 	  _turnRatio(static_cast<vector>(data.TurnRatio)),

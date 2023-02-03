@@ -65,7 +65,7 @@ public class HeatingSystemTests
         // arrange
         var inputData = new List<HeatingSystemData>
         {
-            new(0, 0, 0)
+            new()
         };
         var hs = new HeatingSystem(inputData, inputData);
         hs.Dispose();
@@ -113,8 +113,8 @@ public class HeatingSystemTestData : IEnumerable<object[]>
         {
             new HeatingSystemTestParameters
             {
-                Frequency = new HeatingSystemData(0, 0, 0),
-                Temperature = new HeatingSystemData(0, 0, 0),
+                Frequency = new HeatingSystemData(),
+                Temperature = new HeatingSystemData(),
                 ExpectedResistance = 0,
                 ExpectedInductance = 0,
                 ExpectedImpedance = 0
@@ -124,8 +124,8 @@ public class HeatingSystemTestData : IEnumerable<object[]>
         {
             new HeatingSystemTestParameters
             {
-                Frequency = new HeatingSystemData(10e3, 20e-3, 5e-6),
-                Temperature = new HeatingSystemData(20, 1.13, 1.03),
+                Frequency = new HeatingSystemData{ Key = 10e3, Resistance = 20e-3, Inductance = 5e-6},
+                Temperature = new HeatingSystemData{ Key = 20, Resistance = 1.13, Inductance = 1.03},
                 ExpectedResistance = 20e-3 * 1.13,
                 ExpectedInductance = 5e-6 * 1.03,
                 ExpectedImpedance = Math.Sqrt(20e-3 * 1.13 * (20e-3 * 1.13) + 5e-6 * 1.03 * (5e-6 * 1.03))
@@ -135,8 +135,8 @@ public class HeatingSystemTestData : IEnumerable<object[]>
         {
             new HeatingSystemTestParameters
             {
-                Frequency = new HeatingSystemData(52.32e3, 21.8e-3, 15.1e-5),
-                Temperature = new HeatingSystemData(29.3, 1.09, 1.13),
+                Frequency = new HeatingSystemData{ Key = 52.32e3, Resistance = 21.8e-3, Inductance = 15.1e-5},
+                Temperature = new HeatingSystemData{ Key = 29.3, Resistance = 1.09, Inductance = 1.13},
                 ExpectedResistance = 21.8e-3 * 1.09,
                 ExpectedInductance = 15.1e-5 * 1.13,
                 ExpectedImpedance = Math.Sqrt(21.8e-3 * 1.09 * (21.8e-3 * 1.09) + 15.1e-5 * 1.13 * (15.1e-5 * 1.13))
