@@ -1,135 +1,33 @@
-﻿// #define PARALLEL_COMPUTING
-
-using System.Collections.Concurrent;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace MatchingAlgorithm.Llc;
 
-public class LlcMatching : IEnergyMatching<LlcMatchingResult>
+public class LlcMatching : Matching<ILlcTopology, LlcMatchingParameter>
 {
-    private readonly ILlcTopology _topology;
-
-    private readonly LlcMatchingParameter _parameters;
-    private double NominalResistance { get; }
-    public LlcMatching(ILlcTopology topology, LlcMatchingParameter parameters)
+    protected LlcMatching(ILlcTopology topology, LlcMatchingParameter parameters)
+        : base(topology, parameters)
     {
-        _topology = topology;
-        _parameters = parameters;
         Temperature = new List<double>(parameters.Temperature);
-        NominalResistance = VoltageLimit * VoltageLimit / ExpectedPower * 8 / (Math.PI * Math.PI);
     }
 
-    private IEnumerable<double> Frequency => _parameters.Frequency;
-    private List<double> Temperature { get; set; }
-    private IEnumerable<double> Inductance => _parameters.Inductance;
-    private IEnumerable<double> Capacitance => _parameters.Capacitance;
-    private double VoltageLimit => _parameters.VoltageLimit;
-    private double CurrentLimit => _parameters.CurrentLimit;
-    private double ExpectedPower => _parameters.ExpectedPower;
-
-
-    public IEnumerable<LlcMatchingResult> EnergyMatching()
-    {
-        _topology.Capacitance = Capacitance.First();
-        _topology.Inductance = Inductance.First();
-        
-        var compensationRanges = CompensationRanges();
-        if (compensationRanges.Count != 1 || compensationRanges.Count(x => x.FullCompensation) != 1)
-            // if this throws check CompensationRanges() method, further code assumes that there is only 1 solution
-            throw new NotImplementedException(
-                "at this point algorithm is designed to work only with full compensation and only 1 solution");
-
-
-        var currentCompensationRange = compensationRanges.First();
-        var ls = Inductance.First(x => x > currentCompensationRange.MinInductance);
-
-        var e = ResonantFrequencySetting(ls, currentCompensationRange.Capacitance);
-
-        var results = new List<LlcMatchingResult>();
-
-        foreach (var item in Temperature.Select((value, i) => new { i, value }))
-        {
-            var temperature = item.value;
-            var frequency = e[item.i];
-
-            _topology.Inductance = ls;
-            _topology.Capacitance = currentCompensationRange.Capacitance;
-            var impedance = _topology.Impedance(frequency, temperature);
-            var turnRatio = TurnRatioSetting();
-            var voltage = TransformerCalculator.Voltage(ExpectedPower, VoltageLimit, CurrentLimit, NominalResistance,
-                turnRatio, impedance.Magnitude);
-            var power = TransformerCalculator.Power(impedance.Real, impedance.Magnitude, voltage, turnRatio);
-            var current = TransformerCalculator.Current(impedance.Magnitude, VoltageLimit, turnRatio);
-            
-            results.Add(new LlcMatchingResult
-            {
-                Capacitance = currentCompensationRange.Capacitance,
-                Frequency = frequency,
-                Temperature = temperature,
-                Inductance = ls,
-                Resistance = impedance.Real,
-                Reactance = impedance.Imaginary,
-                Impedance = impedance,
-                Current = current,
-                Power = power,
-                Voltage = voltage,
-                TurnRatio = turnRatio
-            });
-        }
-
-        return results;
-    }
-
-
-    private double TurnRatioSetting()
-    {
-        return 15;
-    }
-    
-    private List<double> ResonantFrequencySetting(double inductance, double capacitance)
-    {
-        if (_parameters.AllowPartialCompensation)
-            throw new NotImplementedException("only full compensation is currently supported");
-
-#if PARALLEL_COMPUTING
-        ConcurrentBag<(FrequencyReactancePair value, long index)> resonantFrequency = new();
-        Parallel.ForEach(Temperature, (t, _, index) =>
-        {
-            var upperResonance = UpperResonanceRegion(t, capacitance);
-            if (upperResonance.Count == 0)
-                throw new UnreachableException(
-                    "can't find resonance for the given set, currently only full compensation is supported");
-
-            var result = upperResonance.MinBy(x => Math.Abs(x.Reactance + 2 * Math.PI * x.Frequency * inductance));
-            resonantFrequency.Add(new ValueTuple<FrequencyReactancePair, long>(result, index));
-        });
-        return resonantFrequency.OrderBy(x => x.index).Select(x => x.value.Frequency).ToList();
-#else
-        List<FrequencyReactancePair> resonantFrequency = new();
-        foreach (var t in Temperature)
-        {
-            var upperResonance = UpperResonanceRegion(t, capacitance);
-            if (upperResonance.Count == 0)
-                throw new UnreachableException(
-                    "can't find resonance for the given set, currently only full compensation is supported");
-
-            var result = upperResonance.MinBy(x => Math.Abs(x.Reactance + 2 * Math.PI * x.Frequency * inductance));
-            resonantFrequency.Add(result);
-        }
-
-        return resonantFrequency.Select(x => x.Frequency).ToList();
-#endif
-    }
+    // private List<double> Temperature { get; set; }
+    protected IEnumerable<double> Inductance => Parameters.Inductance;
+    protected IEnumerable<double> Capacitance => Parameters.Capacitance;
+    protected new List<double> Temperature { get; set; }
 
 
     /// <summary>
-    /// Performs capacitance sweep to find <see cref="LlcCompensationResult"/> in which compensation of LLC can be performed by change of serial inductance.
+    ///     Performs capacitance sweep to find <see cref="LlcCompensationResult" /> in which compensation of LLC can be
+    ///     performed by change of serial inductance.
     /// </summary>
-    /// <exception cref="NotImplementedException">Thrown when attempting to run algorithm with <see cref="LlcMatchingParameter.AllowPartialCompensation"/> flag.</exception>
+    /// <exception cref="NotImplementedException">
+    ///     Thrown when attempting to run algorithm with
+    ///     <see cref="LlcMatchingParameter.AllowPartialCompensation" /> flag.
+    /// </exception>
     /// <exception cref="SolutionNotFoundException">Thrown when there is no solution for given data set.</exception>
-    private List<LlcCompensationResult> CompensationRanges()
+    protected List<LlcCompensationResult> CompensationRanges()
     {
-        if (_parameters.AllowPartialCompensation)
+        if (Parameters.AllowPartialCompensation)
             throw new NotImplementedException("only full compensation is currently supported");
 
         // if implementing partial compensation this needs to go
@@ -174,10 +72,11 @@ public class LlcMatching : IEnergyMatching<LlcMatchingResult>
     }
 
     /// <summary>
-    /// Performs a sweep in temperature domain to find min and max values of serial inductance that will allow for full compensation of LLC. 
+    ///     Performs a sweep in temperature domain to find min and max values of serial inductance that will allow for full
+    ///     compensation of LLC.
     /// </summary>
     /// <param name="capacitance">The capacitance for which calculation will be performed.</param>
-    /// <returns>Returns a result if it exists, otherwise <see langword="null"/>.</returns>
+    /// <returns>Returns a result if it exists, otherwise <see langword="null" />.</returns>
     private InductanceRange? FullInductanceCompensationRange(double capacitance)
     {
         var output = new InductanceRange { Min = double.MinValue, Max = double.MaxValue };
@@ -217,7 +116,7 @@ public class LlcMatching : IEnergyMatching<LlcMatchingResult>
     ///     This region is characteristic for its gentle increase of parallel reactance which makes it easy to perform
     ///     impedance compensation with serial inductance.
     /// </remarks>
-    private List<FrequencyReactancePair> UpperResonanceRegion(double temperature, double capacitance)
+    protected List<FrequencyReactancePair> UpperResonanceRegion(double temperature, double capacitance)
     {
         var capacitiveRange = CapacitiveRegion(temperature, capacitance);
         if (capacitiveRange.Count == 0)
@@ -247,9 +146,9 @@ public class LlcMatching : IEnergyMatching<LlcMatchingResult>
     /// </remarks>
     private List<FrequencyReactancePair> CapacitiveRegion(double temperature, double capacitance)
     {
-        _topology.Capacitance = capacitance;
+        Topology.Capacitance = capacitance;
         var results = (from f in Frequency
-            let xp = _topology.ParallelReactance(f, temperature)
+            let xp = Topology.ParallelReactance(f, temperature)
             where xp < 0
             select new FrequencyReactancePair { Frequency = f, Reactance = xp }).ToList();
         return results;
@@ -257,28 +156,28 @@ public class LlcMatching : IEnergyMatching<LlcMatchingResult>
 
 
     /// <summary>
-    /// Restores all data reduced by <see cref="ReduceCalculationPoints"/>.
+    ///     Restores all data reduced by <see cref="ReduceCalculationPoints" />.
     /// </summary>
     private void RestoreCalculationPoints()
     {
-        Temperature = _parameters.Temperature.ToList();
+        Temperature = Parameters.Temperature.ToList();
     }
 
 
     /// <summary>
-    /// Reduces the number of points required to perform initial sweep for <see cref="FullInductanceCompensationRange"/>.
+    ///     Reduces the number of points required to perform initial sweep for <see cref="FullInductanceCompensationRange" />.
     /// </summary>
     private void ReduceCalculationPoints()
     {
         var f = Frequency.First();
-        var min = _parameters.Temperature.MinBy(t => _topology.Reactance(f, t));
-        var max = _parameters.Temperature.MaxBy(t => _topology.Reactance(f, t));
+        var min = Parameters.Temperature.MinBy(t => Topology.Reactance(f, t));
+        var max = Parameters.Temperature.MaxBy(t => Topology.Reactance(f, t));
         Temperature = new List<double>
         {
-            _parameters.Temperature.First(),
+            Parameters.Temperature.First(),
             max,
             min,
-            _parameters.Temperature.Last()
+            Parameters.Temperature.Last()
         };
     }
 }
