@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using System.Numerics;
 using MatchingAlgorithm.Llc;
+using Moq;
 using Xunit.Sdk;
 
 namespace MatchingAlgorithm.Tests;
@@ -14,22 +16,13 @@ public class LlcTopologyTests
         var frequency = data.Frequency;
         var temperature = data.Temperature;
 
-        var hs = new HeatingSystem(new[]
-            {
-                new HeatingSystemData
-                {
-                    Key = frequency, Resistance = data.FrequencyData.resistance,
-                    Inductance = data.FrequencyData.inductance
-                }
-            },
-            new[]
-            {
-                new HeatingSystemData
-                {
-                    Key = temperature, Resistance = data.TemperatureData.resistance,
-                    Inductance = data.TemperatureData.inductance
-                }
-            });
+        var hsMock = new Mock<IHeatingSystem>();
+        hsMock.Setup(x => x.Resistance(It.IsAny<double>(), It.IsAny<double>())).Returns(data.HsResistance);
+        hsMock.Setup(x => x.Reactance(It.IsAny<double>(), It.IsAny<double>())).Returns(data.HsReactance);
+        hsMock.Setup(x => x.Impedance(It.IsAny<double>(), It.IsAny<double>()))
+            .Returns(new Complex(data.HsResistance, data.HsReactance));
+
+        var hs = hsMock.Object;
 
 
         var llc = new LlcTopology(hs);
@@ -48,7 +41,6 @@ public class LlcTopologyTests
         AssertWithRelativeTolerance(data.ExpectedImpedance, actualImpedance.Magnitude, data.Tolerance);
         AssertWithRelativeTolerance(data.ExpectedParallelReactance, actualParallelReactance, data.Tolerance);
     }
-    
 
 
     private static void AssertWithRelativeTolerance(double expected, double actual, double tolerance)
@@ -78,8 +70,8 @@ public class LlcTopologyParameters
     public required double Frequency { get; init; }
     public required double Temperature { get; init; }
 
-    public required (double resistance, double inductance) FrequencyData { get; init; }
-    public required (double resistance, double inductance) TemperatureData { get; init; }
+    public required double HsResistance { get; init; }
+    public required double HsReactance { get; init; }
 
     public required double Inductance { get; init; }
     public required double Capacitance { get; init; }
@@ -92,7 +84,7 @@ public class LlcTopologyParameters
     /// <summary>
     ///     A relative threshold between expected and actual values below which numbers will be considered the same
     /// </summary>
-    public double Tolerance { get; init; } = 0.05;
+    public double Tolerance { get; init; } = 0.01;
 }
 
 public class LlcTopologyTestData : IEnumerable<object[]>
@@ -105,8 +97,8 @@ public class LlcTopologyTestData : IEnumerable<object[]>
             {
                 Frequency = 0,
                 Temperature = 0,
-                FrequencyData = (0, 0),
-                TemperatureData = (0, 0),
+                HsResistance = 0,
+                HsReactance = 0,
                 Inductance = 0,
                 Capacitance = 0,
                 ExpectedResistance = 0,
@@ -121,11 +113,11 @@ public class LlcTopologyTestData : IEnumerable<object[]>
             {
                 Frequency = 5,
                 Temperature = 0,
-                FrequencyData = (20, 12),
-                TemperatureData = (20, 12),
+                HsResistance = 20,
+                HsReactance = 20,
                 Inductance = 22,
                 Capacitance = 1,
-                ExpectedResistance = 1.96e-8,
+                ExpectedResistance = 5.12e-8,
                 ExpectedReactance = 691.11,
                 ExpectedImpedance = 691.11,
                 ExpectedParallelReactance = -0.0318
