@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Numerics;
 
 namespace MatchingAlgorithm.Llc;
 
@@ -50,17 +49,14 @@ public class LlcPassiveMatching : LlcMatching, IEnergyMatching<LlcMatchingResult
 
         var turnRatio = SelectTurnRatio(impedanceResult);
 
-        List<LlcMatchingResult> list = new List<LlcMatchingResult>();
-        for (int i = 0; i < Temperature.Count; i++)
-        {
-            var item = new { i = i, value = Temperature[i] };
-            double temperature = item.value;
-            double frequency = resonantFrequency[item.i];
-            Complex impedance = impedanceResult[item.i];
-            double voltage = TransformerCalculator.Voltage(ExpectedPower, VoltageLimit, CurrentLimit, NominalResistance, turnRatio, impedance.Magnitude);
-            double power = TransformerCalculator.Power(impedance.Real, impedance.Magnitude, voltage, turnRatio);
-            double current = TransformerCalculator.Current(impedance.Magnitude, voltage, turnRatio);
-            list.Add(new LlcMatchingResult
+        return (from item in Temperature.Select((t, i) => new { i, value = t })
+            let temperature = item.value
+            let frequency = resonantFrequency[item.i]
+            let impedance = impedanceResult[item.i]
+            let voltage = Voltage(ExpectedPower, VoltageLimit, CurrentLimit, NominalResistance, turnRatio, impedance.Magnitude)
+            let power = Power(impedance.Real, impedance.Magnitude, voltage, turnRatio)
+            let current = Current(impedance.Magnitude, voltage, turnRatio)
+            select new LlcMatchingResult
             {
                 Capacitance = capacitance,
                 Frequency = frequency,
@@ -73,10 +69,7 @@ public class LlcPassiveMatching : LlcMatching, IEnergyMatching<LlcMatchingResult
                 Power = power,
                 Voltage = voltage,
                 TurnRatio = turnRatio
-            });
-        }
-
-        return list;
+            }).ToList();
     }
 
     /// <summary>

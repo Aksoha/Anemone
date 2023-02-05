@@ -42,9 +42,9 @@ public abstract class Matching<TTopology, TParameters>
                 let magnitude = impedance.Magnitude
                 let resistance = impedance.Real
                 let voltage =
-                    TransformerCalculator.Voltage(ExpectedPower, VoltageLimit, CurrentLimit, NominalResistance, k,
+                    Voltage(ExpectedPower, VoltageLimit, CurrentLimit, NominalResistance, k,
                         magnitude)
-                select TransformerCalculator.Power(resistance, magnitude, voltage, k)).ToList();
+                select Power(resistance, magnitude, voltage, k)).ToList();
 
             var mean = power.Average();
 
@@ -55,5 +55,63 @@ public abstract class Matching<TTopology, TParameters>
 
 
         return selectedTurnRatio;
+    }
+    
+        /// <summary>
+    /// Calculate voltage of primary side while retaining current and voltage limits
+    /// </summary>
+    /// <param name="expectedPower">Load power.</param>
+    /// <param name="voltageMax">RMS voltage of primary side.</param>
+    /// <param name="currentMax">RMS current of primary side.</param>
+    /// <param name="nominalResistance">Resistance of primary side.</param>
+    /// <param name="turnRatio">Turn ratio.</param>
+    /// <param name="impedance">Impedance of system (secondary side).</param>
+        protected static double Voltage(
+        double expectedPower,
+        double voltageMax,
+        double currentMax,
+        double nominalResistance,
+        double turnRatio,
+        double impedance)
+    {
+        var resistanceMinimal = expectedPower / (currentMax * currentMax) / (turnRatio * turnRatio);
+        var nominalSecondaryResistance = TransformerCalculator.ResistanceToSecondary(nominalResistance, turnRatio);
+
+        var voltage = voltageMax * Math.Sqrt(impedance / nominalSecondaryResistance);
+
+        // we are looking at transformer from other side (stepping up voltage) that's why equation is inverted
+        if (impedance < resistanceMinimal)
+            voltage = currentMax / Math.Sqrt(8 / (Math.PI * Math.PI)) * TransformerCalculator.ResistanceToSecondary(impedance, turnRatio);
+
+        return voltage > voltageMax ? voltageMax : voltage;
+    }
+
+
+    /// <summary>
+    /// Calculate load power.
+    /// </summary>
+    /// <param name="resistance">Resistance of the system on the secondary side.</param>
+    /// <param name="impedance">Impedance of the system on the secondary side.</param>
+    /// <param name="voltage">RMS voltage on primary side.</param>
+    /// <param name="turnRatio">Turn ratio.</param>
+    protected static double Power(double resistance, double impedance, double voltage, double turnRatio)
+    {
+        var current = Current(impedance, voltage, turnRatio);
+        var power = current * voltage * resistance / impedance;
+        power /= 1.11;
+        return power;
+    }
+
+
+    /// <summary>
+    /// Calculate current on primary side.
+    /// </summary>
+    /// <param name="impedance">Impedance of the system on the secondary side.</param>
+    /// <param name="voltage">RMS voltage on primary side.</param>
+    /// <param name="turnRatio">Turn ratio.</param>
+    protected static double Current(double impedance, double voltage, double turnRatio)
+    {
+        // we are looking at transformer from other side (stepping up voltage) that's why equation is inverted
+        return voltage / TransformerCalculator.ResistanceToSecondary(impedance, turnRatio) / 1.11;
     }
 }
