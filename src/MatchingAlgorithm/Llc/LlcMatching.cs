@@ -132,6 +132,15 @@ public class LlcMatching : Matching<ILlcTopology, LlcMatchingParameter>
         return capacitiveRange;
     }
 
+    /// <summary>
+    ///     Calculates inductance for given <paramref name="operatingPoint" />.
+    /// </summary>
+    /// <param name="operatingPoint">The operating point.</param>
+    protected static double ReactanceToInductance(FrequencyReactancePair operatingPoint)
+    {
+        return -operatingPoint.Reactance / (2 * Math.PI * operatingPoint.Frequency);
+    }
+
 
     /// <summary>
     ///     Performs a calculation in frequency domain to find all values of frequencies (for given
