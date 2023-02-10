@@ -1,15 +1,12 @@
-﻿using System.Windows;
+﻿namespace Anemone.Views;
 
-namespace Anemone.Views
+/// <summary>
+///     Interaction logic for ShellView.xaml
+/// </summary>
+public partial class ShellView
 {
-    /// <summary>
-    /// Interaction logic for ShellView.xaml
-    /// </summary>
-    public partial class ShellView : Window
+    public ShellView()
     {
-        public ShellView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

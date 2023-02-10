@@ -1,0 +1,169 @@
+﻿<UserControl x:Class="Anemone.Views.NavigationPanel" x:Name="NavDrawer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:anemone="clr-namespace:Anemone.Core;assembly=Anemone.Core"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.Resources>
+
+
+        <!-- toggle button -->
+        <Style TargetType="ToggleButton" x:Key="HamburgerButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Width" Value="60" />
+            <Setter Property="Height" Value="60" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- icons -->
+        <Style TargetType="anemone:PackIcon" BasedOn="{StaticResource {x:Type anemone:PackIcon}}">
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Width" Value="40" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!-- separator -->
+        <Style x:Key="ContentSeparatorStyle" TargetType="Separator">
+            <Setter Property="Background" Value=" White" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+
+
+        <!-- tooltip -->
+        <Style TargetType="ToolTip" x:Key="ToolTipStyle">
+            <Setter Property="Placement" Value="Right" />
+            <Setter Property="Margin" Value="20 0 0 0" />
+            <Setter Property="Background" Value="Gray" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="HorizontalOffset" Value="15" />
+            <Setter Property="VerticalOffset" Value="12" />
+            <Setter Property="HasDropShadow" Value="True" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+
+
+        <!-- listbox items -->
+        <Style x:Key="NavigationItemStyle" TargetType="ListBoxItem"
+               BasedOn="{StaticResource MaterialDesignListBoxItem}">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource PrimaryHueMidBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid x:Name="NavPanel" Background="{StaticResource TitleBarBrush}" HorizontalAlignment="Left">
+            <StackPanel>
+                <!-- toggle button -->
+                <ToggleButton x:Name="HamburgerButton" Style="{StaticResource HamburgerButton}"
+                              HorizontalAlignment="Left"
+                              IsChecked="{Binding IsExpanded, ElementName=NavDrawer, Mode=TwoWay, 
+                              Converter={StaticResource InvertBooleanConverter}}">
+                    <anemone:PackIcon Kind="HamburgerMenu" />
+
+
+                    <!-- toggle button events -->
+                    <ToggleButton.Triggers>
+                        <EventTrigger RoutedEvent="ToggleButton.Unchecked">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="NavPanel"
+                                        Storyboard.TargetProperty="Width"
+                                        BeginTime="0:0:0"
+                                        From="60" To="230"
+                                        Duration="0:0:0.5">
+                                        <DoubleAnimation.EasingFunction>
+                                            <ExponentialEase EasingMode="EaseOut" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="ToggleButton.Checked">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="NavPanel"
+                                        Storyboard.TargetProperty="Width"
+                                        BeginTime="0:0:0"
+                                        From="230" To="60"
+                                        Duration="0:0:0.5">
+                                        <DoubleAnimation.EasingFunction>
+                                            <ExponentialEase EasingMode="EaseOut" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </ToggleButton.Triggers>
+                </ToggleButton>
+
+
+                <Separator Style="{StaticResource ContentSeparatorStyle}" />
+
+                <!-- navigation items -->
+                <ListBox SelectionChanged="SelectionChanged"
+                         ItemsSource="{Binding ItemsSource, ElementName=NavDrawer}"
+                         SelectedItem="{Binding SelectedPanelItem, ElementName=NavDrawer, Mode=TwoWay}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                         SelectionMode="Single"
+                         ItemContainerStyle="{StaticResource NavigationItemStyle}">
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+
+                                <anemone:PackIcon Grid.Column="0" Kind="{Binding Icon}">
+                                    <anemone:PackIcon.ToolTip>
+                                        <ToolTip
+                                            Style="{StaticResource ToolTipStyle}"
+                                            Visibility="{Binding IsExpanded, ElementName=NavDrawer, Converter={StaticResource InvertBooleanConverter}}"
+                                            Content="{Binding Header}" />
+                                    </anemone:PackIcon.ToolTip>
+                                </anemone:PackIcon>
+
+                                <TextBlock Grid.Column="1" Text="{Binding Header}"
+                                           Visibility="{Binding ElementName=HamburgerButton,
+                                                                                       Path=IsChecked,
+                                                                                       Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                           Margin="20 0 0 0" HorizontalAlignment="Left"
+                                           VerticalAlignment="Center" />
+
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+
+                </ListBox>
+
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

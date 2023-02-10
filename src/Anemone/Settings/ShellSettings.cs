@@ -8,6 +8,7 @@ public class ShellSettings : Holize.PersistenceFramework.Settings
 {
     private int _height;
     private int _left;
+    private bool _navigationDrawerExpanded;
     private int _top;
     private int _width;
     private WindowState _windowState;
@@ -40,5 +41,11 @@ public class ShellSettings : Holize.PersistenceFramework.Settings
     {
         get => _windowState;
         set => SetField(ref _windowState, value);
+    }
+
+    public required bool NavigationDrawerExpanded
+    {
+        get => _navigationDrawerExpanded;
+        set => SetField(ref _navigationDrawerExpanded, value);
     }
 }

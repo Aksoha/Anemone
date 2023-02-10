@@ -9,6 +9,8 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
+using Anemone.Core;
+using Anemone.Services;
 using Anemone.Settings;
 using Anemone.Startup;
 using Anemone.Views;
@@ -43,18 +45,20 @@ public partial class App
 #if DEBUG
         persistenceOptions.LocalFilesDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
 #endif
-        
-        containerRegistry.RegisterSingleton<PersistenceOptions>();
+
+        containerRegistry.RegisterInstance(persistenceOptions);
         containerRegistry.RegisterSettings(new ShellSettings
         {
             Top = 0,
             Left = 0,
             Height = 500,
             Width = 800,
-            WindowState = WindowState.Maximized
+            WindowState = WindowState.Maximized,
+            NavigationDrawerExpanded = true
         });
 
         RegisterDebuggingSettings(containerRegistry);
+        containerRegistry.RegisterSingleton<INavigationRegistrations, NavigationRegistrations>();
     }
 
     protected override Window CreateShell()

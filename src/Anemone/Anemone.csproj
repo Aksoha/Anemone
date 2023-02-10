@@ -6,9 +6,11 @@
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
         <UserSecretsId>b2019773-97d8-4922-89e1-51c95fda326e</UserSecretsId>
+        <ApplicationIcon>favicon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Anemone.Core\Anemone.Core.csproj"/>
         <ProjectReference Include="..\MatchingAlgorithm\MatchingAlgorithm.csproj"/>
     </ItemGroup>
 
@@ -27,11 +29,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Models"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <Page Update="Views\ShellView.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <XamlRuntime>Wpf</XamlRuntime>
+            <SubType>Designer</SubType>
+        </Page>
+        <Page Update="Views\NavigationPanel.xaml">
             <Generator>MSBuild:Compile</Generator>
             <XamlRuntime>Wpf</XamlRuntime>
             <SubType>Designer</SubType>
@@ -42,6 +45,15 @@
         <Content Include="appsettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="favicon.ico"/>
+        <Resource Include="favicon.ico"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Models"/>
     </ItemGroup>
 
 </Project>
