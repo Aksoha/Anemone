@@ -9,6 +9,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Threading;
 using Anemone.Core;
 using Anemone.Services;
 using Anemone.Settings;
@@ -113,6 +114,19 @@ public partial class App
         ConfigureLogger(configuration);
 
         base.OnStartup(e);
+    }
+
+    private void UnhandledExceptionHandler(object sender, DispatcherUnhandledExceptionEventArgs e)
+    {
+        var ex = e.Exception;
+        Log.Logger.Error(ex, "application terminated due to unhandled exception");
+        e.Handled = true;
+
+#if AttachConsole
+        Console.WriteLine("press any key to close");
+        Console.ReadKey();
+#endif
+        Current.Shutdown(1);
     }
 
     protected override void OnExit(ExitEventArgs e)
