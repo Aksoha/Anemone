@@ -17,6 +17,7 @@ using Anemone.Startup;
 using Anemone.Views;
 using Holize.PersistenceFramework;
 using Holize.PersistenceFramework.Extensions.Prism;
+using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Prism.Ioc;
@@ -60,6 +61,8 @@ public partial class App
 
         RegisterDebuggingSettings(containerRegistry);
         containerRegistry.RegisterSingleton<INavigationRegistrations, NavigationRegistrations>();
+        containerRegistry.RegisterSingleton<ISnackbarMessageQueue, SnackbarMessageQueue>();
+        containerRegistry.RegisterSingleton<IToastService, ToastService>();
     }
 
     protected override Window CreateShell()
