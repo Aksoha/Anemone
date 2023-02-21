@@ -2,5 +2,13 @@
 
 public enum PackIconKind
 {
-    HamburgerMenu
+    HamburgerMenu,
+    ImportInductionHeatingData,
+    UploadFile,
+    Settings,
+    Information,
+    File,
+    FileTable,
+    FolderOpen,
+    ArrowULeftTop,
 }

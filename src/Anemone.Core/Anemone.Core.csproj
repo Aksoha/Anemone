@@ -9,6 +9,12 @@
     <ItemGroup>
         <PackageReference Include="MahApps.Metro" Version="2.4.9" />
         <PackageReference Include="MaterialDesignThemes" Version="4.7.1" />
+        <PackageReference Include="Prism.Wpf" Version="8.1.97" />
+        <PackageReference Include="System.IO.Abstractions" Version="19.1.14" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Anemone.Components\Anemone.Components.csproj" />
     </ItemGroup>
 
 </Project>

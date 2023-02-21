@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
 using Anemone.Core;
+using Anemone.DataImport;
 using Anemone.Services;
 using Anemone.Settings;
 using Anemone.Startup;
@@ -21,6 +22,7 @@ using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Prism.Ioc;
+using Prism.Modularity;
 using Prism.Unity;
 using Serilog;
 using Serilog.Events;
@@ -63,6 +65,13 @@ public partial class App
         containerRegistry.RegisterSingleton<INavigationRegistrations, NavigationRegistrations>();
         containerRegistry.RegisterSingleton<ISnackbarMessageQueue, SnackbarMessageQueue>();
         containerRegistry.RegisterSingleton<IToastService, ToastService>();
+        containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
+        containerRegistry.Register<IOpenFileDialog, OpenFileDialog>();
+    }
+
+    protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
+    {
+        moduleCatalog.AddModule<DataImportModule>();
     }
 
     protected override Window CreateShell()
@@ -116,6 +125,8 @@ public partial class App
         var configuration = CreateConfiguration();
         ConfigureLogger(configuration);
 
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+        
         base.OnStartup(e);
     }
 

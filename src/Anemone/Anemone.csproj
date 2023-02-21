@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Anemone.Core\Anemone.Core.csproj" />
+        <ProjectReference Include="..\Anemone.DataImport\Anemone.DataImport.csproj" />
         <ProjectReference Include="..\MatchingAlgorithm\MatchingAlgorithm.csproj" />
     </ItemGroup>
 

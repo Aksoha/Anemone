@@ -1,6 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:core="clr-namespace:Anemone.Core">
+                    xmlns:core="clr-namespace:Anemone.Core"
+                    xmlns:converters="clr-namespace:Anemone.Core.Converters"
+                    xmlns:components="clr-namespace:Anemone.Components">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary
@@ -11,6 +13,7 @@
             Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/materialdesigncolor.teal.xaml" />
         <ResourceDictionary
             Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/materialdesigncolor.purple.xaml" />
+        <!-- <ResourceDictionary Source="pack://application:,,,/Anemone.Components;component/Generic.xaml"/> -->
     </ResourceDictionary.MergedDictionaries>
     <Style TargetType="{x:Type core:PackIcon}">
         <Setter Property="FlowDirection" Value="LeftToRight" />
@@ -39,4 +42,6 @@
 
     <SolidColorBrush x:Key="TitleBarBrush" Color="#242424" />
 
+    <converters:NullableToVisibilityConverter x:Key="NullableToVisibilityConverter"/>
+    <converters:IsNullConverter x:Key="IsNullConverter"/>
 </ResourceDictionary>

@@ -58,7 +58,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-        <ContentControl Grid.Row="0" prism:RegionManager.RegionName="{x:Static anemone:RegionNames.ContentRegion}" />
+        <ContentControl Grid.Row="0" Margin="10" prism:RegionManager.RegionName="{x:Static anemone:RegionNames.ContentRegion}" />
 
         <materialDesign:Snackbar Grid.Row="1" Margin="10"
                                  HorizontalAlignment="Right"
