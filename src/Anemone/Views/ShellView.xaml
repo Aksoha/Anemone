@@ -54,15 +54,10 @@
         </views:NavigationPanel>
 
         <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-        <ContentControl Grid.Row="0" Margin="10" prism:RegionManager.RegionName="{x:Static anemone:RegionNames.ContentRegion}" />
+            <ContentControl Margin="10" prism:RegionManager.RegionName="{x:Static anemone:RegionNames.ContentRegion}" />
 
-        <materialDesign:Snackbar Grid.Row="1" Margin="10"
-                                 HorizontalAlignment="Right"
-                                 MessageQueue="{Binding SnackbarMessageQueue}"/>
+        <materialDesign:Snackbar Margin="10"
+                                 HorizontalAlignment="Center" MessageQueue="{Binding SnackbarMessageQueue}"/>
         </Grid>
         
     </Grid>
