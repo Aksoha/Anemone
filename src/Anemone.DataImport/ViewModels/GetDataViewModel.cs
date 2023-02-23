@@ -4,7 +4,7 @@ using Anemone.DataImport.Models;
 
 namespace Anemone.DataImport.ViewModels;
 
-public class GetDataViewModel : ViewModelBase
+internal class GetDataViewModel : ViewModelBase
 {
     private Sheet? _selectedSheet;
     private bool _headerVisible;

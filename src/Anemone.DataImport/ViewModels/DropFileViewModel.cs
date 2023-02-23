@@ -8,10 +8,8 @@ using Prism.Commands;
 
 namespace Anemone.DataImport.ViewModels;
 
-public class DropFileViewModel : ViewModelBase
+internal class DropFileViewModel : ViewModelBase
 {
-    private static readonly string[] SupportedExtensions = { ".xls", ".xlsx", ".csv" };
-    private static readonly string Filters = "sheet files|*" + string.Join(";*", SupportedExtensions);
     private string? _uploadedFile;
 
 
@@ -39,13 +37,12 @@ public class DropFileViewModel : ViewModelBase
     private void ExecuteDropFileCommand(DragEventArgs e)
     {
         if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
-        var files = e.Data.GetData(DataFormats.FileDrop) as string[];
 
-        if (files is null)
+        if (e.Data.GetData(DataFormats.FileDrop) is not string[] files)
             throw new NullReferenceException(nameof(files));
 
         var filteredFile = files
-            .SingleOrDefault(file => SupportedExtensions.Any(file.ToLower().EndsWith));
+            .SingleOrDefault(file => DataImportFileExtensions.SupportedExtensions.Any(file.ToLower().EndsWith));
 
         if (filteredFile is null)
         {
@@ -60,7 +57,7 @@ public class DropFileViewModel : ViewModelBase
     {
         OpenFileDialog.Multiselect = false;
         OpenFileDialog.Title = "Choose file";
-        OpenFileDialog.Filter = Filters;
+        OpenFileDialog.Filter = DataImportFileExtensions.Filters;
 
         var opened = OpenFileDialog.ShowDialog();
         if (opened is true) UploadedFile = OpenFileDialog.FileName;

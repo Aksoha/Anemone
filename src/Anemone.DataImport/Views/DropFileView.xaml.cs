@@ -1,6 +1,6 @@
 ﻿namespace Anemone.DataImport.Views;
 
-public partial class DropFileView
+internal partial class DropFileView
 {
     public DropFileView()
     {

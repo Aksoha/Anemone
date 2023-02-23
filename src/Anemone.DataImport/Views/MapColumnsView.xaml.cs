@@ -1,6 +1,6 @@
 ﻿namespace Anemone.DataImport.Views;
 
-public partial class MapColumnsView
+internal partial class MapColumnsView
 {
     public MapColumnsView()
     {

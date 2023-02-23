@@ -9,7 +9,7 @@ using Anemone.DataImport.Models;
 
 namespace Anemone.DataImport.ViewModels;
 
-public class MapColumnsViewModel : ViewModelBase
+internal class MapColumnsViewModel : ViewModelBase
 {
     private DataTable _previewData = new();
 
@@ -33,7 +33,7 @@ public class MapColumnsViewModel : ViewModelBase
     
     private void TryMapAllColumns()
     {
-
+        // TODO: attempt to map HeatingSystemColumnMappingModel to column headers
     }
 
     /// <summary>

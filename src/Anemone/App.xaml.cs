@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Abstractions;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -67,6 +68,7 @@ public partial class App
         containerRegistry.RegisterSingleton<IToastService, ToastService>();
         containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
         containerRegistry.Register<IOpenFileDialog, OpenFileDialog>();
+        containerRegistry.Register<IFile, FileWrapper>();
     }
 
     protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)

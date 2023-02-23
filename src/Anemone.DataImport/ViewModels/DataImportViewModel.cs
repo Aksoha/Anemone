@@ -9,18 +9,19 @@ using System.Linq;
 using System.Windows.Input;
 using Anemone.Core;
 using Anemone.DataImport.Models;
-using ExcelDataReader;
+using Anemone.DataImport.Services;
 using Microsoft.Xaml.Behaviors.Core;
 using Prism.Commands;
 
 namespace Anemone.DataImport.ViewModels;
 
-public class DataImportViewModel : ViewModelBase
+internal class DataImportViewModel : ViewModelBase
 {
     public DropFileViewModel DropFileViewModel { get; set; }
     public GetDataViewModel GetDataViewModel { get; set; }
 
     public MapColumnsViewModel MapColumnsViewModel { get; set; }
+    private ISheetFileReader SheetFileReader { get; }
 
     public ObservableCollection<Sheet> Sheets => GetDataViewModel.Sheets;
     public string? SelectedFile => DropFileViewModel.UploadedFile;
@@ -66,11 +67,12 @@ public class DataImportViewModel : ViewModelBase
     private int _currentIndex;
 
 
-    public DataImportViewModel(IOpenFileDialog openFileDialog, IToastService toastService)
+    public DataImportViewModel(DropFileViewModel dropFileViewModel, GetDataViewModel getDataViewModel, MapColumnsViewModel mapColumnsViewModel, ISheetFileReader sheetFileReader)
     {
-        DropFileViewModel = new DropFileViewModel(openFileDialog, toastService);
-        GetDataViewModel = new GetDataViewModel();
-        MapColumnsViewModel = new MapColumnsViewModel();
+        DropFileViewModel = dropFileViewModel;
+        GetDataViewModel = getDataViewModel;
+        MapColumnsViewModel = mapColumnsViewModel;
+        SheetFileReader = sheetFileReader;
 
 
         DropFileViewModel.PropertyChanged += OnDropFileViewModelOnPropertyChanged;
@@ -102,9 +104,7 @@ public class DataImportViewModel : ViewModelBase
 
         Sheets.Clear();
         GetDataViewModel.SelectedSheet = null;
-        using var stream = File.Open(DropFileViewModel.UploadedFile, FileMode.Open, FileAccess.Read);
-        using var reader = ExcelReaderFactory.CreateReader(stream);
-        var result = reader.AsDataSet();
+        var result = SheetFileReader.ReadAsDataSet(DropFileViewModel.UploadedFile);
 
         foreach (DataTable table in result.Tables)
         {

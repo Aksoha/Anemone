@@ -1,4 +1,6 @@
 ﻿using Anemone.Core;
+using Anemone.DataImport.Services;
+using Anemone.DataImport.ViewModels;
 using Anemone.DataImport.Views;
 using Prism.Ioc;
 using Prism.Modularity;
@@ -20,7 +22,12 @@ public class DataImportModule : IModule
     
     public void RegisterTypes(IContainerRegistry containerRegistry)
     {
+        containerRegistry.Register<ISheetFileReader, SheetFileReader>();
+        
         NavigationRegistrations.Register(new NavigationPanelItem {Header = "Import data", NavigationPath = nameof(DataImportView), Icon = PackIconKind.ImportInductionHeatingData});
+        containerRegistry.Register<DropFileViewModel>();
+        containerRegistry.Register<GetDataViewModel>();
+        containerRegistry.Register<MapColumnsViewModel>();
         containerRegistry.RegisterForNavigation<DataImportView>();
     }
 

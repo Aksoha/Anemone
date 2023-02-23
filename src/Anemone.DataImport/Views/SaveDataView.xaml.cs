@@ -2,7 +2,7 @@
 
 namespace Anemone.DataImport.Views;
 
-public partial class SaveDataView : UserControl
+internal partial class SaveDataView : UserControl
 {
     public SaveDataView()
     {

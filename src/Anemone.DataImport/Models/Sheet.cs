@@ -2,7 +2,7 @@
 
 namespace Anemone.DataImport.Models;
 
-public class Sheet
+internal class Sheet
 {
     public required string Name { get; set; }
     public required DataView Set { get; set; }
