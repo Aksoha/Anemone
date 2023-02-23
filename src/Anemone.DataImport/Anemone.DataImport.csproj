@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Anemone.Components\Anemone.Components.csproj" />
       <ProjectReference Include="..\Anemone.Core\Anemone.Core.csproj" />
     </ItemGroup>
 

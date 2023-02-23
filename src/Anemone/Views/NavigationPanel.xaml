@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:anemone="clr-namespace:Anemone.Core;assembly=Anemone.Core"
+             xmlns:components="clr-namespace:Anemone.Core.Components;assembly=Anemone.Core"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
 
@@ -31,7 +31,7 @@
         </Style>
 
         <!-- icons -->
-        <Style TargetType="anemone:PackIcon" BasedOn="{StaticResource {x:Type anemone:PackIcon}}">
+        <Style TargetType="components:PackIcon" BasedOn="{StaticResource {x:Type components:PackIcon}}">
             <Setter Property="Height" Value="40" />
             <Setter Property="Width" Value="40" />
             <Setter Property="HorizontalAlignment" Value="Left" />
@@ -81,7 +81,7 @@
                               HorizontalAlignment="Left"
                               IsChecked="{Binding IsExpanded, ElementName=NavDrawer, Mode=TwoWay, 
                               Converter={StaticResource InvertBooleanConverter}}">
-                    <anemone:PackIcon Kind="HamburgerMenu" />
+                    <components:PackIcon Kind="HamburgerMenu" />
 
 
                     <!-- toggle button events -->
@@ -141,14 +141,14 @@
                                 </Grid.ColumnDefinitions>
 
 
-                                <anemone:PackIcon Grid.Column="0" Kind="{Binding Icon}">
-                                    <anemone:PackIcon.ToolTip>
+                                <components:PackIcon Grid.Column="0" Kind="{Binding Icon}">
+                                    <components:PackIcon.ToolTip>
                                         <ToolTip
                                             Style="{StaticResource ToolTipStyle}"
                                             Visibility="{Binding IsExpanded, ElementName=NavDrawer, Converter={StaticResource InvertBooleanConverter}}"
                                             Content="{Binding Header}" />
-                                    </anemone:PackIcon.ToolTip>
-                                </anemone:PackIcon>
+                                    </components:PackIcon.ToolTip>
+                                </components:PackIcon>
 
                                 <TextBlock Grid.Column="1" Text="{Binding Header}"
                                            Visibility="{Binding ElementName=HamburgerButton,

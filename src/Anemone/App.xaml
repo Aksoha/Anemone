@@ -14,7 +14,7 @@
                     Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
 
 
-                <ResourceDictionary Source="pack://application:,,,/Anemone.Core;component/ResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Anemone.Core;component/Components/ResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

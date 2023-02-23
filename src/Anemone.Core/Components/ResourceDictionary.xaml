@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:core="clr-namespace:Anemone.Core"
                     xmlns:converters="clr-namespace:Anemone.Core.Converters"
-                    xmlns:components="clr-namespace:Anemone.Components">
+                    xmlns:components="clr-namespace:Anemone.Core.Components">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary
@@ -13,16 +13,15 @@
             Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/materialdesigncolor.teal.xaml" />
         <ResourceDictionary
             Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/materialdesigncolor.purple.xaml" />
-        <!-- <ResourceDictionary Source="pack://application:,,,/Anemone.Components;component/Generic.xaml"/> -->
     </ResourceDictionary.MergedDictionaries>
-    <Style TargetType="{x:Type core:PackIcon}">
+    <Style TargetType="{x:Type components:PackIcon}">
         <Setter Property="FlowDirection" Value="LeftToRight" />
         <Setter Property="Height" Value="16" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type core:PackIcon}">
+                <ControlTemplate TargetType="{x:Type components:PackIcon}">
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
@@ -39,9 +38,21 @@
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Width" Value="16" />
     </Style>
-
+    <Style TargetType="{x:Type components:DataGridExt}" BasedOn="{StaticResource MaterialDesignDataGrid}" />
+    <Style x:Key="VerticalSeparator" TargetType="Separator">
+        <Setter Property="LayoutTransform">
+            <Setter.Value>
+                <RotateTransform Angle="90" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    
     <SolidColorBrush x:Key="TitleBarBrush" Color="#242424" />
 
-    <converters:NullableToVisibilityConverter x:Key="NullableToVisibilityConverter"/>
-    <converters:IsNullConverter x:Key="IsNullConverter"/>
+    <converters:NullableToVisibilityConverter x:Key="NullableToVisibilityConverter" />
+    <converters:InverseNullableToVisibilityConverter x:Key="InverseNullableToVisibilityConverter" />
+    <converters:IsNullConverter x:Key="IsNullConverter" />
+    <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
 </ResourceDictionary>

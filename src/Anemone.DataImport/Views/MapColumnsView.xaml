@@ -4,19 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:Anemone.DataImport.ViewModels"
-             xmlns:core="clr-namespace:Anemone.Core;assembly=Anemone.Core"
              xmlns:models="clr-namespace:Anemone.DataImport.Models"
              xmlns:converters="clr-namespace:Anemone.DataImport.Converters"
-             xmlns:components="clr-namespace:Anemone.Components;assembly=Anemone.Components"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:converters1="clr-namespace:Anemone.Core.Converters;assembly=Anemone.Core"
+             xmlns:components="clr-namespace:Anemone.Core.Components;assembly=Anemone.Core"
              d:DataContext="{d:DesignInstance Type=vm:MapColumnsViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="800">
 
     <UserControl.Resources>
         <converters:HeatingSystemColumnMappingConverter x:Key="HeatingSystemColumnMappingConverter" />
-        <converters1:InverseNullableToVisibilityConverter x:Key="InverseNullableToVisibilityConverter" />
 
         <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MaterialDesignDataGridRow}">
             <Setter Property="IsHitTestVisible" Value="False" />
@@ -94,7 +91,7 @@
                    Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <core:PackIcon Kind="Information" Margin="0 0 5 0" Height="20" Width="20" />
+            <components:PackIcon Kind="Information" Margin="0 0 5 0" Height="20" Width="20" />
             <TextBlock Text="Select a header for each column you want to import" VerticalAlignment="Center" />
         </StackPanel>
 

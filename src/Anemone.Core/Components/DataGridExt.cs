@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace Anemone.Components
+namespace Anemone.Core.Components
 {
     public class DataGridExt : DataGrid
     {

@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Anemone.Core;
+namespace Anemone.Core.Components;
 
 // taken from https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/blob/master/MaterialDesignThemes.Wpf/PackIcon.cs
 public class PackIcon : Control

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Markup;
 
-namespace Anemone.Core;
+namespace Anemone.Core.Components;
 
 // taken from https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/blob/master/MaterialDesignThemes.Wpf/PackIconExtension.cs
 [MarkupExtensionReturnType(typeof(PackIcon))]

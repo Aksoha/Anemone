@@ -5,22 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Anemone.DataImport.Views"
              xmlns:viewModels="clr-namespace:Anemone.DataImport.ViewModels"
-             xmlns:core="clr-namespace:Anemone.Core;assembly=Anemone.Core"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:components="clr-namespace:Anemone.Core.Components;assembly=Anemone.Core"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=viewModels:DataImportViewModel, IsDesignTimeCreatable=False}"
              d:DesignHeight="300" d:DesignWidth="300">
-
-    <UserControl.Resources>
-        <Style x:Key="VerticalSeparator" TargetType="Separator">
-            <Setter Property="LayoutTransform">
-                <Setter.Value>
-                    <RotateTransform Angle="90" />
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>
-
+    
     <Grid>
 
         <Grid.RowDefinitions>
@@ -35,19 +25,19 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center"
                     Visibility="{Binding SelectedFile, Converter={StaticResource NullableToVisibilityConverter}}">
             <StackPanel Orientation="Horizontal" VerticalAlignment="{Binding RelativeSource={RelativeSource AncestorType=StackPanel}}"
-                        Visibility="{Binding IsNotFirstSlide, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        Visibility="{Binding IsFirstSlide, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                 <Button Command="{Binding NavigateFirstSlideCommand}" Style="{StaticResource MaterialDesignIconForegroundButton}" Height="25" Width="25">
-                    <core:PackIcon Kind="ArrowULeftTop"  />
+                    <components:PackIcon Kind="ArrowULeftTop"  />
                 </Button>
                 <Separator Margin="10 0" Style="{StaticResource VerticalSeparator}" />
             </StackPanel>
 
-            <core:PackIcon Kind="FileTable" Height="25" Width="25" Margin="0 0 10 0"
+            <components:PackIcon Kind="FileTable" Height="25" Width="25" Margin="0 0 10 0"
                            Foreground="#22844e" />
             <TextBlock Text="{Binding FileName}" VerticalAlignment="Center"
                        Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
             <Separator Margin="10 0" Style="{StaticResource VerticalSeparator}" />
-            <core:PackIcon Kind="FolderOpen" Height="25" Width="25" Foreground="#e8b343"
+            <components:PackIcon Kind="FolderOpen" Height="25" Width="25" Foreground="#e8b343"
                            VerticalAlignment="Center"
                            Margin="0 0 10 0" />
             <TextBlock VerticalAlignment="Center">

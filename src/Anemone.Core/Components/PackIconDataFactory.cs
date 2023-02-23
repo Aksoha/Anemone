@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Anemone.Core;
+namespace Anemone.Core.Components;
 
 // taken from https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/blob/master/MaterialDesignThemes.Wpf/PackIconDataFactory.cs
 internal static class PackIconDataFactory
