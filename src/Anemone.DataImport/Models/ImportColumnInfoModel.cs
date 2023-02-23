@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Runtime.CompilerServices;
 
 namespace Anemone.DataImport.Models;
@@ -21,6 +22,7 @@ internal class ImportColumnInfoModel : INotifyPropertyChanged
         set => SetField(ref _columnName, value);
     }
 
+    public required DataColumn Column { get; set; }
     public bool IsVisible { get; set; } = true;
     
     public event PropertyChangedEventHandler? PropertyChanged;

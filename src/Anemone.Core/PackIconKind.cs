@@ -11,4 +11,6 @@ public enum PackIconKind
     FileTable,
     FolderOpen,
     ArrowULeftTop,
+    Alert,
+    CheckCircle,
 }

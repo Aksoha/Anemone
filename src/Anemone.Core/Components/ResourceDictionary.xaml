@@ -55,4 +55,5 @@
     <converters:IsNullConverter x:Key="IsNullConverter" />
     <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+    <converters:EnumConverter x:Key="EnumConverter" />
 </ResourceDictionary>

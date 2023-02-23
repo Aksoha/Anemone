@@ -69,6 +69,7 @@ public partial class App
         containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
         containerRegistry.Register<IOpenFileDialog, OpenFileDialog>();
         containerRegistry.Register<IFile, FileWrapper>();
+        containerRegistry.Register<IProcess, ProcessWrapper>();
     }
 
     protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)

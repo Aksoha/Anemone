@@ -7,9 +7,16 @@
              xmlns:viewModels="clr-namespace:Anemone.DataImport.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:components="clr-namespace:Anemone.Core.Components;assembly=Anemone.Core"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=viewModels:DataImportViewModel, IsDesignTimeCreatable=False}"
              d:DesignHeight="300" d:DesignWidth="300">
+    
+    <behaviors:Interaction.Triggers>
+        <behaviors:EventTrigger EventName="MouseDown">
+            <behaviors:InvokeCommandAction Command="{Binding MouseDownCommand }" PassEventArgsToCommand="True" />
+        </behaviors:EventTrigger>
+    </behaviors:Interaction.Triggers>
     
     <Grid>
 
@@ -24,16 +31,8 @@
         <!-- file information -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center"
                     Visibility="{Binding SelectedFile, Converter={StaticResource NullableToVisibilityConverter}}">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="{Binding RelativeSource={RelativeSource AncestorType=StackPanel}}"
-                        Visibility="{Binding IsFirstSlide, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
-                <Button Command="{Binding NavigateFirstSlideCommand}" Style="{StaticResource MaterialDesignIconForegroundButton}" Height="25" Width="25">
-                    <components:PackIcon Kind="ArrowULeftTop"  />
-                </Button>
-                <Separator Margin="10 0" Style="{StaticResource VerticalSeparator}" />
-            </StackPanel>
-
             <components:PackIcon Kind="FileTable" Height="25" Width="25" Margin="0 0 10 0"
-                           Foreground="#22844e" />
+                                 Foreground="#22844e" />
             <TextBlock Text="{Binding FileName}" VerticalAlignment="Center"
                        Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
             <Separator Margin="10 0" Style="{StaticResource VerticalSeparator}" />
@@ -55,7 +54,6 @@
         <!-- content -->
         <materialDesign:Transitioner Grid.Row="2" SelectedIndex="{Binding CurrentIndex}">
             <local:DropFileView DataContext="{Binding DropFileViewModel }" />
-            <local:GetDataView DataContext="{Binding GetDataViewModel }" />
             <local:MapColumnsView DataContext="{Binding MapColumnsViewModel}" />
         </materialDesign:Transitioner>
 

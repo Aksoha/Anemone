@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
@@ -18,21 +17,20 @@ namespace Anemone.DataImport.ViewModels;
 internal class DataImportViewModel : ViewModelBase
 {
     public DropFileViewModel DropFileViewModel { get; set; }
-    public GetDataViewModel GetDataViewModel { get; set; }
-
     public MapColumnsViewModel MapColumnsViewModel { get; set; }
     private ISheetFileReader SheetFileReader { get; }
+    private IProcess Process { get; }
 
-    public ObservableCollection<Sheet> Sheets => GetDataViewModel.Sheets;
+    public ObservableCollection<Sheet> Sheets => MapColumnsViewModel.Sheets;
     public string? SelectedFile => DropFileViewModel.UploadedFile;
     public string? FileName => Path.GetFileName(SelectedFile);
 
 
-    public ICommand NavigateFirstSlideCommand { get; set; }
     public ICommand NavigateNextSlideCommand { get; }
     public ICommand NavigatePreviousSlideCommand { get; }
     public ICommand OpenFolderCommand { get; }
 
+    public DelegateCommand<MouseButtonEventArgs> MouseDownCommand { get; }
 
     public int CurrentIndex
     {
@@ -49,7 +47,7 @@ internal class DataImportViewModel : ViewModelBase
         }
     }
 
-    public const int SlideCount = 2;
+    public const int SlideCount = 1;
 
     public bool CanNavigateNext
     {
@@ -67,26 +65,23 @@ internal class DataImportViewModel : ViewModelBase
     private int _currentIndex;
 
 
-    public DataImportViewModel(DropFileViewModel dropFileViewModel, GetDataViewModel getDataViewModel, MapColumnsViewModel mapColumnsViewModel, ISheetFileReader sheetFileReader)
+    public DataImportViewModel(DropFileViewModel dropFileViewModel,
+        MapColumnsViewModel mapColumnsViewModel, ISheetFileReader sheetFileReader, IProcess process)
     {
         DropFileViewModel = dropFileViewModel;
-        GetDataViewModel = getDataViewModel;
         MapColumnsViewModel = mapColumnsViewModel;
         SheetFileReader = sheetFileReader;
+        Process = process;
 
 
         DropFileViewModel.PropertyChanged += OnDropFileViewModelOnPropertyChanged;
-        GetDataViewModel.PropertyChanged += GetDataViewModelOnPropertyChanged;
 
-        NavigateFirstSlideCommand = new ActionCommand(ExecuteNavigateFirstSlideCommand);
-        NavigateNextSlideCommand = new DelegateCommand(ExecuteNavigateNextSlideCommand).ObservesCanExecute(() => CanNavigateNext);
-        NavigatePreviousSlideCommand = new DelegateCommand(ExecuteNavigatePreviousSlideCommand).ObservesCanExecute(() => IsNotFirstSlide);
+        NavigateNextSlideCommand =
+            new DelegateCommand(ExecuteNavigateNextSlideCommand).ObservesCanExecute(() => CanNavigateNext);
+        NavigatePreviousSlideCommand =
+            new DelegateCommand(ExecuteNavigatePreviousSlideCommand).ObservesCanExecute(() => IsNotFirstSlide);
         OpenFolderCommand = new ActionCommand(ExecuteOpenFolderCommand);
-    }
-
-    private void ExecuteNavigateFirstSlideCommand()
-    {
-        CurrentIndex = 0;
+        MouseDownCommand = new DelegateCommand<MouseButtonEventArgs>(ExecuteMouseDownCommand);
     }
 
 
@@ -103,7 +98,6 @@ internal class DataImportViewModel : ViewModelBase
 
 
         Sheets.Clear();
-        GetDataViewModel.SelectedSheet = null;
         var result = SheetFileReader.ReadAsDataSet(DropFileViewModel.UploadedFile);
 
         foreach (DataTable table in result.Tables)
@@ -111,46 +105,12 @@ internal class DataImportViewModel : ViewModelBase
             Sheets.Add(new Sheet { Name = table.TableName, Set = table.AsDataView() });
         }
 
-        GetDataViewModel.SelectedSheet = GetDataViewModel.Sheets.FirstOrDefault();
+        MapColumnsViewModel.SelectedSheet = MapColumnsViewModel.Sheets.FirstOrDefault();
 
         RaisePropertyChanged(nameof(CanNavigateNext));
         RaisePropertyChanged(nameof(SelectedFile));
         RaisePropertyChanged(nameof(FileName));
         ExecuteNavigateNextSlideCommand();
-    }
-
-    private void GetDataViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName is not (nameof(GetDataViewModel.SelectedSheet) or nameof(GetDataViewModel.HeaderVisible)))
-            return;
-
-        var selectedSheet = GetDataViewModel.SelectedSheet;
-        if (selectedSheet is null)
-            return;
-
-
-        var table = selectedSheet.Set.ToTable();
-        MapColumnsViewModel.PreviewColumnData.Clear();
-        
-        foreach (DataColumn dataColumn in table.Columns)
-        {
-            if (GetDataViewModel.HeaderVisible)
-            {
-                MapColumnsViewModel.PreviewColumnData.Add(new ImportColumnInfoModel
-                    { ColumnName = table.Rows[0][dataColumn.ColumnName].ToString() ?? string.Empty });
-                
-            }
-            else
-            {
-                MapColumnsViewModel.PreviewColumnData.Add(new ImportColumnInfoModel
-                    { ColumnName = string.Empty });
-            }
-        }
-        
-        if(GetDataViewModel.HeaderVisible)
-            table.Rows.RemoveAt(0);
-        
-        MapColumnsViewModel.PreviewData = table;
     }
 
     private void ExecuteNavigateNextSlideCommand()
@@ -162,13 +122,39 @@ internal class DataImportViewModel : ViewModelBase
     {
         CurrentIndex--;
     }
-    
+
     private void ExecuteOpenFolderCommand()
     {
         if (SelectedFile is null)
             throw new NullReferenceException(nameof(SelectedFile));
 
-        Process.Start("explorer.exe", Path.GetDirectoryName(SelectedFile)!);
+        var argument = $"/select, \"{SelectedFile}\"";
+
+        Process.Start("explorer.exe", argument);
     }
-    
+
+    private void ExecuteMouseDownCommand(MouseButtonEventArgs e)
+    {
+        switch (e.ChangedButton)
+        {
+            case MouseButton.XButton1:
+                if (NavigatePreviousSlideCommand.CanExecute(null))
+                    NavigatePreviousSlideCommand.Execute(null);
+                e.Handled = true;
+                break;
+            case MouseButton.XButton2:
+                if (NavigateNextSlideCommand.CanExecute(null))
+                    NavigateNextSlideCommand.Execute(null);
+                e.Handled = true;
+                break;
+            case MouseButton.Left:
+                break;
+            case MouseButton.Middle:
+                break;
+            case MouseButton.Right:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
 }

@@ -4,14 +4,18 @@ using System.Globalization;
 using System.Reflection;
 using System.Windows.Data;
 
-namespace Anemone.DataImport.Converters;
+namespace Anemone.Core.Converters;
 
-internal class HeatingSystemColumnMappingConverter : IValueConverter
+/// <summary>
+///     Converts enum to string.
+/// </summary>
+/// <remarks>Uses <see cref="DisplayAttribute" /> for conversion if declared.</remarks>
+public class EnumConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(object value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is string) return value;
-        
+
         var enumObj = (Enum)value;
         return GetEnumDescription(enumObj);
     }

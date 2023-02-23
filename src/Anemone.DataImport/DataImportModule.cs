@@ -26,7 +26,6 @@ public class DataImportModule : IModule
         
         NavigationRegistrations.Register(new NavigationPanelItem {Header = "Import data", NavigationPath = nameof(DataImportView), Icon = PackIconKind.ImportInductionHeatingData});
         containerRegistry.Register<DropFileViewModel>();
-        containerRegistry.Register<GetDataViewModel>();
         containerRegistry.Register<MapColumnsViewModel>();
         containerRegistry.RegisterForNavigation<DataImportView>();
     }
