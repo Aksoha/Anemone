@@ -1,6 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:core="clr-namespace:Anemone.Core"
                     xmlns:converters="clr-namespace:Anemone.Core.Converters"
                     xmlns:components="clr-namespace:Anemone.Core.Components">
 
@@ -49,6 +48,13 @@
     
     
     <SolidColorBrush x:Key="TitleBarBrush" Color="#242424" />
+    
+    <SolidColorBrush x:Key="InformationColorBrush" Color="green" />
+    <SolidColorBrush x:Key="WarningColorBrush" Color="yellow" />
+    <SolidColorBrush x:Key="ErrorColorBrush" Color="red" />
+    
+    <SolidColorBrush x:Key="FolderColorBrush" Color="#e8b343" />
+    <SolidColorBrush x:Key="SheetFileColorBrush" Color="#22844e" />
 
     <converters:NullableToVisibilityConverter x:Key="NullableToVisibilityConverter" />
     <converters:InverseNullableToVisibilityConverter x:Key="InverseNullableToVisibilityConverter" />

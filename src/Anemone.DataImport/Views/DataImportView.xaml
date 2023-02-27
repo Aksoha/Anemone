@@ -32,11 +32,11 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center"
                     Visibility="{Binding SelectedFile, Converter={StaticResource NullableToVisibilityConverter}}">
             <components:PackIcon Kind="FileTable" Height="25" Width="25" Margin="0 0 10 0"
-                                 Foreground="#22844e" />
+                                 Foreground="{StaticResource SheetFileColorBrush}" />
             <TextBlock Text="{Binding FileName}" VerticalAlignment="Center"
                        Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
             <Separator Margin="10 0" Style="{StaticResource VerticalSeparator}" />
-            <components:PackIcon Kind="FolderOpen" Height="25" Width="25" Foreground="#e8b343"
+            <components:PackIcon Kind="FolderOpen" Height="25" Width="25" Foreground="{StaticResource FolderColorBrush}"
                            VerticalAlignment="Center"
                            Margin="0 0 10 0" />
             <TextBlock VerticalAlignment="Center">
