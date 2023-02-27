@@ -1,8 +1,10 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using Anemone.Core;
 using Anemone.DataImport.Models;
 using Anemone.DataImport.Views;
@@ -144,6 +146,7 @@ internal class MapColumnsViewModel : ViewModelBase
             }
 
             SetMappingStatus(description, sCol.Column);
+            SetMappingStatus(description, sCol.Column);
         }
 
 
@@ -153,9 +156,31 @@ internal class MapColumnsViewModel : ViewModelBase
 
     private void SetMappingStatus(MappingInformationModel mappingInformationModel, DataColumn column)
     {
-        if ((from DataRow row in DisplayedSheet.Rows select row[column].ToString()).Any(string.IsNullOrWhiteSpace))
+        var fieldsInfo =
+            typeof(HeatingSystemColumnMappingModel).GetField(mappingInformationModel.MappedValue.ToString())!;
+        var attribute =
+            fieldsInfo.GetCustomAttribute(typeof(ChainedValidationAttribute<HeatingSystemColumnMappingModel>)) as
+                ChainedValidationAttribute<HeatingSystemColumnMappingModel>;
+
+        var associatedColumns = new List<DataColumn>();
+        if (attribute is not null)
         {
-            mappingInformationModel.StatusModel = MappingStatusModel.MissingRow;
+            associatedColumns = SheetColumnHeaders
+                .Where(x => attribute.ValidateTogetherWith.All(y => y == x.ColumnType))
+                .Select(x => x.Column).ToList();
+        }
+
+
+        if ((from DataRow row in DisplayedSheet.Rows
+                let thisColumnValue = row[column].ToString()
+                let thisColumnValueHasValue = string.IsNullOrWhiteSpace(thisColumnValue) is false
+                from associatedColumn in associatedColumns
+                let associatedValue = row[associatedColumn].ToString()
+                let associatedColumnHasValue = string.IsNullOrWhiteSpace(associatedValue) is false
+                where thisColumnValueHasValue != associatedColumnHasValue
+                select thisColumnValueHasValue).Any())
+        {
+            mappingInformationModel.StatusModel = MappingStatusModel.InconsistentData;
             return;
         }
 

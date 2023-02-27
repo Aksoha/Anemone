@@ -42,6 +42,7 @@ internal class MappingInformationModel : INotifyPropertyChanged
                 MappingStatusModel.Ok => FormatMappingDescription(MappingStatusModel.Ok),
                 MappingStatusModel.MissingRow => FormatMappingDescription(MappingStatusModel.MissingRow),
                 MappingStatusModel.NotAssigned => FormatMappingDescription(MappingStatusModel.NotAssigned),
+                MappingStatusModel.InconsistentData => FormatMappingDescription(MappingStatusModel.InconsistentData),
                 _ => throw new UnreachableException()
             };
         }

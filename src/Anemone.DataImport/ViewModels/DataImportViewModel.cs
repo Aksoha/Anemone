@@ -21,7 +21,7 @@ internal class DataImportViewModel : ViewModelBase
     private ISheetFileReader SheetFileReader { get; }
     private IProcess Process { get; }
 
-    public ObservableCollection<Sheet> Sheets => MapColumnsViewModel.Sheets;
+    private ObservableCollection<Sheet> Sheets => MapColumnsViewModel.Sheets;
     public string? SelectedFile => DropFileViewModel.UploadedFile;
     public string? FileName => Path.GetFileName(SelectedFile);
 
