@@ -16,8 +16,41 @@ namespace Anemone.DataImport.ViewModels;
 
 internal class DataImportViewModel : ViewModelBase
 {
-    public DropFileViewModel DropFileViewModel { get; set; }
-    public MapColumnsViewModel MapColumnsViewModel { get; set; }
+    private const int SlideCount = 2;
+
+    private int _currentIndex;
+
+
+    public DataImportViewModel(DropFileViewModel dropFileViewModel,
+        MapColumnsViewModel mapColumnsViewModel, SaveDataViewModel saveDataViewModel, ISheetFileReader sheetFileReader,
+        IProcess process)
+    {
+        DropFileViewModel = dropFileViewModel;
+        MapColumnsViewModel = mapColumnsViewModel;
+        SaveDataViewModel = saveDataViewModel;
+        SheetFileReader = sheetFileReader;
+        Process = process;
+
+
+        FrequencyData = SaveDataViewModel.FrequencyData;
+        TemperatureData = SaveDataViewModel.TemperatureData;
+
+
+        DropFileViewModel.PropertyChanged += OnDropFileViewModelOnPropertyChanged;
+        MapColumnsViewModel.DataChanged += MapColumnsViewModelOnDataChanged;
+
+
+        NavigateNextSlideCommand =
+            new DelegateCommand(ExecuteNavigateNextSlideCommand).ObservesCanExecute(() => CanNavigateNext);
+        NavigatePreviousSlideCommand =
+            new DelegateCommand(ExecuteNavigatePreviousSlideCommand).ObservesCanExecute(() => IsNotFirstSlide);
+        OpenFolderCommand = new ActionCommand(ExecuteOpenFolderCommand);
+        MouseDownCommand = new DelegateCommand<MouseButtonEventArgs>(ExecuteMouseDownCommand);
+    }
+
+    public DropFileViewModel DropFileViewModel { get; }
+    public MapColumnsViewModel MapColumnsViewModel { get; }
+    public SaveDataViewModel SaveDataViewModel { get; }
     private ISheetFileReader SheetFileReader { get; }
     private IProcess Process { get; }
 
@@ -25,6 +58,9 @@ internal class DataImportViewModel : ViewModelBase
     public string? SelectedFile => DropFileViewModel.UploadedFile;
     public string? FileName => Path.GetFileName(SelectedFile);
 
+
+    private ObservableCollection<HeatingSystemData> FrequencyData { get; }
+    private ObservableCollection<HeatingSystemData> TemperatureData { get; }
 
     public ICommand NavigateNextSlideCommand { get; }
     public ICommand NavigatePreviousSlideCommand { get; }
@@ -47,8 +83,6 @@ internal class DataImportViewModel : ViewModelBase
         }
     }
 
-    public const int SlideCount = 1;
-
     public bool CanNavigateNext
     {
         get
@@ -62,26 +96,13 @@ internal class DataImportViewModel : ViewModelBase
     public bool IsNotFirstSlide => !IsFirstSlide;
     public bool IsNotLastSlide => CurrentIndex < SlideCount;
 
-    private int _currentIndex;
-
-
-    public DataImportViewModel(DropFileViewModel dropFileViewModel,
-        MapColumnsViewModel mapColumnsViewModel, ISheetFileReader sheetFileReader, IProcess process)
+    private void MapColumnsViewModelOnDataChanged(object? sender, HeatingDataEventArgs e)
     {
-        DropFileViewModel = dropFileViewModel;
-        MapColumnsViewModel = mapColumnsViewModel;
-        SheetFileReader = sheetFileReader;
-        Process = process;
+        FrequencyData.Clear();
+        foreach (var data in e.FrequencyData) FrequencyData.Add(data);
 
-
-        DropFileViewModel.PropertyChanged += OnDropFileViewModelOnPropertyChanged;
-
-        NavigateNextSlideCommand =
-            new DelegateCommand(ExecuteNavigateNextSlideCommand).ObservesCanExecute(() => CanNavigateNext);
-        NavigatePreviousSlideCommand =
-            new DelegateCommand(ExecuteNavigatePreviousSlideCommand).ObservesCanExecute(() => IsNotFirstSlide);
-        OpenFolderCommand = new ActionCommand(ExecuteOpenFolderCommand);
-        MouseDownCommand = new DelegateCommand<MouseButtonEventArgs>(ExecuteMouseDownCommand);
+        TemperatureData.Clear();
+        foreach (var data in e.TemperatureData) TemperatureData.Add(data);
     }
 
 
@@ -101,9 +122,7 @@ internal class DataImportViewModel : ViewModelBase
         var result = SheetFileReader.ReadAsDataSet(DropFileViewModel.UploadedFile);
 
         foreach (DataTable table in result.Tables)
-        {
             Sheets.Add(new Sheet { Name = table.TableName, Set = table.AsDataView() });
-        }
 
         MapColumnsViewModel.SelectedSheet = MapColumnsViewModel.Sheets.FirstOrDefault();
 

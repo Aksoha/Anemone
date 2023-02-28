@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -93,6 +94,8 @@ internal class MapColumnsViewModel : ViewModelBase
         }
     }
 
+    public event EventHandler<HeatingDataEventArgs>? DataChanged;
+
     private void ChangeDisplayedSheet()
     {
         if (SelectedSheet is null) return;
@@ -151,6 +154,57 @@ internal class MapColumnsViewModel : ViewModelBase
 
 
         _updatingColumnHeaders = false;
+
+        if (IsMappingValid())
+            SendNotification();
+    }
+
+    private void SendNotification()
+    {
+        if (DataChanged is null) return;
+
+        var fData = new List<HeatingSystemData>();
+        var tData = new List<HeatingSystemData>();
+
+
+        var frequency = SheetColumnHeaders.Single(x => x.ColumnType == HeatingSystemColumnMappingModel.Frequency)
+            .Column;
+        var temperature = SheetColumnHeaders.Single(x => x.ColumnType == HeatingSystemColumnMappingModel.Temperature)
+            .Column;
+
+        var resistanceF = SheetColumnHeaders.Single(x => x.ColumnType == HeatingSystemColumnMappingModel.ResistanceF)
+            .Column;
+        var inductanceF = SheetColumnHeaders.Single(x => x.ColumnType == HeatingSystemColumnMappingModel.InductanceF)
+            .Column;
+        var resistanceT = SheetColumnHeaders.Single(x => x.ColumnType == HeatingSystemColumnMappingModel.ResistanceT)
+            .Column;
+        var inductanceT = SheetColumnHeaders.Single(x => x.ColumnType == HeatingSystemColumnMappingModel.InductanceT)
+            .Column;
+
+
+        foreach (DataRow row in DisplayedSheet.Rows)
+        {
+            if (row[frequency] is double fVal)
+                fData.Add(new HeatingSystemData
+                    {
+                        Key = fVal,
+                        Resistance = (double)row[resistanceF],
+                        Inductance = (double)row[inductanceF]
+                    }
+                );
+
+            if (row[temperature] is double tVal)
+                tData.Add(new HeatingSystemData
+                    {
+                        Key = tVal,
+                        Resistance = (double)row[resistanceT],
+                        Inductance = (double)row[inductanceT]
+                    }
+                );
+        }
+
+
+        DataChanged.Invoke(this, new HeatingDataEventArgs { FrequencyData = fData, TemperatureData = tData });
     }
 
 
@@ -164,11 +218,9 @@ internal class MapColumnsViewModel : ViewModelBase
 
         var associatedColumns = new List<DataColumn>();
         if (attribute is not null)
-        {
             associatedColumns = SheetColumnHeaders
                 .Where(x => attribute.ValidateTogetherWith.All(y => y == x.ColumnType))
                 .Select(x => x.Column).ToList();
-        }
 
 
         if ((from DataRow row in DisplayedSheet.Rows
@@ -201,5 +253,10 @@ internal class MapColumnsViewModel : ViewModelBase
     private void ResetMappingStatuses()
     {
         foreach (var description in ColumnMappingInformation) description.StatusModel = MappingStatusModel.NotAssigned;
+    }
+
+    private bool IsMappingValid()
+    {
+        return ColumnMappingInformation.All(x => x.StatusModel == MappingStatusModel.Ok);
     }
 }

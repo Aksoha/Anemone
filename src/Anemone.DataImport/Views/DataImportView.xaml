@@ -11,13 +11,13 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=viewModels:DataImportViewModel, IsDesignTimeCreatable=False}"
              d:DesignHeight="300" d:DesignWidth="300">
-    
+
     <behaviors:Interaction.Triggers>
         <behaviors:EventTrigger EventName="MouseDown">
             <behaviors:InvokeCommandAction Command="{Binding MouseDownCommand }" PassEventArgsToCommand="True" />
         </behaviors:EventTrigger>
     </behaviors:Interaction.Triggers>
-    
+
     <Grid>
 
         <Grid.RowDefinitions>
@@ -36,9 +36,10 @@
             <TextBlock Text="{Binding FileName}" VerticalAlignment="Center"
                        Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
             <Separator Margin="10 0" Style="{StaticResource VerticalSeparator}" />
-            <components:PackIcon Kind="FolderOpen" Height="25" Width="25" Foreground="{StaticResource FolderColorBrush}"
-                           VerticalAlignment="Center"
-                           Margin="0 0 10 0" />
+            <components:PackIcon Kind="FolderOpen" Height="25" Width="25"
+                                 Foreground="{StaticResource FolderColorBrush}"
+                                 VerticalAlignment="Center"
+                                 Margin="0 0 10 0" />
             <TextBlock VerticalAlignment="Center">
                 <Hyperlink Style="{StaticResource MaterialDesignSubtitle1Hyperlink}"
                            Command="{Binding OpenFolderCommand}">
@@ -55,6 +56,7 @@
         <materialDesign:Transitioner Grid.Row="2" SelectedIndex="{Binding CurrentIndex}">
             <local:DropFileView DataContext="{Binding DropFileViewModel }" />
             <local:MapColumnsView DataContext="{Binding MapColumnsViewModel}" />
+            <local:SaveDataView DataContext="{Binding SaveDataViewModel}" />
         </materialDesign:Transitioner>
 
 
