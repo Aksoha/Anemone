@@ -12,6 +12,8 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
 using Anemone.Core;
+using Anemone.Core.Components;
+using Anemone.Core.ViewModels;
 using Anemone.DataImport;
 using Anemone.Services;
 using Anemone.Settings;
@@ -63,6 +65,8 @@ public partial class App
         });
 
         RegisterDebuggingSettings(containerRegistry);
+        containerRegistry.RegisterDialog<ChangeNameDialog, ChangeNameDialogViewModel>();
+        containerRegistry.RegisterDialogWindow<DialogWindow>();
         containerRegistry.RegisterSingleton<INavigationRegistrations, NavigationRegistrations>();
         containerRegistry.RegisterSingleton<ISnackbarMessageQueue, SnackbarMessageQueue>();
         containerRegistry.RegisterSingleton<IToastService, ToastService>();
