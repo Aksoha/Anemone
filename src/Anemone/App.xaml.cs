@@ -72,6 +72,7 @@ public partial class App
         containerRegistry.RegisterSingleton<IToastService, ToastService>();
         containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
         containerRegistry.Register<IOpenFileDialog, OpenFileDialog>();
+        containerRegistry.Register<IDialogService, PrismDialogWrapper>();
         containerRegistry.Register<IFile, FileWrapper>();
         containerRegistry.Register<IProcess, ProcessWrapper>();
     }
