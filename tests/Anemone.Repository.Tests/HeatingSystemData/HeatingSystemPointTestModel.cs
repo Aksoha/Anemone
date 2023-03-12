@@ -1,4 +1,4 @@
-﻿namespace Anemone.Repository.Tests;
+﻿namespace Anemone.Repository.Tests.HeatingSystemData;
 
 public class HeatingSystemPointTestModel : HeatingSystemPoint
 {

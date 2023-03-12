@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Bogus;
 using Dapper;
 
-namespace Anemone.Repository.Tests;
+namespace Anemone.Repository.Tests.HeatingSystemData;
 
 [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local")]
 public class HeatingSystemSqliteRepositoryTests : IClassFixture<DatabaseFixture>, IDisposable
