@@ -45,7 +45,12 @@ public class ShellViewModel : ViewModelBase
     {
         if (SelectedNavigationItem is null)
             throw new ArgumentNullException(nameof(SelectedNavigationItem));
-        RegionManager.RequestNavigate(RegionNames.ContentRegion, SelectedNavigationItem.NavigationPath);
+
+        const string regionName = RegionNames.ContentRegion;
+        
+        RegionManager.Regions[regionName].NavigationService.NavigationFailed += LogNavigationError;
+        RegionManager.RequestNavigate(regionName, SelectedNavigationItem.NavigationPath);
+        RegionManager.Regions[regionName].NavigationService.NavigationFailed -= LogNavigationError;
     }
 
     private void ExecuteNavigateCommand(string navigationPath)
@@ -57,5 +62,10 @@ public class ShellViewModel : ViewModelBase
         
         
         RegionManager.RequestNavigate(RegionNames.ContentRegion, navigationPath);
+    }
+    
+    private void LogNavigationError(object? sender, RegionNavigationFailedEventArgs e)
+    {
+        Logger.LogError(e.Error, "unhandled exception has occured while invoking navigation to the {Path}", e.Uri);
     }
 }
