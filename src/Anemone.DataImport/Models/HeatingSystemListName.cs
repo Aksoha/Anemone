@@ -1,29 +1,36 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Runtime.CompilerServices;
+using Anemone.Repository.HeatingSystemData;
 
 namespace Anemone.DataImport.Models;
 
-internal class ImportColumnInfoModel : INotifyPropertyChanged
+public class HeatingSystemListName : INotifyPropertyChanged
 {
-    private string _columnName = string.Empty;
-    private HeatingSystemColumnMappingModel? _columnType;
+    private int _id;
+    private string _name = string.Empty;
 
-    public HeatingSystemColumnMappingModel? ColumnType
+    public HeatingSystemListName()
     {
-        get => _columnType;
-        set => SetField(ref _columnType, value);
     }
 
-    public string ColumnName
+    public HeatingSystemListName(HeatingSystemName heatingSystemName)
     {
-        get => _columnName;
-        set => SetField(ref _columnName, value);
+        Id = (int)heatingSystemName.Id!;
+        Name = heatingSystemName.Name;
     }
 
-    public required DataColumn Column { get; set; }
-    public bool IsVisible { get; set; } = true;
+    public int Id
+    {
+        get => _id;
+        set => SetField(ref _id, value);
+    }
+
+    public string Name
+    {
+        get => _name;
+        set => SetField(ref _name, value);
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

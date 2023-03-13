@@ -13,4 +13,6 @@ public enum PackIconKind
     ArrowULeftTop,
     Alert,
     CheckCircle,
+    Delete,
+    Rename
 }

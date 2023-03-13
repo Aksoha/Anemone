@@ -9,12 +9,14 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Threading;
 using Anemone.Core;
 using Anemone.Core.Components;
 using Anemone.Core.ViewModels;
 using Anemone.DataImport;
+using Anemone.Repository;
 using Anemone.Services;
 using Anemone.Settings;
 using Anemone.Startup;
@@ -75,7 +77,51 @@ public partial class App
         containerRegistry.Register<IOpenFileDialog, OpenFileDialog>();
         containerRegistry.Register<IDialogService, PrismDialogWrapper>();
         containerRegistry.Register<IFile, FileWrapper>();
+        containerRegistry.Register<IDirectory, DirectoryWrapper>();
         containerRegistry.Register<IProcess, ProcessWrapper>();
+
+
+        var serviceCollection = new ServiceCollection();
+        containerRegistry.RegisterInstance<IServiceCollection>(serviceCollection);
+
+        Container.Resolve<IServiceCollection>().ConfigureDatabase(new RepositoryOptions
+            { ConnectionString = ApplicationInfo.ConnectionString });
+
+        foreach (var service in serviceCollection)
+            Register(containerRegistry, service);
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+
+
+        containerRegistry.RegisterInstance<IServiceProvider>(serviceProvider);
+        Container.Resolve<IServiceProvider>().UseDatabase();
+    }
+
+    /// <summary>
+    /// Registers a service from <see cref="IServiceCollection"/> in the <paramref name="containerRegistry"/>.
+    /// </summary>
+    /// <param name="containerRegistry">The container.</param>
+    /// <param name="service">The service to register.</param>
+    private static void Register(IContainerRegistry containerRegistry, ServiceDescriptor service)
+    {
+        if (service.ImplementationInstance is not null)
+        {
+            containerRegistry.RegisterInstance(service.ServiceType, service.ImplementationInstance);
+        }
+        else if (service.ImplementationFactory is not null)
+        {
+            var factory = service.ImplementationFactory;
+            Func<IContainerProvider, object> factoryMethod = containerProvider =>
+            {
+                var provider = containerProvider.Resolve<IServiceProvider>();
+                return factory(provider);
+            };
+            containerRegistry.Register(service.ServiceType, factoryMethod);
+        }
+        else
+        {
+            containerRegistry.Register(service.ServiceType, service.ImplementationType);
+        }
     }
 
     protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
@@ -134,8 +180,8 @@ public partial class App
         var configuration = CreateConfiguration();
         ConfigureLogger(configuration);
 
-        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-        
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
         base.OnStartup(e);
     }
 

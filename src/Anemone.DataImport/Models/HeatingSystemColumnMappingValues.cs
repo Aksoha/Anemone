@@ -5,6 +5,6 @@ namespace Anemone.DataImport.Models;
 
 internal static class HeatingSystemColumnMappingValues
 {
-    public static readonly IEnumerable<HeatingSystemColumnMappingModel> GetValues = Enum.GetValues<HeatingSystemColumnMappingModel>();
-
+    public static readonly IEnumerable<HeatingSystemColumnMappingModel> GetValues =
+        Enum.GetValues<HeatingSystemColumnMappingModel>();
 }

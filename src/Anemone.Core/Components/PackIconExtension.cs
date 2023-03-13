@@ -5,7 +5,7 @@ namespace Anemone.Core.Components;
 
 // taken from https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/blob/master/MaterialDesignThemes.Wpf/PackIconExtension.cs
 [MarkupExtensionReturnType(typeof(PackIcon))]
-internal class PackIconExtension : MarkupExtension
+public class PackIconExtension : MarkupExtension
 {
     public PackIconExtension()
     {

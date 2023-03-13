@@ -7,13 +7,13 @@ namespace Anemone.DataImport.Services;
 
 public class SheetFileReader : ISheetFileReader
 {
-    private IFile File { get; }
-
     public SheetFileReader(IFile file)
     {
         File = file;
     }
-    
+
+    private IFile File { get; }
+
     public DataSet ReadAsDataSet(string path)
     {
         using var stream = File.Open(path, FileMode.Open, FileAccess.Read);

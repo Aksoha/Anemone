@@ -8,10 +8,10 @@
              xmlns:viewModels="clr-namespace:Anemone.DataImport.ViewModels"
              xmlns:components="clr-namespace:Anemone.Core.Components;assembly=Anemone.Core"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300" 
+             d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance Type=viewModels:DropFileViewModel, IsDesignTimeCreatable=False}"
              Background="Transparent"
-             AllowDrop="True" >
+             AllowDrop="True">
 
 
     <behaviors:Interaction.Triggers>
@@ -19,8 +19,8 @@
             <behaviors:InvokeCommandAction Command="{Binding DropFileCommand }" PassEventArgsToCommand="True" />
         </behaviors:EventTrigger>
     </behaviors:Interaction.Triggers>
-        
-    
+
+
     <Border BorderThickness="1">
 
         <Border.BorderBrush>
@@ -44,12 +44,13 @@
                         <Setter Property="Margin" Value="0 5 0 5" />
                     </Style>
                 </StackPanel.Resources>
-                <components:PackIcon Kind="UploadFile" VerticalAlignment="Center" HorizontalAlignment="Center" Width="40"
-                                  Height="40" />
+                <components:PackIcon Kind="UploadFile" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                     Width="40"
+                                     Height="40" />
                 <TextBlock TextAlignment="Center" Text="Drag &amp; Drop" />
                 <TextBlock TextAlignment="Center" Text="or" />
                 <Button Content="Choose file" Command="{Binding ChooseFileCommand}" />
-                
+
             </StackPanel>
         </Grid>
     </Border>

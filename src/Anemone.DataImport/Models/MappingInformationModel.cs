@@ -26,10 +26,7 @@ internal class MappingInformationModel : INotifyPropertyChanged
         get => _statusModel;
         set
         {
-            if (SetField(ref _statusModel, value))
-            {
-                OnPropertyChanged(nameof(Description));
-            }
+            if (SetField(ref _statusModel, value)) OnPropertyChanged(nameof(Description));
         }
     }
 
@@ -47,11 +44,14 @@ internal class MappingInformationModel : INotifyPropertyChanged
             };
         }
     }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     private static string MappingStatusAsString(MappingStatusModel mappingStatusModel)
     {
         var fieldInfo = mappingStatusModel.GetType().GetField(mappingStatusModel.ToString())!;
         var attribute = fieldInfo.GetCustomAttribute(typeof(DisplayAttribute)) as DisplayAttribute;
-        return  attribute?.Description ?? mappingStatusModel.ToString();
+        return attribute?.Description ?? mappingStatusModel.ToString();
     }
 
     private string FormatMappingDescription(MappingStatusModel mappingStatusModel)
@@ -68,8 +68,6 @@ internal class MappingInformationModel : INotifyPropertyChanged
 
         return builder.ToString();
     }
-    
-    public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {

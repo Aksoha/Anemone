@@ -79,7 +79,7 @@
                     HorizontalAlignment="Right"
                     Style="{StaticResource MaterialDesignRaisedButton}"
                     Command="{Binding NavigateNextSlideCommand}"
-                    Content="Next" />
+                    Content="{Binding NextButtonText}" />
         </Grid>
 
     </Grid>

@@ -5,16 +5,18 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Anemone.Core;
 using Anemone.DataImport.Models;
 using Anemone.DataImport.Services;
 using Microsoft.Xaml.Behaviors.Core;
 using Prism.Commands;
+using Prism.Regions;
 
 namespace Anemone.DataImport.ViewModels;
 
-internal class DataImportViewModel : ViewModelBase
+internal class DataImportViewModel : ViewModelBase, IRegionMemberLifetime
 {
     private const int SlideCount = 2;
 
@@ -41,12 +43,14 @@ internal class DataImportViewModel : ViewModelBase
 
 
         NavigateNextSlideCommand =
-            new DelegateCommand(ExecuteNavigateNextSlideCommand).ObservesCanExecute(() => CanNavigateNext);
+            new DelegateCommand(async () => await ExecuteNavigateNextSlideCommand()).ObservesCanExecute(() =>
+                CanNavigateNext);
         NavigatePreviousSlideCommand =
             new DelegateCommand(ExecuteNavigatePreviousSlideCommand).ObservesCanExecute(() => IsNotFirstSlide);
         OpenFolderCommand = new ActionCommand(ExecuteOpenFolderCommand);
         MouseDownCommand = new DelegateCommand<MouseButtonEventArgs>(ExecuteMouseDownCommand);
     }
+
 
     public DropFileViewModel DropFileViewModel { get; }
     public MapColumnsViewModel MapColumnsViewModel { get; }
@@ -77,9 +81,11 @@ internal class DataImportViewModel : ViewModelBase
             _currentIndex = value;
             RaisePropertyChanged();
             RaisePropertyChanged(nameof(IsFirstSlide));
+            RaisePropertyChanged(nameof(IsLastSlide));
             RaisePropertyChanged(nameof(IsNotFirstSlide));
             RaisePropertyChanged(nameof(IsNotLastSlide));
             RaisePropertyChanged(nameof(CanNavigateNext));
+            RaisePropertyChanged(nameof(NextButtonText));
         }
     }
 
@@ -87,14 +93,21 @@ internal class DataImportViewModel : ViewModelBase
     {
         get
         {
-            if (!IsFirstSlide) return IsNotLastSlide;
-            return DropFileViewModel.UploadedFile is not null && IsNotLastSlide;
+            if (IsFirstSlide)
+                return SelectedFile is not null;
+
+            return true;
         }
     }
 
     public bool IsFirstSlide => CurrentIndex <= 0;
+    public bool IsLastSlide => CurrentIndex >= SlideCount;
     public bool IsNotFirstSlide => !IsFirstSlide;
-    public bool IsNotLastSlide => CurrentIndex < SlideCount;
+    public bool IsNotLastSlide => !IsLastSlide;
+
+    public string NextButtonText => IsLastSlide ? "Save" : "Next";
+
+    public bool KeepAlive => false;
 
     private void MapColumnsViewModelOnDataChanged(object? sender, HeatingDataEventArgs e)
     {
@@ -106,7 +119,7 @@ internal class DataImportViewModel : ViewModelBase
     }
 
 
-    private void OnDropFileViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private async void OnDropFileViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName != nameof(DropFileViewModel.UploadedFile))
             return;
@@ -129,12 +142,18 @@ internal class DataImportViewModel : ViewModelBase
         RaisePropertyChanged(nameof(CanNavigateNext));
         RaisePropertyChanged(nameof(SelectedFile));
         RaisePropertyChanged(nameof(FileName));
-        ExecuteNavigateNextSlideCommand();
+        await ExecuteNavigateNextSlideCommand();
     }
 
-    private void ExecuteNavigateNextSlideCommand()
+    private async Task ExecuteNavigateNextSlideCommand()
     {
-        CurrentIndex++;
+        if (IsNotLastSlide)
+        {
+            CurrentIndex++;
+            return;
+        }
+
+        await SaveDataViewModel.Save.Invoke();
     }
 
     private void ExecuteNavigatePreviousSlideCommand()

@@ -9,7 +9,7 @@ internal enum HeatingSystemColumnMappingModel
     Temperature,
 
     [Display(Name = "Resistance(frequency)")]
-    [ChainedValidation<HeatingSystemColumnMappingModel>(new []{InductanceF})]
+    [ChainedValidation<HeatingSystemColumnMappingModel>(new[] { InductanceF })]
     ResistanceF,
 
     [Display(Name = "Resistance(temperature)")]
@@ -22,5 +22,5 @@ internal enum HeatingSystemColumnMappingModel
 
     [Display(Name = "Inductance(temperature)")]
     [ChainedValidation<HeatingSystemColumnMappingModel>(new[] { ResistanceT })]
-    InductanceT,
+    InductanceT
 }

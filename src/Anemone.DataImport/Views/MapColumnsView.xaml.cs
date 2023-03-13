@@ -5,6 +5,5 @@ internal partial class MapColumnsView
     public MapColumnsView()
     {
         InitializeComponent();
-
     }
 }

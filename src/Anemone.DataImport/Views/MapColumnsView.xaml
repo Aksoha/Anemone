@@ -107,17 +107,17 @@
 
             <StackPanel Grid.Column="0">
 
-                    <ComboBox Margin="0 5"
-                              materialDesign:HintAssist.Hint="select sheet"
-                              ItemsSource="{Binding Sheets}"
-                              SelectedItem="{Binding SelectedSheet}"
-                              Style="{StaticResource MaterialDesignFilledComboBox}" HorizontalAlignment="Left">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+                <ComboBox Margin="0 5"
+                          materialDesign:HintAssist.Hint="select sheet"
+                          ItemsSource="{Binding Sheets}"
+                          SelectedItem="{Binding SelectedSheet}"
+                          Style="{StaticResource MaterialDesignFilledComboBox}" HorizontalAlignment="Left">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
                 <CheckBox
                     x:Name="CheckBox"
                     Margin="0 5" Content="My sheet a header row"
@@ -144,26 +144,34 @@
                             <DataTemplate.Triggers>
                                 <DataTrigger Binding="{Binding StatusModel}"
                                              Value="{x:Static models:MappingStatusModel.Ok}">
-                                    <Setter TargetName="MappedText" Property="Foreground" Value="{StaticResource InformationColorBrush}" />
-                                    <Setter TargetName="MappedIcon" Property="Foreground" Value="{StaticResource InformationColorBrush}" />
+                                    <Setter TargetName="MappedText" Property="Foreground"
+                                            Value="{StaticResource InformationColorBrush}" />
+                                    <Setter TargetName="MappedIcon" Property="Foreground"
+                                            Value="{StaticResource InformationColorBrush}" />
                                     <Setter TargetName="MappedIcon" Property="Kind" Value="CheckCircle" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding StatusModel}"
                                              Value="{x:Static models:MappingStatusModel.MissingRow}">
-                                    <Setter TargetName="MappedText" Property="Foreground" Value="{StaticResource WarningColorBrush}" />
-                                    <Setter TargetName="MappedIcon" Property="Foreground" Value="{StaticResource WarningColorBrush}" />
+                                    <Setter TargetName="MappedText" Property="Foreground"
+                                            Value="{StaticResource WarningColorBrush}" />
+                                    <Setter TargetName="MappedIcon" Property="Foreground"
+                                            Value="{StaticResource WarningColorBrush}" />
                                     <Setter TargetName="MappedIcon" Property="Kind" Value="Alert" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding StatusModel}"
                                              Value="{x:Static models:MappingStatusModel.NotAssigned}">
-                                    <Setter TargetName="MappedText" Property="Foreground" Value="{StaticResource ErrorColorBrush}" />
-                                    <Setter TargetName="MappedIcon" Property="Foreground" Value="{StaticResource ErrorColorBrush}" />
+                                    <Setter TargetName="MappedText" Property="Foreground"
+                                            Value="{StaticResource ErrorColorBrush}" />
+                                    <Setter TargetName="MappedIcon" Property="Foreground"
+                                            Value="{StaticResource ErrorColorBrush}" />
                                     <Setter TargetName="MappedIcon" Property="Kind" Value="Alert" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding StatusModel}"
                                              Value="{x:Static models:MappingStatusModel.InconsistentData}">
-                                    <Setter TargetName="MappedText" Property="Foreground" Value="{StaticResource ErrorColorBrush}" />
-                                    <Setter TargetName="MappedIcon" Property="Foreground" Value="{StaticResource ErrorColorBrush}" />
+                                    <Setter TargetName="MappedText" Property="Foreground"
+                                            Value="{StaticResource ErrorColorBrush}" />
+                                    <Setter TargetName="MappedIcon" Property="Foreground"
+                                            Value="{StaticResource ErrorColorBrush}" />
                                     <Setter TargetName="MappedIcon" Property="Kind" Value="Alert" />
                                 </DataTrigger>
                             </DataTemplate.Triggers>
@@ -195,9 +203,7 @@
                                 IsReadOnly="True"
                                 CanUserSortColumns="False"
                                 Style="{StaticResource MaterialDesignDataGrid}"
-                                ColumnHeaderStyle="{StaticResource ColumnHeader}">
-
-        </components:DataGridExt>
+                                ColumnHeaderStyle="{StaticResource ColumnHeader}" />
 
 
     </Grid>
