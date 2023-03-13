@@ -33,8 +33,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anemone.Repository", "src\A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anemone.Repository.Tests", "tests\Anemone.Repository.Tests\Anemone.Repository.Tests.csproj", "{002B938E-B59B-4A9C-8774-176A9F3313E6}"
 EndProject
-
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anemone.RepositoryMock", "tests\Anemone.RepositoryMock\Anemone.RepositoryMock.csproj", "{29CFE7E3-82AE-4F1C-8843-F2A7BB83B51D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anemone.DataImport.Tests", "tests\Anemone.DataImport.Tests\Anemone.DataImport.Tests.csproj", "{B70D7F5D-DA9C-4FD0-BE57-ED7AA787F390}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -108,6 +109,14 @@ Global
 		{29CFE7E3-82AE-4F1C-8843-F2A7BB83B51D}.Release|x64.Build.0 = Release|Any CPU
 		{29CFE7E3-82AE-4F1C-8843-F2A7BB83B51D}.Release|x86.ActiveCfg = Release|Any CPU
 		{29CFE7E3-82AE-4F1C-8843-F2A7BB83B51D}.Release|x86.Build.0 = Release|Any CPU
+		{B70D7F5D-DA9C-4FD0-BE57-ED7AA787F390}.Debug|x64.ActiveCfg = Debug|Any CPU
+        {B70D7F5D-DA9C-4FD0-BE57-ED7AA787F390}.Debug|x64.Build.0 = Debug|Any CPU
+        {B70D7F5D-DA9C-4FD0-BE57-ED7AA787F390}.Debug|x86.ActiveCfg = Debug|Any CPU
+        {B70D7F5D-DA9C-4FD0-BE57-ED7AA787F390}.Debug|x86.Build.0 = Debug|Any CPU
+        {B70D7F5D-DA9C-4FD0-BE57-ED7AA787F390}.Release|x64.ActiveCfg = Release|Any CPU
+        {B70D7F5D-DA9C-4FD0-BE57-ED7AA787F390}.Release|x64.Build.0 = Release|Any CPU
+        {B70D7F5D-DA9C-4FD0-BE57-ED7AA787F390}.Release|x86.ActiveCfg = Release|Any CPU
+        {B70D7F5D-DA9C-4FD0-BE57-ED7AA787F390}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -121,6 +130,7 @@ Global
 		{496513AF-3E8F-4502-9840-8743EFAE75E3} = {05AEB28A-FB37-4153-8FD5-2D93A931D1E7}
 		{002B938E-B59B-4A9C-8774-176A9F3313E6} = {F2E08F7B-8F89-47D0-A399-B2ADA24FD835}
 		{29CFE7E3-82AE-4F1C-8843-F2A7BB83B51D} = {F2E08F7B-8F89-47D0-A399-B2ADA24FD835}
+		{B70D7F5D-DA9C-4FD0-BE57-ED7AA787F390} = {F2E08F7B-8F89-47D0-A399-B2ADA24FD835}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B7C3DFE-1EA2-424D-934B-388E7A485DA8}
