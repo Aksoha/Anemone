@@ -45,7 +45,7 @@ public partial class App
     /// <summary>
     ///     a queue of logging data used for storing logging messages before logger is created
     /// </summary>
-    private List<LoggingQueueItem>? _loggerQueue = new();
+    private Queue<LoggingQueueItem> _loggerQueue = new();
 
     protected override void RegisterTypes(IContainerRegistry containerRegistry)
     {
@@ -164,16 +164,17 @@ public partial class App
 
 
         ArgumentNullException.ThrowIfNull(_loggerQueue);
-        foreach (var item in _loggerQueue)
+        while (_loggerQueue.Count > 0)
+        {
+            var item = _loggerQueue.Dequeue();
             // ReSharper disable once TemplateIsNotCompileTimeConstantProblem
             Log.Logger.Write(item.LogEventLevel, item.Exception, item.Message);
-
-        _loggerQueue = null;
+        }
     }
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        _loggerQueue!.Add(new LoggingQueueItem
+        _loggerQueue.Enqueue(new LoggingQueueItem
             { LogEventLevel = LogEventLevel.Information, Message = "starting application" });
 
         AllocConsole();
