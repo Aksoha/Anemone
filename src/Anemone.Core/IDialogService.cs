@@ -1,8 +1,9 @@
-﻿
-
-namespace Anemone.Core;
+﻿namespace Anemone.Core;
 
 public interface IDialogService
 {
-    ChangeNameDialogResult ShowChangeNameDialog(string name);
+    TextBoxDialogResult ShowTextBoxDialog(string text, string title = "");
+
+    ConfirmationDialogResult ShowConfirmationDialog(string message, string title = "",
+        string cancelButtonText = "Cancel", string confirmButtonText = "Confirm");
 }

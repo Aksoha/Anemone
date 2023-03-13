@@ -2,9 +2,9 @@
 
 namespace Anemone.Core.Components;
 
-public partial class ChangeNameDialog : UserControl
+public partial class TextBoxDialog : UserControl
 {
-    public ChangeNameDialog()
+    public TextBoxDialog()
     {
         InitializeComponent();
     }

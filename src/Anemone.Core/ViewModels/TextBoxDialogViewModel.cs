@@ -6,11 +6,13 @@ using Prism.Services.Dialogs;
 
 namespace Anemone.Core.ViewModels;
 
-public class ChangeNameDialogViewModel : ViewModelBase, IDialogAware
+public class TextBoxDialogViewModel : ViewModelBase, IDialogAware
 {
+    public const string MessageParameter = nameof(Message);
+    public const string TitleParameter = nameof(Title);
     private string _message = string.Empty;
-    
-    public ChangeNameDialogViewModel()
+
+    public TextBoxDialogViewModel()
     {
         CancelDialogCommand = new ActionCommand(() => CloseDialog(ButtonResult.Cancel));
         ConfirmDialogCommand =
@@ -31,9 +33,7 @@ public class ChangeNameDialogViewModel : ViewModelBase, IDialogAware
         }
     }
 
-    public static string MessageParameter = nameof(Message);
-    
-    public string Title => "Rename";
+    public string Title { get; set; } = string.Empty;
     public event Action<IDialogResult>? RequestClose;
 
     public virtual bool CanCloseDialog()
@@ -48,12 +48,13 @@ public class ChangeNameDialogViewModel : ViewModelBase, IDialogAware
     public virtual void OnDialogOpened(IDialogParameters parameters)
     {
         Message = parameters.GetValue<string>(MessageParameter);
+        Title = parameters.GetValue<string>(TitleParameter);
     }
 
     protected virtual void CloseDialog(ButtonResult parameter)
     {
-        var query = DialogQueryBuilder.Create(MessageParameter, Message);
-        RaiseRequestClose(new DialogResult(parameter, new DialogParameters(query)));
+        var parameters = new DialogParameters { { MessageParameter, Message } };
+        RaiseRequestClose(new DialogResult(parameter, parameters));
     }
 
     public virtual void RaiseRequestClose(IDialogResult dialogResult)

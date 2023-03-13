@@ -65,7 +65,8 @@ public partial class App
         });
 
         RegisterDebuggingSettings(containerRegistry);
-        containerRegistry.RegisterDialog<ChangeNameDialog, ChangeNameDialogViewModel>();
+        containerRegistry.RegisterDialog<TextBoxDialog, TextBoxDialogViewModel>();
+        containerRegistry.RegisterDialog<ConfirmationDialog, ConfirmationDialogViewModel>();
         containerRegistry.RegisterDialogWindow<DialogWindow>();
         containerRegistry.RegisterSingleton<INavigationRegistrations, NavigationRegistrations>();
         containerRegistry.RegisterSingleton<ISnackbarMessageQueue, SnackbarMessageQueue>();
