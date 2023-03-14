@@ -31,7 +31,6 @@ public class DataImportModule : IModule
         containerRegistry.Register<MapColumnsViewModel>();
         containerRegistry.Register<SaveDataViewModel>();
         containerRegistry.Register<ImportDataPreviewChartView>();
-        containerRegistry.Register<HeatingRepositoryListViewModel>();
         containerRegistry.RegisterForNavigation<DataImportView>();
         containerRegistry.RegisterForNavigation<SaveDataViewModel>();
     }

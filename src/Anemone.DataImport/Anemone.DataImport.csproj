@@ -7,22 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Anemone.Core\Anemone.Core.csproj"/>
-        <ProjectReference Include="..\Anemone.Repository\Anemone.Repository.csproj"/>
+        <ProjectReference Include="..\Anemone.Core\Anemone.Core.csproj" />
+        <ProjectReference Include="..\Anemone.Repository\Anemone.Repository.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="ExcelDataReader" Version="3.6.0"/>
-        <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0"/>
-        <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Page Update="Views\HeatingRepositoryListView.xaml">
-            <Generator>MSBuild:Compile</Generator>
-            <XamlRuntime>Wpf</XamlRuntime>
-            <SubType>Designer</SubType>
-        </Page>
+        <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+        <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
+        <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
     </ItemGroup>
 
 </Project>

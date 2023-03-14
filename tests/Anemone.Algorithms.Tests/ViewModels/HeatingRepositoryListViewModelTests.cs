@@ -1,12 +1,12 @@
-﻿using Anemone.Core;
-using Anemone.DataImport.ViewModels;
+﻿using Anemone.Algorithms.ViewModels;
+using Anemone.Core;
 using Anemone.RepositoryMock.HeatingSystemData;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Prism.Services.Dialogs;
 using IDialogService = Anemone.Core.IDialogService;
 
-namespace Anemone.DataImport.Tests.ViewModels;
+namespace Anemone.Algorithms.Tests.ViewModels;
 
 public class HeatingRepositoryListViewModelTests
 {

@@ -1,0 +1,115 @@
+﻿<UserControl x:Class="Anemone.Algorithms.Views.LlcAlgorithmView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Anemone.Algorithms.Views"
+             xmlns:viewModels="clr-namespace:Anemone.Algorithms.ViewModels"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:views="clr-namespace:Anemone.DataImport.Views"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewModels:LlcAlgorithmViewModel, IsDesignTimeCreatable=False}"
+             d:DesignHeight="300" d:DesignWidth="300">
+
+
+    <UserControl.Resources>
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignFilledTextBox}">
+            <Setter Property="MinWidth" Value="100" />
+            <Setter Property="Margin" Value="10"></Setter>
+        </Style>
+    </UserControl.Resources>
+
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        
+        <!-- input data, button and progress -->
+
+
+            
+            <!-- input data -->
+        <materialDesign:Card Grid.Column="0" VerticalAlignment="Top">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <Expander Header="Frequency" IsExpanded="True">
+                            <StackPanel>
+                                <TextBox Text="{Binding Parameters.FrequencyMin}"
+                                         materialDesign:HintAssist.Hint="min" />
+                                <TextBox Text="{Binding Parameters.FrequencyMax}"
+                                         materialDesign:HintAssist.Hint="max" />
+                                <TextBox Text="{Binding Parameters.FrequencyStep}"
+                                         materialDesign:HintAssist.Hint="step" />
+                            </StackPanel>
+                        </Expander>
+
+                        <Expander Header="Temperature" IsExpanded="True">
+                            <StackPanel>
+                                <TextBox Text="{Binding Parameters.TemperatureMin}"
+                                         materialDesign:HintAssist.Hint="min" />
+                                <TextBox Text="{Binding Parameters.TemperatureMax}"
+                                         materialDesign:HintAssist.Hint="min" />
+                                <TextBox Text="{Binding Parameters.TemperatureStep}"
+                                         materialDesign:HintAssist.Hint="step" />
+                            </StackPanel>
+                        </Expander>
+
+                        <Expander Header="Turn ratio" IsExpanded="True">
+                            <StackPanel>
+                                <TextBox Text="{Binding Parameters.TurnRatioMin}" materialDesign:HintAssist.Hint="min" />
+                                <TextBox Text="{Binding Parameters.TurnRatioMax}" materialDesign:HintAssist.Hint="max" />
+                                <TextBox Text="{Binding Parameters.TurnRatioStep}"
+                                         materialDesign:HintAssist.Hint="step" />
+                            </StackPanel>
+                        </Expander>
+
+                        <Expander Header="Inductance" IsExpanded="True">
+                            <StackPanel>
+                                <TextBox Text="{Binding Parameters.InductanceMin}"
+                                         materialDesign:HintAssist.Hint="frequency min" />
+                                <TextBox Text="{Binding Parameters.InductanceMax}"
+                                         materialDesign:HintAssist.Hint="frequency max" />
+                                <TextBox Text="{Binding Parameters.InductanceStep}"
+                                         materialDesign:HintAssist.Hint="frequency step" />
+                            </StackPanel>
+                        </Expander>
+
+                        <Expander Header="Capacitance" IsExpanded="True">
+                            <StackPanel>
+                                <TextBox Text="{Binding Parameters.CapacitanceMin}"
+                                         materialDesign:HintAssist.Hint="frequency min" />
+                                <TextBox Text="{Binding Parameters.CapacitanceMax}"
+                                         materialDesign:HintAssist.Hint="frequency max" />
+                                <TextBox Text="{Binding Parameters.CapacitanceStep}"
+                                         materialDesign:HintAssist.Hint="frequency step" />
+                            </StackPanel>
+                        </Expander>
+                        <Expander Header="Misc" IsExpanded="True">
+                            <StackPanel>
+                                <TextBox Text="{Binding Parameters.Voltage}"
+                                         materialDesign:HintAssist.Hint="frequency voltage" />
+                                <TextBox Text="{Binding Parameters.Current}"
+                                         materialDesign:HintAssist.Hint="frequency current" />
+                                <TextBox Text="{Binding Parameters.Power}"
+                                         materialDesign:HintAssist.Hint="frequency power" />
+                            </StackPanel>
+                        </Expander>
+                    </StackPanel>
+                </ScrollViewer>
+            </materialDesign:Card>
+            
+        <StackPanel Grid.Column="1">
+            <StackPanel VerticalAlignment="Bottom">
+                <views:HeatingRepositoryListView DataContext="{Binding HeatingRepositoryListViewModel}"/>
+                <Button 
+                    materialDesign:ButtonProgressAssist.IsIndeterminate="True"
+                    materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding CalculationInProgress}"
+                    materialDesign:ButtonProgressAssist.Value="-1"
+                    Command="{Binding CalculateCommand}" Content="{Binding ButtonText}" Margin="0 20"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -13,15 +13,7 @@
     <Grid>
         <!-- preview collected data -->
         <!-- provide name to save -->
-
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-
-        <views:HeatingRepositoryListView Grid.Column="0" DataContext="{Binding HeatingRepositoryListViewModel }" />
-
-        <Grid Grid.Column="1">
+        
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -43,5 +35,4 @@
                                               Series="{Binding InductanceTemperatureChart}"
                                               Title="Inductance temperature" />
         </Grid>
-    </Grid>
 </UserControl>

@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Threading;
+using Anemone.Algorithms;
 using Anemone.Core;
 using Anemone.Core.Components;
 using Anemone.Core.ViewModels;
@@ -126,6 +127,7 @@ public partial class App
     protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
     {
         moduleCatalog.AddModule<DataImportModule>();
+        moduleCatalog.AddModule<AlgorithmsModule>();
     }
 
     protected override Window CreateShell()

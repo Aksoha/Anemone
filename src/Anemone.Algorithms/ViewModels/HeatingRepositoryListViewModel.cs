@@ -2,14 +2,14 @@
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Anemone.Algorithms.Models;
 using Anemone.Core;
-using Anemone.DataImport.Models;
 using Anemone.Repository.HeatingSystemData;
 using Microsoft.Extensions.Logging;
 using Prism.Services.Dialogs;
 using IDialogService = Anemone.Core.IDialogService;
 
-namespace Anemone.DataImport.ViewModels;
+namespace Anemone.Algorithms.ViewModels;
 
 public class HeatingRepositoryListViewModel : ViewModelBase
 {
@@ -43,6 +43,12 @@ public class HeatingRepositoryListViewModel : ViewModelBase
     public HeatingSystemListName? SelectedItem { get; set; }
 
     public ObservableCollection<HeatingSystemListName> ItemsSource { get; set; } = new();
+
+    public async Task<HeatingSystem> Get(HeatingSystemListName item)
+    {
+        var result = await Repository.Get(item.Id);
+        return result;
+    }
 
     private async Task ExecuteFetchDataCommand()
     {

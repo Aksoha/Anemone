@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Anemone.Repository.HeatingSystemData;
 
-namespace Anemone.DataImport.Models;
+namespace Anemone.Algorithms.Models;
 
 public class HeatingSystemListName : INotifyPropertyChanged
 {
