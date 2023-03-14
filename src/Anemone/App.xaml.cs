@@ -1,10 +1,5 @@
-﻿#if DEBUG
-#define AttachConsole
-#endif
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
@@ -47,6 +42,8 @@ public partial class App
     /// </summary>
     private Queue<LoggingQueueItem> _loggerQueue = new();
 
+    private ApplicationArguments _arguments = default!;
+
     protected override void RegisterTypes(IContainerRegistry containerRegistry)
     {
         var persistenceOptions = new PersistenceOptions();
@@ -66,7 +63,9 @@ public partial class App
             NavigationDrawerExpanded = true
         });
 
-        RegisterDebuggingSettings(containerRegistry);
+        if(_arguments.AttachDebugger)
+            RegisterDebuggingSettings(containerRegistry);
+        
         containerRegistry.RegisterDialog<TextBoxDialog, TextBoxDialogViewModel>();
         containerRegistry.RegisterDialog<ConfirmationDialog, ConfirmationDialogViewModel>();
         containerRegistry.RegisterDialogWindow<DialogWindow>();
@@ -174,10 +173,13 @@ public partial class App
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        _arguments = ApplicationArguments.Parse(e);
+
         _loggerQueue.Enqueue(new LoggingQueueItem
             { LogEventLevel = LogEventLevel.Information, Message = "starting application" });
 
-        AllocConsole();
+        if (_arguments.AttachDebugger)
+            AllocConsole();
         var configuration = CreateConfiguration();
         ConfigureLogger(configuration);
 
@@ -192,10 +194,12 @@ public partial class App
         Log.Logger.Error(ex, "application terminated due to unhandled exception");
         e.Handled = true;
 
-#if AttachConsole
-        Console.WriteLine("press any key to close");
-        Console.ReadKey();
-#endif
+        if (_arguments.AttachDebugger)
+        {
+            Console.WriteLine("press any key to close");
+            Console.ReadKey();
+        }
+
         Current.Shutdown(1);
     }
 
@@ -203,12 +207,13 @@ public partial class App
     {
         Log.Logger.Information("stopping application");
         SaveDebuggingSettings();
-        FreeConsole();
+        
+        if(_arguments.AttachDebugger)
+            FreeConsole();
         base.OnExit(e);
     }
 
 
-    [Conditional("AttachConsole")]
     private void SaveDebuggingSettings()
     {
         var consoleSettings = Container.Resolve<DebuggingConsoleSettings>();
@@ -221,7 +226,6 @@ public partial class App
     }
 
 
-    [Conditional("AttachConsole")]
     private void RegisterDebuggingSettings(IContainerRegistry containerRegistry)
     {
         containerRegistry.RegisterSettings(new DebuggingConsoleSettings
@@ -239,11 +243,9 @@ public partial class App
     }
 
     [DllImport("Kernel32")]
-    [Conditional("AttachConsole")]
     private static extern void AllocConsole();
 
     [DllImport("Kernel32")]
-    [Conditional("AttachConsole")]
     private static extern void FreeConsole();
 
     [DllImport("user32.dll")]
