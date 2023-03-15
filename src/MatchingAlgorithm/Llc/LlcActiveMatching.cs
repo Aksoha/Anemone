@@ -4,13 +4,13 @@ using MatchingAlgorithm.Extensions;
 
 namespace MatchingAlgorithm.Llc;
 
-public class LlcActiveMatching : LlcMatching, IEnergyMatching<LlcMatchingResult>
+public class LlcActiveMatching : LlcMatching
 {
     public LlcActiveMatching(ILlcTopology topology, LlcMatchingParameter parameters) : base(topology, parameters)
     {
     }
 
-    public IEnumerable<LlcMatchingResult> EnergyMatching()
+    public override IEnumerable<LlcMatchingResult> EnergyMatching()
     {
         // ALGORITHM
         // currently supporting only 1 solution, requires resonance on entire range

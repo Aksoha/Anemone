@@ -3,13 +3,13 @@ using System.Diagnostics;
 
 namespace MatchingAlgorithm.Llc;
 
-public class LlcPassiveMatching : LlcMatching, IEnergyMatching<LlcMatchingResult>
+public class LlcPassiveMatching : LlcMatching
 {
     public LlcPassiveMatching(ILlcTopology topology, LlcMatchingParameter parameters) : base(topology, parameters)
     {
     }
 
-    public IEnumerable<LlcMatchingResult> EnergyMatching()
+    public override IEnumerable<LlcMatchingResult> EnergyMatching()
     {
         Topology.Capacitance = Capacitance.First();
         Topology.Inductance = Inductance.First();

@@ -2,7 +2,7 @@
 
 namespace MatchingAlgorithm.Llc;
 
-public class LlcMatching : Matching<ILlcTopology, LlcMatchingParameter>
+public abstract class LlcMatching : Matching<ILlcTopology, LlcMatchingParameter>, IEnergyMatching<LlcMatchingResult>
 {
     protected LlcMatching(ILlcTopology topology, LlcMatchingParameter parameters)
         : base(topology, parameters)
@@ -189,4 +189,6 @@ public class LlcMatching : Matching<ILlcTopology, LlcMatchingParameter>
             Parameters.Temperature.Last()
         };
     }
+
+    public abstract IEnumerable<LlcMatchingResult> EnergyMatching();
 }
