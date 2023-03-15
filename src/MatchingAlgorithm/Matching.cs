@@ -75,7 +75,9 @@ public abstract class Matching<TTopology, TParameters>
         double impedance)
     {
         var resistanceMinimal = expectedPower / (currentMax * currentMax) / (turnRatio * turnRatio);
-        var nominalSecondaryResistance = TransformerCalculator.ResistanceToSecondary(nominalResistance, turnRatio);
+        
+        // inverted equation, calculate resistance by looking from secondary side
+        var nominalSecondaryResistance = TransformerCalculator.ResistanceToPrimary(nominalResistance, turnRatio);
 
         var voltage = voltageMax * Math.Sqrt(impedance / nominalSecondaryResistance);
 
