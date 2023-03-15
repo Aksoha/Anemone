@@ -6,6 +6,7 @@ using Anemone.Algorithms.Models;
 using Anemone.Core;
 using Anemone.Repository.HeatingSystemData;
 using Microsoft.Extensions.Logging;
+using Prism.Events;
 using Prism.Services.Dialogs;
 using IDialogService = Anemone.Core.IDialogService;
 
@@ -13,13 +14,16 @@ namespace Anemone.Algorithms.ViewModels;
 
 public class HeatingRepositoryListViewModel : ViewModelBase
 {
+    private HeatingSystemListName? _selectedItem;
+
     public HeatingRepositoryListViewModel(ILogger<HeatingRepositoryListViewModel> logger,
-        IHeatingSystemRepository repository, IToastService toastService, IDialogService dialogService)
+        IHeatingSystemRepository repository, IToastService toastService, IDialogService dialogService, IEventAggregator eventAggregator)
     {
         Logger = logger;
         Repository = repository;
         ToastService = toastService;
         DialogService = dialogService;
+        EventAggregator = eventAggregator;
         FetchDataCommand = new ActionCommandAsync(ExecuteFetchDataCommand);
         RenameCommand = new ActionCommandAsync(ExecuteRenameCommand);
         DeleteCommand = new ActionCommandAsync(ExecuteDeleteCommand);
@@ -32,6 +36,7 @@ public class HeatingRepositoryListViewModel : ViewModelBase
     private IHeatingSystemRepository Repository { get; }
     private IToastService ToastService { get; }
     private IDialogService DialogService { get; }
+    private IEventAggregator EventAggregator { get; }
     public ICommand FetchDataCommand { get; set; }
     public ICommand RenameCommand { get; set; }
     public ICommand DeleteCommand { get; set; }
@@ -40,11 +45,24 @@ public class HeatingRepositoryListViewModel : ViewModelBase
     /// <summary>
     ///     Item on which <see cref="RenameCommand" /> and <see cref="DeleteCommand" /> will be performed.
     /// </summary>
-    public HeatingSystemListName? SelectedItem { get; set; }
+    public HeatingSystemListName? SelectedItem
+    {
+        get => _selectedItem;
+        set
+        {
+            if (SetProperty(ref _selectedItem, value))
+                PublishEvent(value);
+        }
+    }
+
+    private void PublishEvent(HeatingSystemListName? value)
+    {
+        EventAggregator.GetEvent<HeatingSystemSelectionChangedEvent>().Publish(value);
+    }
 
     public ObservableCollection<HeatingSystemListName> ItemsSource { get; set; } = new();
 
-    public async Task<HeatingSystem> Get(HeatingSystemListName item)
+    public async Task<HeatingSystem?> Get(HeatingSystemListName item)
     {
         var result = await Repository.Get(item.Id);
         return result;

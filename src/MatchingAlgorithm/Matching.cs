@@ -2,7 +2,12 @@
 
 namespace MatchingAlgorithm;
 
-public abstract class Matching<TTopology, TParameters>
+public abstract class MatchingBase
+{
+    
+}
+
+public abstract class Matching<TTopology, TParameters> : MatchingBase
     where TTopology : ITopology
     where TParameters : MatchingParameter
 {

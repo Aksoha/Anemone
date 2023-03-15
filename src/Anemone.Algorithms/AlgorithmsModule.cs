@@ -3,6 +3,7 @@ using Anemone.Algorithms.Views;
 using Anemone.Core;
 using Anemone.DataImport.Views;
 using FluentValidation;
+using MatchingAlgorithm.Llc;
 using Prism.Ioc;
 using Prism.Modularity;
 
@@ -22,6 +23,8 @@ public class AlgorithmsModule : IModule
     public void RegisterTypes(IContainerRegistry containerRegistry)
     {
         containerRegistry.Register<IValidator<LlcAlgorithmParameters>, AlgorithmValidator>();
+        containerRegistry.Register<ILlcMatchingBuilder, LlcMatchingBuilder>();
+        containerRegistry.Register<IMatchingBuilder<LlcMatching, LlcAlgorithmParameters>>(x => x.Resolve<ILlcMatchingBuilder>());
         containerRegistry.Register<HeatingRepositoryListView>();
         containerRegistry.RegisterForNavigation<LlcAlgorithmView>();
     }

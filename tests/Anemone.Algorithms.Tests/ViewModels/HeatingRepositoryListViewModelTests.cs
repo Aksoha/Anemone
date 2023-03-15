@@ -1,8 +1,10 @@
-﻿using Anemone.Algorithms.ViewModels;
+﻿using Anemone.Algorithms.Models;
+using Anemone.Algorithms.ViewModels;
 using Anemone.Core;
 using Anemone.RepositoryMock.HeatingSystemData;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Prism.Events;
 using Prism.Services.Dialogs;
 using IDialogService = Anemone.Core.IDialogService;
 
@@ -17,6 +19,9 @@ public class HeatingRepositoryListViewModelTests
         var logger = Mock.Of<ILogger<HeatingRepositoryListViewModel>>();
         var toastService = Mock.Of<IToastService>();
         var dialogServiceMock = new Mock<IDialogService>();
+        var eventAggregatorMock = new Mock<IEventAggregator>();
+        eventAggregatorMock.Setup(x => x.GetEvent<HeatingSystemSelectionChangedEvent>().Publish(It.IsAny<HeatingSystemListName>()));
+        var eventAggregator = eventAggregatorMock.Object;
         const string newName = "hs new name";
 
         var testContext = HeatingSystemFaker.GenerateHeatingSystem(20).ToList();
@@ -33,7 +38,7 @@ public class HeatingRepositoryListViewModelTests
         });
 
         var dialogService = dialogServiceMock.Object;
-        var testedModel = new HeatingRepositoryListViewModel(logger, repository, toastService, dialogService);
+        var testedModel = new HeatingRepositoryListViewModel(logger, repository, toastService, dialogService, eventAggregator);
 
         // act
         var itemToUpdate = testedModel.ItemsSource.First();
@@ -59,6 +64,9 @@ public class HeatingRepositoryListViewModelTests
         var logger = Mock.Of<ILogger<HeatingRepositoryListViewModel>>();
         var toastService = Mock.Of<IToastService>();
         var dialogServiceMock = new Mock<IDialogService>();
+        var eventAggregatorMock = new Mock<IEventAggregator>();
+        eventAggregatorMock.Setup(x => x.GetEvent<HeatingSystemSelectionChangedEvent>().Publish(It.IsAny<HeatingSystemListName>()));
+        var eventAggregator = eventAggregatorMock.Object;
         const string newName = "hs new name";
 
         var testContext = HeatingSystemFaker.GenerateHeatingSystem(20).ToList();
@@ -74,7 +82,7 @@ public class HeatingRepositoryListViewModelTests
         });
 
         var dialogService = dialogServiceMock.Object;
-        var testedModel = new HeatingRepositoryListViewModel(logger, repository, toastService, dialogService);
+        var testedModel = new HeatingRepositoryListViewModel(logger, repository, toastService, dialogService, eventAggregator);
 
         // act
         var itemToUpdate = testedModel.ItemsSource.First();
@@ -96,7 +104,11 @@ public class HeatingRepositoryListViewModelTests
         var logger = Mock.Of<ILogger<HeatingRepositoryListViewModel>>();
         var toastService = Mock.Of<IToastService>();
         var dialogServiceMock = new Mock<IDialogService>();
-
+        var eventAggregatorMock = new Mock<IEventAggregator>();
+        eventAggregatorMock.Setup(x => x.GetEvent<HeatingSystemSelectionChangedEvent>().Publish(It.IsAny<HeatingSystemListName>()));
+        var eventAggregator = eventAggregatorMock.Object;
+        
+        
         dialogServiceMock.Setup(x =>
                 x.ShowConfirmationDialog(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
                     It.IsAny<string>()))
@@ -113,7 +125,7 @@ public class HeatingRepositoryListViewModelTests
         var repository = new HeatingSystemRepositoryMock();
         foreach (var item in data) await repository.Create(item);
 
-        var testedModel = new HeatingRepositoryListViewModel(logger, repository, toastService, dialogService);
+        var testedModel = new HeatingRepositoryListViewModel(logger, repository, toastService, dialogService, eventAggregator);
 
 
         // act
@@ -141,6 +153,10 @@ public class HeatingRepositoryListViewModelTests
         var logger = Mock.Of<ILogger<HeatingRepositoryListViewModel>>();
         var toastService = Mock.Of<IToastService>();
         var dialogServiceMock = new Mock<IDialogService>();
+        var eventAggregatorMock = new Mock<IEventAggregator>();
+        eventAggregatorMock.Setup(x => x.GetEvent<HeatingSystemSelectionChangedEvent>().Publish(It.IsAny<HeatingSystemListName>()));
+        var eventAggregator = eventAggregatorMock.Object;
+
 
         dialogServiceMock.Setup(x =>
                 x.ShowConfirmationDialog(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
@@ -158,7 +174,7 @@ public class HeatingRepositoryListViewModelTests
         var repository = new HeatingSystemRepositoryMock();
         foreach (var item in data) await repository.Create(item);
 
-        var testedModel = new HeatingRepositoryListViewModel(logger, repository, toastService, dialogService);
+        var testedModel = new HeatingRepositoryListViewModel(logger, repository, toastService, dialogService, eventAggregator);
 
 
         // act

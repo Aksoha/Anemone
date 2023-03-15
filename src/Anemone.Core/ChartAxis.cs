@@ -2,15 +2,18 @@
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 
-namespace Anemone.DataImport.Models;
+namespace Anemone.Core;
 
-public class CustomAxis : Axis
+/// <summary>
+/// <see cref="Axis"/> with predefined color scheme that matches dark theme.
+/// </summary>
+public class ChartAxis : Axis
 {
-    public CustomAxis()
+    public ChartAxis()
     {
         var whitePaint = new SKColor(255, 255, 255);
         LabelsPaint = new SolidColorPaint(whitePaint);
-        SeparatorsPaint = new SolidColorPaint(whitePaint);
+        SeparatorsPaint = new SolidColorPaint(new SKColor(255, 255, 255, 33));
         NamePaint = new SolidColorPaint(whitePaint);
     }
 }

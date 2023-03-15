@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Anemone.Algorithms.Views"
              xmlns:viewModels="clr-namespace:Anemone.Algorithms.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:views="clr-namespace:Anemone.DataImport.Views"
+             xmlns:views="clr-namespace:Anemone.Algorithms.Views"
+             xmlns:wpf="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=viewModels:LlcAlgorithmViewModel, IsDesignTimeCreatable=False}"
              d:DesignHeight="300" d:DesignWidth="300">
@@ -51,7 +51,7 @@
                                 <TextBox Text="{Binding Parameters.TemperatureMin}"
                                          materialDesign:HintAssist.Hint="min" />
                                 <TextBox Text="{Binding Parameters.TemperatureMax}"
-                                         materialDesign:HintAssist.Hint="min" />
+                                         materialDesign:HintAssist.Hint="max" />
                                 <TextBox Text="{Binding Parameters.TemperatureStep}"
                                          materialDesign:HintAssist.Hint="step" />
                             </StackPanel>
@@ -66,50 +66,97 @@
                             </StackPanel>
                         </Expander>
 
-                        <Expander Header="Inductance" IsExpanded="True">
+                        <Expander Header="Inductance" IsExpanded="True" MinWidth="230">
                             <StackPanel>
+                                <DockPanel VerticalAlignment="Stretch">
+                                    <TextBlock Text="variable inductance" Margin="20"/>
+                                    <ToggleButton
+                                        HorizontalAlignment="Right" IsChecked="{Binding Parameters.VariableInductance}" Margin="20"/>
+                                </DockPanel>
                                 <TextBox Text="{Binding Parameters.InductanceMin}"
-                                         materialDesign:HintAssist.Hint="frequency min" />
+                                         materialDesign:HintAssist.Hint="min" />
                                 <TextBox Text="{Binding Parameters.InductanceMax}"
-                                         materialDesign:HintAssist.Hint="frequency max" />
+                                         materialDesign:HintAssist.Hint="max" />
                                 <TextBox Text="{Binding Parameters.InductanceStep}"
-                                         materialDesign:HintAssist.Hint="frequency step" />
+                                         materialDesign:HintAssist.Hint="step" />
                             </StackPanel>
                         </Expander>
 
                         <Expander Header="Capacitance" IsExpanded="True">
                             <StackPanel>
                                 <TextBox Text="{Binding Parameters.CapacitanceMin}"
-                                         materialDesign:HintAssist.Hint="frequency min" />
+                                         materialDesign:HintAssist.Hint="min" />
                                 <TextBox Text="{Binding Parameters.CapacitanceMax}"
-                                         materialDesign:HintAssist.Hint="frequency max" />
+                                         materialDesign:HintAssist.Hint="max" />
                                 <TextBox Text="{Binding Parameters.CapacitanceStep}"
-                                         materialDesign:HintAssist.Hint="frequency step" />
+                                         materialDesign:HintAssist.Hint="step" />
                             </StackPanel>
                         </Expander>
-                        <Expander Header="Misc" IsExpanded="True">
+                        <Expander Header="Power" IsExpanded="True">
                             <StackPanel>
                                 <TextBox Text="{Binding Parameters.Voltage}"
-                                         materialDesign:HintAssist.Hint="frequency voltage" />
+                                         materialDesign:HintAssist.Hint="voltage" />
                                 <TextBox Text="{Binding Parameters.Current}"
-                                         materialDesign:HintAssist.Hint="frequency current" />
+                                         materialDesign:HintAssist.Hint="current" />
                                 <TextBox Text="{Binding Parameters.Power}"
-                                         materialDesign:HintAssist.Hint="frequency power" />
+                                         materialDesign:HintAssist.Hint="power" />
                             </StackPanel>
                         </Expander>
                     </StackPanel>
                 </ScrollViewer>
             </materialDesign:Card>
             
-        <StackPanel Grid.Column="1">
-            <StackPanel VerticalAlignment="Bottom">
-                <views:HeatingRepositoryListView DataContext="{Binding HeatingRepositoryListViewModel}"/>
-                <Button 
+        <!-- heating system and button -->
+
+        <Grid Grid.Column="1">
+            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <StackPanel Grid.Row="0" Margin="20 0">
+                <views:HeatingRepositoryListView DataContext="{Binding HeatingRepositoryListViewModel}" />
+                </StackPanel>
+            <StackPanel Grid.Row="2" VerticalAlignment="Bottom"  Margin="20 0">
+                <Button
                     materialDesign:ButtonProgressAssist.IsIndeterminate="True"
                     materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding CalculationInProgress}"
                     materialDesign:ButtonProgressAssist.Value="-1"
-                    Command="{Binding CalculateCommand}" Content="{Binding ButtonText}" Margin="0 20"/>
+                    Command="{Binding CalculateCommand}" Content="{Binding ButtonText}" Margin="0 20" />
+
+                <Button Command="{Binding ExportDataCommand}" Content="Export data"
+                        Style="{StaticResource MaterialDesignOutlinedButton}" />
             </StackPanel>
-        </StackPanel>
+        </Grid>
+        
+        <!-- charts -->
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                
+                                <!-- power chart -->
+                                <wpf:CartesianChart Grid.Row="0"
+                                                    Series="{Binding PowerChartSeriesCollection}"
+                                                    XAxes="{Binding XAxesCollection}" 
+                                                    YAxes="{Binding PowerChartYAxesCollection}"/>
+            
+                                <wpf:CartesianChart Grid.Row="1"
+                                                    Series="{Binding FrequencyChartSeriesCollection}"
+                                                    XAxes="{Binding XAxesCollection}" 
+                                                    YAxes="{Binding FrequencyChartYAxesCollection}"/>
+                                
+                                <wpf:CartesianChart Grid.Row="2"
+                                                    Series="{Binding InductanceChartSeriesCollection}"
+                                                    XAxes="{Binding XAxesCollection}" 
+                                                    YAxes="{Binding InductanceChartYAxesCollection}"/>
+                                
+        </Grid>
+        
     </Grid>
 </UserControl>

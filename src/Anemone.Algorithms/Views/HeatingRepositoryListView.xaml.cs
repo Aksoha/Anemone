@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Anemone.DataImport.Views;
+namespace Anemone.Algorithms.Views;
 
 public partial class HeatingRepositoryListView : UserControl
 {

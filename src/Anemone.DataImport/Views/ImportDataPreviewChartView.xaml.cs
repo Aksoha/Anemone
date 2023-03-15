@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using Anemone.DataImport.Models;
+using Anemone.Core;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 
@@ -39,7 +39,7 @@ public partial class ImportDataPreviewChartView
         set => SetValue(TitleProperty, value);
     }
 
-    public Axis[]? XAxes { get; } = { new CustomAxis() };
+    public Axis[]? XAxes { get; } = { new ChartAxis() };
 
-    public Axis[]? YAxes { get; } = { new CustomAxis() };
+    public Axis[]? YAxes { get; } = { new ChartAxis() };
 }
