@@ -27,6 +27,7 @@ public class LlcAlgorithmViewModel : ViewModelBase
     private bool _calculationInProgress;
     private CancellationTokenSource? _cancellationToken;
     private LlcMatchingResult[]? _results;
+    private bool _isResultCalculated;
 
 
     public LlcAlgorithmViewModel(HeatingRepositoryListViewModel heatingRepositoryListViewModel,
@@ -39,12 +40,18 @@ public class LlcAlgorithmViewModel : ViewModelBase
         Logger = logger;
         EventAggregator = eventAggregator;
         MatchingBuilder = matchingBuilder;
+        ViewDetailedResultsCommand = new DelegateCommand(ExecuteViewDetailedResultsCommand).ObservesCanExecute(() => CanExecuteExportDataCommand);
         CalculateCommand = new ActionCommandAsync(ExecuteCalculateCommand);
         ExportDataCommand = new DelegateCommand(async () => await ExecuteExportDataCommand()).ObservesCanExecute(() => CanExecuteExportDataCommand);
         
         EventAggregator.GetEvent<HeatingSystemSelectionChangedEvent>().Subscribe(SelectionChanged);
 
         InitializeChartProperties();
+    }
+
+    private void ExecuteViewDetailedResultsCommand()
+    {
+        throw new NotImplementedException();
     }
 
     private Task ExecuteExportDataCommand()
@@ -72,9 +79,21 @@ public class LlcAlgorithmViewModel : ViewModelBase
         }
     }
 
+    public MatchingEstimator Estimator { get; } = new();
+
+    public bool IsResultCalculated
+    {
+        // TODO: hook it up once data export and preview detailed data is finished
+        // get => _isResultCalculated;
+        get => false;
+        set => SetProperty(ref _isResultCalculated, value);
+    }
+
     private bool CanExecuteExportDataCommand => Results is not null;
     
     private HeatingSystemListName? HeatingSystemListName { get; set; }
+
+    public ICommand ViewDetailedResultsCommand { get; }
     public ICommand CalculateCommand { get; }
     public ICommand ExportDataCommand { get; }
 
@@ -286,17 +305,14 @@ public class LlcAlgorithmViewModel : ViewModelBase
             InductanceChartYAxes.MinLimit = 0.8 * Parameters.InductanceMin;
             InductanceChartYAxes.MaxLimit = 1.2 * Parameters.InductanceMax;
 
-            var estimator = new MatchingEstimator(Results);
-
-            Logger.LogDebug(
-                "mean power: {MeanPower}, turn ratio: {TurnRatio}, capacitance: {Capacitance}, maxFrequencyDerivative: {MaxFrequencyDerivative}, maxInductanceDerivative: {MaxInductanceDerivative}, maxPhaseShift: {MaxPhaseShift}",
-                estimator.MeanPower.ToString("0"), estimator.TurnRatio.ToString("0"), estimator.Capacitance.ToString("0.00E0"), estimator.MaxFrequencyDerivative.ToString("0.00"),
-                estimator.MaxInductanceDerivative.ToString("0.00E0"), estimator.MaxPhaseShift.ToString("0.00E0"));
+            Estimator.Estimate(Results);
+            IsResultCalculated = true;
+            RaisePropertyChanged(nameof(Estimator));
         }
         catch (SolutionNotFoundException e)
         {
             const string message = "no solution was found for given parameters";
-            Logger.LogWarning($"{message}: reason {{reason}}", e.Message);
+            Logger.LogWarning($"{message}: reason: {{reason}}", e.Message);
             ToastService.Show(message);
         }
         catch (Exception e)

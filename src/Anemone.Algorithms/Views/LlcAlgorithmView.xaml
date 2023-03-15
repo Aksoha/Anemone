@@ -26,137 +26,202 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        
-        <!-- input data, button and progress -->
 
-
-            
-            <!-- input data -->
+        <!-- input data -->
         <materialDesign:Card Grid.Column="0" VerticalAlignment="Top">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <Expander Header="Frequency" IsExpanded="True">
-                            <StackPanel>
-                                <TextBox Text="{Binding Parameters.FrequencyMin}"
-                                         materialDesign:HintAssist.Hint="min" />
-                                <TextBox Text="{Binding Parameters.FrequencyMax}"
-                                         materialDesign:HintAssist.Hint="max" />
-                                <TextBox Text="{Binding Parameters.FrequencyStep}"
-                                         materialDesign:HintAssist.Hint="step" />
-                            </StackPanel>
-                        </Expander>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    
+                    <!-- frequency -->
+                    <Expander Header="Frequency" IsExpanded="True">
+                        <StackPanel>
+                            <TextBox Text="{Binding Parameters.FrequencyMin}"
+                                     materialDesign:HintAssist.Hint="min" />
+                            <TextBox Text="{Binding Parameters.FrequencyMax}"
+                                     materialDesign:HintAssist.Hint="max" />
+                            <TextBox Text="{Binding Parameters.FrequencyStep}"
+                                     materialDesign:HintAssist.Hint="step" />
+                        </StackPanel>
+                    </Expander>
 
-                        <Expander Header="Temperature" IsExpanded="True">
-                            <StackPanel>
-                                <TextBox Text="{Binding Parameters.TemperatureMin}"
-                                         materialDesign:HintAssist.Hint="min" />
-                                <TextBox Text="{Binding Parameters.TemperatureMax}"
-                                         materialDesign:HintAssist.Hint="max" />
-                                <TextBox Text="{Binding Parameters.TemperatureStep}"
-                                         materialDesign:HintAssist.Hint="step" />
-                            </StackPanel>
-                        </Expander>
+                    <!-- temperature -->
+                    <Expander Header="Temperature" IsExpanded="True">
+                        <StackPanel>
+                            <TextBox Text="{Binding Parameters.TemperatureMin}"
+                                     materialDesign:HintAssist.Hint="min" />
+                            <TextBox Text="{Binding Parameters.TemperatureMax}"
+                                     materialDesign:HintAssist.Hint="max" />
+                            <TextBox Text="{Binding Parameters.TemperatureStep}"
+                                     materialDesign:HintAssist.Hint="step" />
+                        </StackPanel>
+                    </Expander>
 
-                        <Expander Header="Turn ratio" IsExpanded="True">
-                            <StackPanel>
-                                <TextBox Text="{Binding Parameters.TurnRatioMin}" materialDesign:HintAssist.Hint="min" />
-                                <TextBox Text="{Binding Parameters.TurnRatioMax}" materialDesign:HintAssist.Hint="max" />
-                                <TextBox Text="{Binding Parameters.TurnRatioStep}"
-                                         materialDesign:HintAssist.Hint="step" />
-                            </StackPanel>
-                        </Expander>
+                    <!-- turn ratio -->
+                    <Expander Header="Turn ratio" IsExpanded="True">
+                        <StackPanel>
+                            <TextBox Text="{Binding Parameters.TurnRatioMin}" materialDesign:HintAssist.Hint="min" />
+                            <TextBox Text="{Binding Parameters.TurnRatioMax}" materialDesign:HintAssist.Hint="max" />
+                            <TextBox Text="{Binding Parameters.TurnRatioStep}"
+                                     materialDesign:HintAssist.Hint="step" />
+                        </StackPanel>
+                    </Expander>
 
-                        <Expander Header="Inductance" IsExpanded="True" MinWidth="230">
-                            <StackPanel>
-                                <DockPanel VerticalAlignment="Stretch">
-                                    <TextBlock Text="variable inductance" Margin="20"/>
-                                    <ToggleButton
-                                        HorizontalAlignment="Right" IsChecked="{Binding Parameters.VariableInductance}" Margin="20"/>
-                                </DockPanel>
-                                <TextBox Text="{Binding Parameters.InductanceMin}"
-                                         materialDesign:HintAssist.Hint="min" />
-                                <TextBox Text="{Binding Parameters.InductanceMax}"
-                                         materialDesign:HintAssist.Hint="max" />
-                                <TextBox Text="{Binding Parameters.InductanceStep}"
-                                         materialDesign:HintAssist.Hint="step" />
-                            </StackPanel>
-                        </Expander>
+                    <!-- inductance -->
+                    <Expander Header="Inductance" IsExpanded="True" MinWidth="230">
+                        <StackPanel>
+                            <DockPanel VerticalAlignment="Stretch">
+                                <TextBlock Text="variable inductance" Margin="20" />
+                                <ToggleButton
+                                    HorizontalAlignment="Right" IsChecked="{Binding Parameters.VariableInductance}"
+                                    Margin="20" />
+                            </DockPanel>
+                            <TextBox Text="{Binding Parameters.InductanceMin}"
+                                     materialDesign:HintAssist.Hint="min" />
+                            <TextBox Text="{Binding Parameters.InductanceMax}"
+                                     materialDesign:HintAssist.Hint="max" />
+                            <TextBox Text="{Binding Parameters.InductanceStep}"
+                                     materialDesign:HintAssist.Hint="step" />
+                        </StackPanel>
+                    </Expander>
 
-                        <Expander Header="Capacitance" IsExpanded="True">
-                            <StackPanel>
-                                <TextBox Text="{Binding Parameters.CapacitanceMin}"
-                                         materialDesign:HintAssist.Hint="min" />
-                                <TextBox Text="{Binding Parameters.CapacitanceMax}"
-                                         materialDesign:HintAssist.Hint="max" />
-                                <TextBox Text="{Binding Parameters.CapacitanceStep}"
-                                         materialDesign:HintAssist.Hint="step" />
-                            </StackPanel>
-                        </Expander>
-                        <Expander Header="Power" IsExpanded="True">
-                            <StackPanel>
-                                <TextBox Text="{Binding Parameters.Voltage}"
-                                         materialDesign:HintAssist.Hint="voltage" />
-                                <TextBox Text="{Binding Parameters.Current}"
-                                         materialDesign:HintAssist.Hint="current" />
-                                <TextBox Text="{Binding Parameters.Power}"
-                                         materialDesign:HintAssist.Hint="power" />
-                            </StackPanel>
-                        </Expander>
-                    </StackPanel>
-                </ScrollViewer>
-            </materialDesign:Card>
-            
-        <!-- heating system and button -->
-
-        <Grid Grid.Column="1">
-            
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            
-            <StackPanel Grid.Row="0" Margin="20 0">
-                <views:HeatingRepositoryListView DataContext="{Binding HeatingRepositoryListViewModel}" />
+                    <!-- capacitance -->
+                    <Expander Header="Capacitance" IsExpanded="True">
+                        <StackPanel>
+                            <TextBox Text="{Binding Parameters.CapacitanceMin}"
+                                     materialDesign:HintAssist.Hint="min" />
+                            <TextBox Text="{Binding Parameters.CapacitanceMax}"
+                                     materialDesign:HintAssist.Hint="max" />
+                            <TextBox Text="{Binding Parameters.CapacitanceStep}"
+                                     materialDesign:HintAssist.Hint="step" />
+                        </StackPanel>
+                    </Expander>
+                    
+                    <!-- voltage, current and power -->
+                    <Expander Header="Power" IsExpanded="True">
+                        <StackPanel>
+                            <TextBox Text="{Binding Parameters.Voltage}"
+                                     materialDesign:HintAssist.Hint="voltage" />
+                            <TextBox Text="{Binding Parameters.Current}"
+                                     materialDesign:HintAssist.Hint="current" />
+                            <TextBox Text="{Binding Parameters.Power}"
+                                     materialDesign:HintAssist.Hint="power" />
+                        </StackPanel>
+                    </Expander>
                 </StackPanel>
-            <StackPanel Grid.Row="2" VerticalAlignment="Bottom"  Margin="20 0">
+            </ScrollViewer>
+        </materialDesign:Card>
+
+        
+        <!-- heating system selector, simple results and buttons -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- heating system selector -->
+            <StackPanel Grid.Row="0" Margin="20 0">
+                <TextBlock Text="heating systems" Margin="0 0 0 10" />
+                <views:HeatingRepositoryListView DataContext="{Binding HeatingRepositoryListViewModel}" />
+            </StackPanel>
+            
+            <!-- simple results and detailed result navigation button -->
+            <StackPanel Grid.Row="2" Margin="20 0"
+                        Visibility="{Binding IsResultCalculated, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="results" Margin="5" />
+                <materialDesign:Card>
+                    <Grid VerticalAlignment="Bottom">
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignTextBlock}">
+                                <Setter Property="Margin" Value="10 5" />
+                            </Style>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Grid.Row="0" Text="mean power" />
+                        <TextBlock Grid.Column="1" Grid.Row="0"
+                                   Text="{Binding Estimator.MeanPower, StringFormat={}{0:0.00}}" />
+
+                        <TextBlock Grid.Column="0" Grid.Row="1" Text="turn ratio" />
+                        <TextBlock Grid.Column="1" Grid.Row="1"
+                                   Text="{Binding Estimator.TurnRatio, StringFormat={}{0:0}}" />
+
+                        <TextBlock Grid.Column="0" Grid.Row="2" Text="capacitance" />
+                        <TextBlock Grid.Column="1" Grid.Row="2"
+                                   Text="{Binding Estimator.Capacitance, StringFormat={}{0:0.00e0}}" />
+
+                        <TextBlock Grid.Column="0" Grid.Row="3" Text="df/dt" />
+                        <TextBlock Grid.Column="1" Grid.Row="3"
+                                   Text="{Binding Estimator.MaxFrequencyDerivative, StringFormat={}{0:0.00e0}}" />
+
+                        <TextBlock Grid.Column="0" Grid.Row="4" Text="dl/dt" />
+                        <TextBlock Grid.Column="1" Grid.Row="4"
+                                   Text="{Binding Estimator.MaxInductanceDerivative, StringFormat={}{0:0.00e0}}" />
+
+                        <TextBlock Grid.Column="0" Grid.Row="5" Text="phase shift" />
+                        <TextBlock Grid.Column="1" Grid.Row="5"
+                                   Text="{Binding Estimator.MaxPhaseShift, StringFormat={}{0:0.00e0}}" />
+
+                    </Grid>
+                </materialDesign:Card>
+                <Button Command="{Binding}" Content="View results" Margin="0 20 0 0"
+                        Style="{StaticResource MaterialDesignOutlinedButton}">
+                </Button>
+            </StackPanel>
+
+            
+            <!-- calculate and export data buttons -->
+            <StackPanel Grid.Row="3" VerticalAlignment="Bottom" Margin="20 0">
+                <Button Command="{Binding ExportDataCommand}" Content="Export data"
+                        Margin="0 20"
+                        Style="{StaticResource MaterialDesignOutlinedButton}" Visibility="{Binding IsResultCalculated, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <Button
                     materialDesign:ButtonProgressAssist.IsIndeterminate="True"
                     materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding CalculationInProgress}"
                     materialDesign:ButtonProgressAssist.Value="-1"
-                    Command="{Binding CalculateCommand}" Content="{Binding ButtonText}" Margin="0 20" />
-
-                <Button Command="{Binding ExportDataCommand}" Content="Export data"
-                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                    Command="{Binding CalculateCommand}" Content="{Binding ButtonText}" Margin="0 0 0 20" />
             </StackPanel>
         </Grid>
-        
+
         <!-- charts -->
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                
-                
-                                <!-- power chart -->
-                                <wpf:CartesianChart Grid.Row="0"
-                                                    Series="{Binding PowerChartSeriesCollection}"
-                                                    XAxes="{Binding XAxesCollection}" 
-                                                    YAxes="{Binding PowerChartYAxesCollection}"/>
-            
-                                <wpf:CartesianChart Grid.Row="1"
-                                                    Series="{Binding FrequencyChartSeriesCollection}"
-                                                    XAxes="{Binding XAxesCollection}" 
-                                                    YAxes="{Binding FrequencyChartYAxesCollection}"/>
-                                
-                                <wpf:CartesianChart Grid.Row="2"
-                                                    Series="{Binding InductanceChartSeriesCollection}"
-                                                    XAxes="{Binding XAxesCollection}" 
-                                                    YAxes="{Binding InductanceChartYAxesCollection}"/>
-                                
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- power chart -->
+            <wpf:CartesianChart Grid.Row="0"
+                                Series="{Binding PowerChartSeriesCollection}"
+                                XAxes="{Binding XAxesCollection}"
+                                YAxes="{Binding PowerChartYAxesCollection}" />
+            <!-- frequency chart -->
+            <wpf:CartesianChart Grid.Row="1"
+                                Series="{Binding FrequencyChartSeriesCollection}"
+                                XAxes="{Binding XAxesCollection}"
+                                YAxes="{Binding FrequencyChartYAxesCollection}" />
+            <!-- inductance chart -->
+            <wpf:CartesianChart Grid.Row="2"
+                                Series="{Binding InductanceChartSeriesCollection}"
+                                XAxes="{Binding XAxesCollection}"
+                                YAxes="{Binding InductanceChartYAxesCollection}" />
+
         </Grid>
-        
+
     </Grid>
 </UserControl>
