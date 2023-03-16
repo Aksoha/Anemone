@@ -1,7 +1,6 @@
 ﻿using Anemone.Algorithms.Models;
 using Anemone.Algorithms.Views;
 using Anemone.Core;
-using Anemone.DataImport.Views;
 using FluentValidation;
 using MatchingAlgorithm.Llc;
 using Prism.Ioc;
@@ -26,10 +25,18 @@ public class AlgorithmsModule : IModule
         containerRegistry.Register<ILlcMatchingBuilder, LlcMatchingBuilder>();
         containerRegistry.Register<IMatchingBuilder<LlcMatching, LlcAlgorithmParameters>>(x => x.Resolve<ILlcMatchingBuilder>());
         containerRegistry.Register<HeatingRepositoryListView>();
+        
         containerRegistry.RegisterForNavigation<LlcAlgorithmView>();
+        NavigationRegistrations.Register(new NavigationPanelItem
+        {
+            Header = "Llc",
+            NavigationPath = nameof(LlcAlgorithmView),
+            Icon = PackIconKind.HeatingSystemMatching
+        });
     }
 
     public void OnInitialized(IContainerProvider containerProvider)
     {
+        ApplicationCommands.NavigateCommand.Execute(nameof(LlcAlgorithmView));
     }
 }
