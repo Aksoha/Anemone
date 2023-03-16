@@ -14,5 +14,6 @@ public enum PackIconKind
     Alert,
     CheckCircle,
     Delete,
-    Rename
+    Rename,
+    HeatingSystemMatching,
 }
