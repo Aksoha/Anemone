@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Anemone.Algorithms.Builders;
+using Anemone.Algorithms.Matching;
 using Anemone.Algorithms.Models;
 using Anemone.Core;
 using FluentValidation;
@@ -13,12 +14,11 @@ using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using MatchingAlgorithm;
-using MatchingAlgorithm.Llc;
 using Microsoft.Extensions.Logging;
 using Prism.Commands;
 using Prism.Events;
 using SkiaSharp;
-using HeatingSystem = Anemone.Repository.HeatingSystemData.HeatingSystem;
+using HeatingSystem = Anemone.Algorithms.Models.HeatingSystem;
 
 namespace Anemone.Algorithms.ViewModels;
 
@@ -26,24 +26,29 @@ public class LlcAlgorithmViewModel : ViewModelBase
 {
     private bool _calculationInProgress;
     private CancellationTokenSource? _cancellationToken;
-    private LlcMatchingResult[]? _results;
+    private LlcMatchingResult? _results;
     private bool _isResultCalculated;
 
 
     public LlcAlgorithmViewModel(HeatingRepositoryListViewModel heatingRepositoryListViewModel,
-        IValidator<LlcAlgorithmParameters> validator, IToastService toastService, ILogger<LlcAlgorithmViewModel> logger,
-        IEventAggregator eventAggregator, ILlcMatchingBuilder matchingBuilder)
+        IValidator<LlcMatchingBuildArgs> validator, IToastService toastService,
+        ILogger<LlcAlgorithmViewModel> logger,
+        IEventAggregator eventAggregator, ILlcMatchingCalculator matchingCalculator)
     {
         HeatingRepositoryListViewModel = heatingRepositoryListViewModel;
         Validator = validator;
         ToastService = toastService;
         Logger = logger;
         EventAggregator = eventAggregator;
-        MatchingBuilder = matchingBuilder;
-        ViewDetailedResultsCommand = new DelegateCommand(ExecuteViewDetailedResultsCommand).ObservesCanExecute(() => CanExecuteExportDataCommand);
+        MatchingCalculator = matchingCalculator;
+        ViewDetailedResultsCommand =
+            new DelegateCommand(ExecuteViewDetailedResultsCommand).ObservesCanExecute(() =>
+                CanExecuteExportDataCommand);
         CalculateCommand = new ActionCommandAsync(ExecuteCalculateCommand);
-        ExportDataCommand = new DelegateCommand(async () => await ExecuteExportDataCommand()).ObservesCanExecute(() => CanExecuteExportDataCommand);
-        
+        ExportDataCommand =
+            new DelegateCommand(async () => await ExecuteExportDataCommand()).ObservesCanExecute(() =>
+                CanExecuteExportDataCommand);
+
         EventAggregator.GetEvent<HeatingSystemSelectionChangedEvent>().Subscribe(SelectionChanged);
 
         InitializeChartProperties();
@@ -59,38 +64,36 @@ public class LlcAlgorithmViewModel : ViewModelBase
         throw new NotImplementedException();
     }
 
-    private IValidator<LlcAlgorithmParameters> Validator { get; }
+    private IValidator<LlcMatchingBuildArgs> Validator { get; }
     private IToastService ToastService { get; }
     private ILogger<LlcAlgorithmViewModel> Logger { get; }
     private IEventAggregator EventAggregator { get; }
-    private ILlcMatchingBuilder MatchingBuilder { get; }
-
+    private ILlcMatchingCalculator MatchingCalculator { get; }
 
     public HeatingRepositoryListViewModel HeatingRepositoryListViewModel { get; }
-    public LlcAlgorithmParameters Parameters { get; } = new();
+    public LlcMatchingParameter Parameter { get; } = new();
 
-    private LlcMatchingResult[]? Results
+    public LlcMatchingResult? Results
     {
         get => _results;
-        set
+        private set
         {
-            if(SetProperty(ref _results, value))
+            if (SetProperty(ref _results, value))
                 RaisePropertyChanged(nameof(CanExecuteExportDataCommand));
         }
     }
 
-    public MatchingEstimator Estimator { get; } = new();
 
     public bool IsResultCalculated
     {
-        // TODO: hook it up once data export and preview detailed data is finished
-        // get => _isResultCalculated;
-        get => false;
+        // TODO: hook it up once data export and preview detailed data is finished (hooked up)
+        get => _isResultCalculated;
+        // get => false;
         set => SetProperty(ref _isResultCalculated, value);
     }
 
     private bool CanExecuteExportDataCommand => Results is not null;
-    
+
     private HeatingSystemListName? HeatingSystemListName { get; set; }
 
     public ICommand ViewDetailedResultsCommand { get; }
@@ -114,22 +117,23 @@ public class LlcAlgorithmViewModel : ViewModelBase
     public ObservableCollection<ISeries> FrequencyChartSeriesCollection { get; set; }
     public ObservableCollection<ISeries> InductanceChartSeriesCollection { get; set; }
 
-    private LineSeries<LlcMatchingResult> PowerChartCurrentSeries =>
-        (LineSeries<LlcMatchingResult>)PowerChartSeriesCollection[1];
+    private LineSeries<LlcMatchingResultPoint> PowerChartCurrentSeries =>
+        (LineSeries<LlcMatchingResultPoint>)PowerChartSeriesCollection[1];
 
-    private LineSeries<LlcMatchingResult> FrequencyChartCurrentSeries =>
-        (LineSeries<LlcMatchingResult>)FrequencyChartSeriesCollection[1];
+    private LineSeries<LlcMatchingResultPoint> FrequencyChartCurrentSeries =>
+        (LineSeries<LlcMatchingResultPoint>)FrequencyChartSeriesCollection[1];
 
-    private LineSeries<LlcMatchingResult> InductanceChartCurrentSeries =>
-        (LineSeries<LlcMatchingResult>)InductanceChartSeriesCollection[1];    
-    private LineSeries<LlcMatchingResult> PowerChartPreviousSeries =>
-        (LineSeries<LlcMatchingResult>)PowerChartSeriesCollection[0];
+    private LineSeries<LlcMatchingResultPoint> InductanceChartCurrentSeries =>
+        (LineSeries<LlcMatchingResultPoint>)InductanceChartSeriesCollection[1];
 
-    private LineSeries<LlcMatchingResult> FrequencyChartPreviousSeries =>
-        (LineSeries<LlcMatchingResult>)FrequencyChartSeriesCollection[0];
+    private LineSeries<LlcMatchingResultPoint> PowerChartPreviousSeries =>
+        (LineSeries<LlcMatchingResultPoint>)PowerChartSeriesCollection[0];
 
-    private LineSeries<LlcMatchingResult> InductanceChartPreviousSeries =>
-        (LineSeries<LlcMatchingResult>)InductanceChartSeriesCollection[0];
+    private LineSeries<LlcMatchingResultPoint> FrequencyChartPreviousSeries =>
+        (LineSeries<LlcMatchingResultPoint>)FrequencyChartSeriesCollection[0];
+
+    private LineSeries<LlcMatchingResultPoint> InductanceChartPreviousSeries =>
+        (LineSeries<LlcMatchingResultPoint>)InductanceChartSeriesCollection[0];
 
     public Axis[] XAxesCollection { get; set; }
     public Axis[] PowerChartYAxesCollection { get; set; }
@@ -157,10 +161,10 @@ public class LlcAlgorithmViewModel : ViewModelBase
         var purple = new SKColor(143, 88, 191);
         var purpleDark = new SKColor(81, 46, 112);
         var strokeThickness = 4f;
-        
+
         PowerChartSeriesCollection = new ObservableCollection<ISeries>
         {
-            new LineSeries<LlcMatchingResult>
+            new LineSeries<LlcMatchingResultPoint>
             {
                 Name = "Previous",
                 Mapping = (data, point) =>
@@ -171,10 +175,11 @@ public class LlcAlgorithmViewModel : ViewModelBase
                 GeometryStroke = null,
                 GeometryFill = null,
                 Fill = null,
-                Stroke = new SolidColorPaint(purpleDark) {StrokeThickness = strokeThickness},
-                TooltipLabelFormatter = chartPoint => $"{chartPoint.Context.Series.Name}: {chartPoint.PrimaryValue:0.00}"
+                Stroke = new SolidColorPaint(purpleDark) { StrokeThickness = strokeThickness },
+                TooltipLabelFormatter = chartPoint =>
+                    $"{chartPoint.Context.Series.Name}: {chartPoint.PrimaryValue:0.00}"
             },
-            new LineSeries<LlcMatchingResult>
+            new LineSeries<LlcMatchingResultPoint>
             {
                 Name = "Current",
                 Mapping = (data, point) =>
@@ -185,14 +190,15 @@ public class LlcAlgorithmViewModel : ViewModelBase
                 GeometryStroke = null,
                 GeometryFill = null,
                 Fill = null,
-                Stroke = new SolidColorPaint(purple) {StrokeThickness = strokeThickness},
-                TooltipLabelFormatter = chartPoint => $"{chartPoint.Context.Series.Name}: {chartPoint.PrimaryValue:0.00}"
+                Stroke = new SolidColorPaint(purple) { StrokeThickness = strokeThickness },
+                TooltipLabelFormatter = chartPoint =>
+                    $"{chartPoint.Context.Series.Name}: {chartPoint.PrimaryValue:0.00}"
             },
         };
 
         FrequencyChartSeriesCollection = new ObservableCollection<ISeries>
         {
-            new LineSeries<LlcMatchingResult>
+            new LineSeries<LlcMatchingResultPoint>
             {
                 Name = "Previous",
                 Mapping = (data, point) =>
@@ -203,10 +209,11 @@ public class LlcAlgorithmViewModel : ViewModelBase
                 GeometryStroke = null,
                 GeometryFill = null,
                 Fill = null,
-                Stroke = new SolidColorPaint(purpleDark) {StrokeThickness = strokeThickness},
-                TooltipLabelFormatter = chartPoint => $"{chartPoint.Context.Series.Name}: {chartPoint.PrimaryValue:0.00}",
+                Stroke = new SolidColorPaint(purpleDark) { StrokeThickness = strokeThickness },
+                TooltipLabelFormatter = chartPoint =>
+                    $"{chartPoint.Context.Series.Name}: {chartPoint.PrimaryValue:0.00}",
             },
-            new LineSeries<LlcMatchingResult>
+            new LineSeries<LlcMatchingResultPoint>
             {
                 Name = "Current",
                 Mapping = (data, point) =>
@@ -217,14 +224,15 @@ public class LlcAlgorithmViewModel : ViewModelBase
                 GeometryStroke = null,
                 GeometryFill = null,
                 Fill = null,
-                Stroke = new SolidColorPaint(purple) {StrokeThickness = strokeThickness},
-                TooltipLabelFormatter = chartPoint => $"{chartPoint.Context.Series.Name}: {chartPoint.PrimaryValue:0.00}"
+                Stroke = new SolidColorPaint(purple) { StrokeThickness = strokeThickness },
+                TooltipLabelFormatter = chartPoint =>
+                    $"{chartPoint.Context.Series.Name}: {chartPoint.PrimaryValue:0.00}"
             },
         };
 
         InductanceChartSeriesCollection = new ObservableCollection<ISeries>
         {
-            new LineSeries<LlcMatchingResult>
+            new LineSeries<LlcMatchingResultPoint>
             {
                 Name = "Previous",
                 Mapping = (data, point) =>
@@ -235,10 +243,11 @@ public class LlcAlgorithmViewModel : ViewModelBase
                 GeometryStroke = null,
                 GeometryFill = null,
                 Fill = null,
-                Stroke = new SolidColorPaint(purpleDark) {StrokeThickness = strokeThickness},
-                TooltipLabelFormatter = chartPoint => $"{chartPoint.Context.Series.Name}: {chartPoint.PrimaryValue:0.00E0}"
+                Stroke = new SolidColorPaint(purpleDark) { StrokeThickness = strokeThickness },
+                TooltipLabelFormatter = chartPoint =>
+                    $"{chartPoint.Context.Series.Name}: {chartPoint.PrimaryValue:0.00E0}"
             },
-            new LineSeries<LlcMatchingResult>
+            new LineSeries<LlcMatchingResultPoint>
             {
                 Name = "Current",
                 Mapping = (data, point) =>
@@ -249,8 +258,9 @@ public class LlcAlgorithmViewModel : ViewModelBase
                 GeometryStroke = null,
                 GeometryFill = null,
                 Fill = null,
-                Stroke = new SolidColorPaint(purple) {StrokeThickness = strokeThickness},
-                TooltipLabelFormatter = chartPoint => $"{chartPoint.Context.Series.Name}: {chartPoint.PrimaryValue:0.00E0}"
+                Stroke = new SolidColorPaint(purple) { StrokeThickness = strokeThickness },
+                TooltipLabelFormatter = chartPoint =>
+                    $"{chartPoint.Context.Series.Name}: {chartPoint.PrimaryValue:0.00E0}"
             },
         };
     }
@@ -261,16 +271,10 @@ public class LlcAlgorithmViewModel : ViewModelBase
     }
 
 
-    [MemberNotNullWhen(true, nameof(HeatingSystemListName))]
-    private bool CanExecuteCalculateCommand()
+    private bool CanExecuteCalculateCommand(HeatingSystem heatingSystem)
     {
-        if (HeatingSystemListName is null)
-        {
-            ToastService.Show("select heating system");
-            return false;
-        }
-
-        var validationResult = Validator.Validate(Parameters);
+        var validationResult = Validator.Validate(new LlcMatchingBuildArgs
+            { Parameter = Parameter, HeatingSystem = heatingSystem });
         if (validationResult.IsValid)
             return true;
 
@@ -287,31 +291,30 @@ public class LlcAlgorithmViewModel : ViewModelBase
     {
         try
         {
-            var matching = MatchingBuilder.Build(Parameters, heatingSystem);
-            Results = matching.EnergyMatching().ToArray();
+            Results = MatchingCalculator.Calculate(Parameter, heatingSystem);
+
 
             PowerChartPreviousSeries.Values = PowerChartCurrentSeries.Values;
             FrequencyChartPreviousSeries.Values = FrequencyChartCurrentSeries.Values;
             InductanceChartPreviousSeries.Values = InductanceChartCurrentSeries.Values;
 
-            PowerChartCurrentSeries.Values = Results;
-            FrequencyChartCurrentSeries.Values = Results;
-            InductanceChartCurrentSeries.Values = Results;
+            PowerChartCurrentSeries.Values = Results.Points;
+            FrequencyChartCurrentSeries.Values = Results.Points;
+            InductanceChartCurrentSeries.Values = Results.Points;
 
             PowerChartYAxes.MinLimit = 0;
-            PowerChartYAxes.MaxLimit = Parameters.Power * 1.2;
-            FrequencyChartYAxes.MinLimit = 0.8 * Parameters.FrequencyMin;
-            FrequencyChartYAxes.MaxLimit = 1.2 * Parameters.FrequencyMax;
-            InductanceChartYAxes.MinLimit = 0.8 * Parameters.InductanceMin;
-            InductanceChartYAxes.MaxLimit = 1.2 * Parameters.InductanceMax;
+            PowerChartYAxes.MaxLimit = Parameter.Power * 1.2;
+            FrequencyChartYAxes.MinLimit = 0.8 * Parameter.FrequencyMin;
+            FrequencyChartYAxes.MaxLimit = 1.2 * Parameter.FrequencyMax;
+            InductanceChartYAxes.MinLimit = 0.8 * Parameter.InductanceMin;
+            InductanceChartYAxes.MaxLimit = 1.2 * Parameter.InductanceMax;
 
-            Estimator.Estimate(Results);
+
             IsResultCalculated = true;
-            RaisePropertyChanged(nameof(Estimator));
         }
         catch (SolutionNotFoundException e)
         {
-            const string message = "no solution was found for given parameters";
+            const string message = "no solution was found for given parameter";
             Logger.LogWarning($"{message}: reason: {{reason}}", e.Message);
             ToastService.Show(message);
         }
@@ -332,12 +335,18 @@ public class LlcAlgorithmViewModel : ViewModelBase
             return;
         }
 
-        if (CanExecuteCalculateCommand() is false)
+        if (HeatingSystemListName is null)
+        {
+            ToastService.Show("select heating system");
             return;
-
+        }
 
         var heatingSystem = await HeatingRepositoryListViewModel.Get(HeatingSystemListName);
         ArgumentNullException.ThrowIfNull(heatingSystem);
+
+        if (CanExecuteCalculateCommand(heatingSystem!) is false)
+            return;
+
 
         Logger.LogDebug("starting llc calculation");
         CalculationInProgress = true;

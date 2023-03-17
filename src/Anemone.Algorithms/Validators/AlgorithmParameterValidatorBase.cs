@@ -1,12 +1,29 @@
-﻿using FluentValidation;
+﻿using Anemone.Algorithms.Models;
+using FluentValidation;
 
-namespace Anemone.Algorithms.Models;
+namespace Anemone.Algorithms.Validators;
 
-public class AlgorithmValidator : AbstractValidator<LlcAlgorithmParameters>
+public class AlgorithmParameterValidatorBase<T> : AbstractValidator<T> where T : MatchingParameterBase
 {
-    public AlgorithmValidator()
+    public AlgorithmParameterValidatorBase()
     {
-
+        RuleFor(x => x.FrequencyMin).NotNull();
+        RuleFor(x => x.FrequencyMax).NotNull();
+        RuleFor(x => x.FrequencyStep).NotNull();
+        
+        RuleFor(x => x.TemperatureMin).NotNull();
+        RuleFor(x => x.TemperatureMax).NotNull();
+        RuleFor(x => x.TemperatureStep).NotNull();
+        
+        RuleFor(x => x.TurnRatioMin).NotNull();
+        RuleFor(x => x.TurnRatioMax).NotNull();
+        RuleFor(x => x.TurnRatioStep).NotNull();
+        
+        RuleFor(x => x.Voltage).NotNull();
+        RuleFor(x => x.Current).NotNull();
+        RuleFor(x => x.Power).NotNull();
+        
+        
         RuleFor(x => x.FrequencyMin).GreaterThanOrEqualTo(0);
         RuleFor(x => x.FrequencyStep).GreaterThanOrEqualTo(0);
         RuleFor(x => x).Must(x => BeSinglePointOrRangeInAscendingOrder(x.FrequencyMin, x.FrequencyMax, x.FrequencyStep));
@@ -22,17 +39,9 @@ public class AlgorithmValidator : AbstractValidator<LlcAlgorithmParameters>
         RuleFor(x => x.Voltage).GreaterThan(0);
         RuleFor(x => x.Current).GreaterThan(0);
         RuleFor(x => x.Power).GreaterThan(0);
-
-        RuleFor(x => x.InductanceMin).GreaterThan(0);
-        RuleFor(x => x.InductanceStep).GreaterThanOrEqualTo(0);
-        RuleFor(x => x).Must(x => BeSinglePointOrRangeInAscendingOrder(x.InductanceMin, x.InductanceMax, x.InductanceStep));
-
-        RuleFor(x => x.CapacitanceMin).GreaterThan(0);
-        RuleFor(x => x.CapacitanceStep).GreaterThanOrEqualTo(0);
-        RuleFor(x => x).Must(x => BeSinglePointOrRangeInAscendingOrder(x.CapacitanceMin, x.CapacitanceMax, x.CapacitanceStep));
     }
     
-    private static bool BeSinglePointOrRangeInAscendingOrder(double min, double max, double step)
+    protected static bool BeSinglePointOrRangeInAscendingOrder(double? min, double? max, double? step)
     {
         if (Equals(min, max))
             return true;

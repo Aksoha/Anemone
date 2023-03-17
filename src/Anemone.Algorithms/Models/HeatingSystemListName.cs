@@ -9,10 +9,7 @@ public class HeatingSystemListName : INotifyPropertyChanged
 {
     private int _id;
     private string _name = string.Empty;
-
-    public HeatingSystemListName()
-    {
-    }
+    
 
     public HeatingSystemListName(HeatingSystemName heatingSystemName)
     {

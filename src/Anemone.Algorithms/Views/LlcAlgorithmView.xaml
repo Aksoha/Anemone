@@ -35,11 +35,11 @@
                     <!-- frequency -->
                     <Expander Header="Frequency" IsExpanded="True">
                         <StackPanel>
-                            <TextBox Text="{Binding Parameters.FrequencyMin}"
+                            <TextBox Text="{Binding Parameter.FrequencyMin}"
                                      materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding Parameters.FrequencyMax}"
+                            <TextBox Text="{Binding Parameter.FrequencyMax}"
                                      materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding Parameters.FrequencyStep}"
+                            <TextBox Text="{Binding Parameter.FrequencyStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -47,11 +47,11 @@
                     <!-- temperature -->
                     <Expander Header="Temperature" IsExpanded="True">
                         <StackPanel>
-                            <TextBox Text="{Binding Parameters.TemperatureMin}"
+                            <TextBox Text="{Binding Parameter.TemperatureMin}"
                                      materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding Parameters.TemperatureMax}"
+                            <TextBox Text="{Binding Parameter.TemperatureMax}"
                                      materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding Parameters.TemperatureStep}"
+                            <TextBox Text="{Binding Parameter.TemperatureStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -59,9 +59,9 @@
                     <!-- turn ratio -->
                     <Expander Header="Turn ratio" IsExpanded="True">
                         <StackPanel>
-                            <TextBox Text="{Binding Parameters.TurnRatioMin}" materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding Parameters.TurnRatioMax}" materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding Parameters.TurnRatioStep}"
+                            <TextBox Text="{Binding Parameter.TurnRatioMin}" materialDesign:HintAssist.Hint="min" />
+                            <TextBox Text="{Binding Parameter.TurnRatioMax}" materialDesign:HintAssist.Hint="max" />
+                            <TextBox Text="{Binding Parameter.TurnRatioStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -72,14 +72,14 @@
                             <DockPanel VerticalAlignment="Stretch">
                                 <TextBlock Text="variable inductance" Margin="20" />
                                 <ToggleButton
-                                    HorizontalAlignment="Right" IsChecked="{Binding Parameters.VariableInductance}"
+                                    HorizontalAlignment="Right" IsChecked="{Binding Parameter.VariableInductance}"
                                     Margin="20" />
                             </DockPanel>
-                            <TextBox Text="{Binding Parameters.InductanceMin}"
+                            <TextBox Text="{Binding Parameter.InductanceMin}"
                                      materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding Parameters.InductanceMax}"
+                            <TextBox Text="{Binding Parameter.InductanceMax}"
                                      materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding Parameters.InductanceStep}"
+                            <TextBox Text="{Binding Parameter.InductanceStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -87,11 +87,11 @@
                     <!-- capacitance -->
                     <Expander Header="Capacitance" IsExpanded="True">
                         <StackPanel>
-                            <TextBox Text="{Binding Parameters.CapacitanceMin}"
+                            <TextBox Text="{Binding Parameter.CapacitanceMin}"
                                      materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding Parameters.CapacitanceMax}"
+                            <TextBox Text="{Binding Parameter.CapacitanceMax}"
                                      materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding Parameters.CapacitanceStep}"
+                            <TextBox Text="{Binding Parameter.CapacitanceStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -99,11 +99,11 @@
                     <!-- voltage, current and power -->
                     <Expander Header="Power" IsExpanded="True">
                         <StackPanel>
-                            <TextBox Text="{Binding Parameters.Voltage}"
+                            <TextBox Text="{Binding Parameter.Voltage}"
                                      materialDesign:HintAssist.Hint="voltage" />
-                            <TextBox Text="{Binding Parameters.Current}"
+                            <TextBox Text="{Binding Parameter.Current}"
                                      materialDesign:HintAssist.Hint="current" />
-                            <TextBox Text="{Binding Parameters.Power}"
+                            <TextBox Text="{Binding Parameter.Power}"
                                      materialDesign:HintAssist.Hint="power" />
                         </StackPanel>
                     </Expander>
@@ -154,27 +154,27 @@
                         
                         <TextBlock Grid.Column="0" Grid.Row="0" Text="mean power" />
                         <TextBlock Grid.Column="1" Grid.Row="0"
-                                   Text="{Binding Estimator.MeanPower, StringFormat={}{0:0.00}}" />
+                                   Text="{Binding Results.MeanPower, FallbackValue='', StringFormat={}{0:0.00}}" />
 
                         <TextBlock Grid.Column="0" Grid.Row="1" Text="turn ratio" />
                         <TextBlock Grid.Column="1" Grid.Row="1"
-                                   Text="{Binding Estimator.TurnRatio, StringFormat={}{0:0}}" />
+                                   Text="{Binding Results.TurnRatio, FallbackValue='', StringFormat={}{0:0}}" />
 
                         <TextBlock Grid.Column="0" Grid.Row="2" Text="capacitance" />
                         <TextBlock Grid.Column="1" Grid.Row="2"
-                                   Text="{Binding Estimator.Capacitance, StringFormat={}{0:0.00e0}}" />
+                                   Text="{Binding Results.Capacitance, FallbackValue='', StringFormat={}{0:0.00e0}}" />
 
                         <TextBlock Grid.Column="0" Grid.Row="3" Text="df/dt" />
                         <TextBlock Grid.Column="1" Grid.Row="3"
-                                   Text="{Binding Estimator.MaxFrequencyDerivative, StringFormat={}{0:0.00e0}}" />
+                                   Text="{Binding Results.MaxFrequencyDerivative, FallbackValue='', StringFormat={}{0:0.00e0}}" />
 
                         <TextBlock Grid.Column="0" Grid.Row="4" Text="dl/dt" />
                         <TextBlock Grid.Column="1" Grid.Row="4"
-                                   Text="{Binding Estimator.MaxInductanceDerivative, StringFormat={}{0:0.00e0}}" />
+                                   Text="{Binding Results.MaxInductanceDerivative, FallbackValue='', StringFormat={}{0:0.00e0}}" />
 
                         <TextBlock Grid.Column="0" Grid.Row="5" Text="phase shift" />
                         <TextBlock Grid.Column="1" Grid.Row="5"
-                                   Text="{Binding Estimator.MaxPhaseShift, StringFormat={}{0:0.00e0}}" />
+                                   Text="{Binding Results.MaxPhaseShift, FallbackValue='', StringFormat={}{0:0.00e0}}" />
 
                     </Grid>
                 </materialDesign:Card>

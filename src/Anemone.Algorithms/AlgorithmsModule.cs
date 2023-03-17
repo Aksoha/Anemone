@@ -1,10 +1,15 @@
-﻿using Anemone.Algorithms.Models;
+﻿using Anemone.Algorithms.Builders;
+using Anemone.Algorithms.Matching;
+using Anemone.Algorithms.Models;
+using Anemone.Algorithms.Validators;
 using Anemone.Algorithms.Views;
 using Anemone.Core;
 using FluentValidation;
 using MatchingAlgorithm.Llc;
 using Prism.Ioc;
 using Prism.Modularity;
+using LlcMatchingParameter = Anemone.Algorithms.Models.LlcMatchingParameter;
+using LlcMatchingResult = Anemone.Algorithms.Models.LlcMatchingResult;
 
 namespace Anemone.Algorithms;
 
@@ -21,10 +26,19 @@ public class AlgorithmsModule : IModule
     
     public void RegisterTypes(IContainerRegistry containerRegistry)
     {
-        containerRegistry.Register<IValidator<LlcAlgorithmParameters>, AlgorithmValidator>();
+        containerRegistry.Register<IValidator<MatchingParameterBase>, AlgorithmParameterValidatorBase<MatchingParameterBase>>();
+        containerRegistry.Register<IValidator<LlcMatchingParameter>, LlcAlgorithmParameterValidator>();
+        containerRegistry.Register<IValidator<LlcMatchingBuildArgs>, LlcMatchingCalculatorValidator>();
+        
+        
         containerRegistry.Register<ILlcMatchingBuilder, LlcMatchingBuilder>();
-        containerRegistry.Register<IMatchingBuilder<LlcMatching, LlcAlgorithmParameters>>(x => x.Resolve<ILlcMatchingBuilder>());
+        containerRegistry.Register<IMatchingBuilder<LlcMatching, LlcMatchingBuildArgs>>(x => x.Resolve<ILlcMatchingBuilder>());
         containerRegistry.Register<HeatingRepositoryListView>();
+
+        containerRegistry.Register<ILlcMatchingCalculator, LlcMatchingCalculator>();
+        containerRegistry.Register<IMatchingCalculator<LlcMatchingParameter, LlcMatchingResult>>(x =>
+            x.Resolve<ILlcMatchingCalculator>());
+        
         
         containerRegistry.RegisterForNavigation<LlcAlgorithmView>();
         NavigationRegistrations.Register(new NavigationPanelItem
