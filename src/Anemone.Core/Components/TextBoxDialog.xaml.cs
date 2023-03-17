@@ -7,5 +7,6 @@ public partial class TextBoxDialog : UserControl
     public TextBoxDialog()
     {
         InitializeComponent();
+        TextBox.Focus();
     }
 }

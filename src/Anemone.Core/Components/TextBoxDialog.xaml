@@ -8,6 +8,10 @@
              d:DataContext="{d:DesignInstance Type=viewModels:TextBoxDialogViewModel, IsDesignTimeCreatable=False}"
              d:DesignHeight="300" d:DesignWidth="300"
              MinWidth="200">
+    <UserControl.InputBindings>
+        <KeyBinding Key="Enter" Command="{Binding ConfirmDialogCommand}"/>
+        <KeyBinding Key="Escape" Command="{Binding CancelDialogCommand}"/>
+    </UserControl.InputBindings>
 
 
     <Grid Margin="5">
@@ -18,7 +22,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBox Grid.Row="0"
+        <TextBox Grid.Row="0" x:Name="TextBox"
                  Text="{Binding Message, UpdateSourceTrigger=PropertyChanged}"
                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  TextWrapping="Wrap" />
