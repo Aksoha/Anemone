@@ -79,6 +79,7 @@ public partial class App
         containerRegistry.Register<IFile, FileWrapper>();
         containerRegistry.Register<IDirectory, DirectoryWrapper>();
         containerRegistry.Register<IProcess, ProcessWrapper>();
+        containerRegistry.Register<ISaveFileDialog, SaveFileDialog>();
 
 
         var serviceCollection = new ServiceCollection();
