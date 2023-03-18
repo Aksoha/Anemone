@@ -8,6 +8,7 @@ using System.Windows.Input;
 using Anemone.Algorithms.Builders;
 using Anemone.Algorithms.Matching;
 using Anemone.Algorithms.Models;
+using Anemone.Algorithms.Report;
 using Anemone.Core;
 using FluentValidation;
 using LiveChartsCore;
@@ -33,7 +34,8 @@ public class LlcAlgorithmViewModel : ViewModelBase
     public LlcAlgorithmViewModel(HeatingRepositoryListViewModel heatingRepositoryListViewModel,
         IValidator<LlcMatchingBuildArgs> validator, IToastService toastService,
         ILogger<LlcAlgorithmViewModel> logger,
-        IEventAggregator eventAggregator, ILlcMatchingCalculator matchingCalculator)
+        IEventAggregator eventAggregator, ILlcMatchingCalculator matchingCalculator,
+        IReportGenerator reportGenerator, IDataExporter dataExporter, ISaveFileDialog saveFileDialog)
     {
         HeatingRepositoryListViewModel = heatingRepositoryListViewModel;
         Validator = validator;
@@ -41,6 +43,9 @@ public class LlcAlgorithmViewModel : ViewModelBase
         Logger = logger;
         EventAggregator = eventAggregator;
         MatchingCalculator = matchingCalculator;
+        ReportGenerator = reportGenerator;
+        DataExporter = dataExporter;
+        SaveFileDialog = saveFileDialog;
         ViewDetailedResultsCommand =
             new DelegateCommand(ExecuteViewDetailedResultsCommand).ObservesCanExecute(() =>
                 CanExecuteExportDataCommand);
@@ -59,9 +64,30 @@ public class LlcAlgorithmViewModel : ViewModelBase
         throw new NotImplementedException();
     }
 
-    private Task ExecuteExportDataCommand()
+    private async Task ExecuteExportDataCommand()
     {
-        throw new NotImplementedException();
+        SaveFileDialog.FileName = "doc";
+        SaveFileDialog.DefaultExt = ".csv";
+        SaveFileDialog.Filter = "csv files (.csv)|*.csv";
+        
+        var result = SaveFileDialog.ShowDialog();
+        if(result is false)
+            return;
+
+        var fileName = SaveFileDialog.FileName;
+
+        try
+        {
+            ArgumentNullException.ThrowIfNull(Results);
+            var dataToExport = ReportGenerator.Generate(Results);
+            await DataExporter.Export(fileName, dataToExport);
+            Logger.LogInformation("created new csv file at {Path}", fileName);
+            ToastService.Show("exported file");
+        }
+        finally
+        {
+            SaveFileDialog.Reset();
+        }
     }
 
     private IValidator<LlcMatchingBuildArgs> Validator { get; }
@@ -69,6 +95,9 @@ public class LlcAlgorithmViewModel : ViewModelBase
     private ILogger<LlcAlgorithmViewModel> Logger { get; }
     private IEventAggregator EventAggregator { get; }
     private ILlcMatchingCalculator MatchingCalculator { get; }
+    private IReportGenerator ReportGenerator { get; }
+    private IDataExporter DataExporter { get; }
+    private ISaveFileDialog SaveFileDialog { get; }
 
     public HeatingRepositoryListViewModel HeatingRepositoryListViewModel { get; }
     public LlcMatchingParameter Parameter { get; } = new();
@@ -86,9 +115,7 @@ public class LlcAlgorithmViewModel : ViewModelBase
 
     public bool IsResultCalculated
     {
-        // TODO: hook it up once data export and preview detailed data is finished (hooked up)
         get => _isResultCalculated;
-        // get => false;
         set => SetProperty(ref _isResultCalculated, value);
     }
 

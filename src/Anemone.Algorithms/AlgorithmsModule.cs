@@ -1,6 +1,7 @@
 ﻿using Anemone.Algorithms.Builders;
 using Anemone.Algorithms.Matching;
 using Anemone.Algorithms.Models;
+using Anemone.Algorithms.Report;
 using Anemone.Algorithms.Validators;
 using Anemone.Algorithms.Views;
 using Anemone.Core;
@@ -38,6 +39,9 @@ public class AlgorithmsModule : IModule
         containerRegistry.Register<ILlcMatchingCalculator, LlcMatchingCalculator>();
         containerRegistry.Register<IMatchingCalculator<LlcMatchingParameter, LlcMatchingResult>>(x =>
             x.Resolve<ILlcMatchingCalculator>());
+
+        containerRegistry.Register<IDataExporter, DataExporter>();
+        containerRegistry.Register<IReportGenerator, ReportGenerator>();
         
         
         containerRegistry.RegisterForNavigation<LlcAlgorithmView>();

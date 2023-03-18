@@ -113,7 +113,7 @@
 
         
         <!-- heating system selector, simple results and buttons -->
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="1" MinWidth="200">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
