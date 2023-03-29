@@ -33,7 +33,7 @@
                 <StackPanel>
                     
                     <!-- frequency -->
-                    <Expander Header="Frequency" IsExpanded="True">
+                    <Expander Header="Frequency" IsExpanded="True"  >
                         <StackPanel>
                             <TextBox Text="{Binding Parameter.FrequencyMin}"
                                      materialDesign:HintAssist.Hint="min" />
