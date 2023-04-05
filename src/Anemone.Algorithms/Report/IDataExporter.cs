@@ -5,5 +5,5 @@ namespace Anemone.Algorithms.Report;
 
 public interface IDataExporter
 {
-    Task Export(string filePath, DataTable table);
+    Task ExportToCsv(string filePath, DataTable data);
 }

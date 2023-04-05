@@ -18,26 +18,38 @@ public class DataExporter : IDataExporter
         File = file;
     }
     
-    public async Task Export(string filePath, DataTable table)
+    public async Task ExportToCsv(string filePath, DataTable data)
     {
         if (Path.GetExtension(filePath) != ".csv")
             throw new NotSupportedException("specified file format is not supported");
 
         await using var fs =  File.Create(filePath);
+        await WriteData(fs, data);
+        fs.Close();
+    }
 
+    private static async Task WriteData(Stream fs, DataTable table)
+    {
         var headers = GetHeaders(table);
         await fs.WriteAsync(LineToBytes(headers));
         
-        
         foreach (DataRow row in table.Rows)
         {
-            var fields = row.ItemArray.Select(field => 
-                string.Concat("\"", field?.ToString()?.Replace("\"", "\"\""), "\""));
+            var fields = GetRowAsString(row);
             var buffer = LineToBytes(fields);
             await fs.WriteAsync(buffer);
         }
-        
-        fs.Close();
+    }
+    
+    private static IEnumerable<string> GetHeaders(DataTable table)
+    {
+        return (from DataColumn column in table.Columns select column.ColumnName).ToList();
+    }
+
+    private static IEnumerable<string> GetRowAsString(DataRow row)
+    {
+        return row.ItemArray.Select(field =>
+            string.Concat("\"", field?.ToString()?.Replace("\"", "\"\""), "\""));
     }
 
     private static byte[] LineToBytes(IEnumerable<string> fields)
@@ -45,8 +57,5 @@ public class DataExporter : IDataExporter
         return Encoding.UTF8.GetBytes(string.Join(",", fields) + "\n");
     }
 
-    private static IEnumerable<string> GetHeaders(DataTable table)
-    {
-        return (from DataColumn column in table.Columns select column.ColumnName).ToList();
-    }
+
 }

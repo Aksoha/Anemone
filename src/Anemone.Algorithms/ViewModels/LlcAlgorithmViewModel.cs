@@ -80,7 +80,7 @@ public class LlcAlgorithmViewModel : ViewModelBase
         {
             ArgumentNullException.ThrowIfNull(Results);
             var dataToExport = ReportGenerator.Generate(Results);
-            await DataExporter.Export(fileName, dataToExport);
+            await DataExporter.ExportToCsv(fileName, dataToExport);
             Logger.LogInformation("created new csv file at {Path}", fileName);
             ToastService.Show("exported file");
         }

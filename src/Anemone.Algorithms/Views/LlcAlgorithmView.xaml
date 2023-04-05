@@ -186,7 +186,7 @@
             
             <!-- calculate and export data buttons -->
             <StackPanel Grid.Row="3" VerticalAlignment="Bottom" Margin="20 0">
-                <Button Command="{Binding ExportDataCommand}" Content="Export data"
+                <Button Command="{Binding ExportDataCommand}" Content="ExportToCsv data"
                         Margin="0 20"
                         Style="{StaticResource MaterialDesignOutlinedButton}" Visibility="{Binding IsResultCalculated, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <Button

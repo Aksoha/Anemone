@@ -34,7 +34,7 @@ public class DataExporterTests
         // act
         Task Act()
         {
-            return dataExporter.Export(filePath, new DataTable());
+            return dataExporter.ExportToCsv(filePath, new DataTable());
         }
 
         // assert
@@ -51,31 +51,31 @@ public class DataExporterTests
         mockFileSystem.AddDirectory(directory);
         var file = mockFileSystem.File;
 
-        var table = new DataTable();
         var products = _productFaker.Generate(5);
 
-        table.Columns.Add("Id");
-        table.Columns.Add("ProductName");
-        foreach (var product in products)
-        {
-            var row = table.NewRow();
-            row["Id"] = product.Id;
-            row["ProductName"] = product.ProductName;
-            table.Rows.Add(row);
-        }
+        var table = new DataTable();
+        AppendHeaderRow(table);
+        AppendContentRows(table, products);
 
         var dataExporter = new DataExporter(file);
 
         // act
-        await dataExporter.Export(filePath, table);
+        await dataExporter.ExportToCsv(filePath, table);
 
 
         // assert
         var actualLines = file.ReadLines(filePath).ToList();
-        Assert.Equal(products.Count, actualLines.Count);
+        Assert.Equal(products.Count + 1, actualLines.Count);
 
         var idx = 0;
-        foreach (var columns in actualLines.Select(actualLine => actualLine.Split(",")))
+        var rows = actualLines.Select(line => line.Split(",")).ToArray();
+        
+        var firstRow = rows.First();
+        Assert.Equal(2, firstRow.Length);
+        Assert.Equal("Id", firstRow[0]);
+        Assert.Equal("ProductName", firstRow[1]);
+
+        foreach (var columns in rows.Skip(1))
         {
             Assert.Equal(2, columns.Length);
 
@@ -84,6 +84,23 @@ public class DataExporterTests
             Assert.Equal(product.ProductName, columns[1].Trim('"'));
             idx++;
         }
+    }
+
+    private static void AppendContentRows(DataTable table, List<ProductModel> content)
+    {
+        foreach (var contentItem in content)
+        {
+            var row = table.NewRow();
+            row["Id"] = contentItem.Id;
+            row["ProductName"] = contentItem.ProductName;
+            table.Rows.Add(row);
+        }
+    }
+
+    private static void AppendHeaderRow(DataTable table)
+    {
+        table.Columns.Add("Id");
+        table.Columns.Add("ProductName");
     }
 
     private class ProductModel
