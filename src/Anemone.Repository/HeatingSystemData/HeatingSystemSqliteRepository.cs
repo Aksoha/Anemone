@@ -20,6 +20,23 @@ public class HeatingSystemSqliteRepository : IHeatingSystemRepository
     private IDbConnectionFactory ConnectionFactory { get; }
     private RepositoryOptions Options { get; }
 
+    public async Task<bool> Exists(int id)
+    {
+        using var connection = GetConnection();
+        connection.Open();
+        try
+        {
+            const string sql = "SELECT 1 FROM HeatingSystem WHERE Id = @Id";
+            var exists = await connection.QuerySingleOrDefaultAsync<bool>(sql, new {Id = id});
+            return exists;
+        }
+        catch (SqliteException e)
+        {
+            throw new RepositoryReadException(connection.Database, e);
+        }
+
+    }
+
     public async Task Create(HeatingSystem data)
     {
         using var connection = GetConnection();

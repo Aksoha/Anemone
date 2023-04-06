@@ -5,6 +5,8 @@ namespace Anemone.Repository;
 
 public interface IRepository<T> where T : IDbEntity
 {
+    Task<bool> Exists(int id);
+    
     /// <summary>
     ///     Creates new entry in the database for <see cref="data" />.
     /// </summary>
