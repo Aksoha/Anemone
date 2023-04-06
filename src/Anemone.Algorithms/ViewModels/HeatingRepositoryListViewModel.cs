@@ -10,7 +10,6 @@ using Anemone.Repository.HeatingSystemData;
 using Microsoft.Extensions.Logging;
 using Prism.Events;
 using Prism.Services.Dialogs;
-using HeatingSystem = Anemone.Algorithms.Models.HeatingSystem;
 using IDialogService = Anemone.Core.IDialogService;
 
 namespace Anemone.Algorithms.ViewModels;
@@ -112,15 +111,6 @@ public class HeatingRepositoryListViewModel : ViewModelBase
     }
 
     public ObservableCollection<HeatingSystemListName> ItemsSource { get; } = new();
-
-    public async Task<HeatingSystem?> Get(HeatingSystemListName item)
-    {
-        var result = await Repository.Get(item.Id);
-        return result is null
-            ? null
-            : new HeatingSystem
-                { Id = (int)result.Id!, Name = result.Name, Points = result.HeatingSystemPoints.ToArray() };
-    }
 
     private async Task ExecuteFetchDataCommand()
     {

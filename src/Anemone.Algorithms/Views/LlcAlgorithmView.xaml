@@ -124,7 +124,7 @@
             <!-- heating system selector -->
             <StackPanel Grid.Row="0" Margin="20 0">
                 <TextBlock Text="heating systems" Margin="0 0 0 10" />
-                <views:HeatingRepositoryListView DataContext="{Binding HeatingRepositoryListViewModel}" />
+                <views:HeatingRepositoryListView />
             </StackPanel>
             
             <!-- simple results and detailed result navigation button -->

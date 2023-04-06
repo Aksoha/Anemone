@@ -44,6 +44,7 @@ public class AlgorithmsModule : IModule
         containerRegistry.Register<IReportGenerator, ReportGenerator>();
         
         
+        containerRegistry.RegisterForNavigation<HeatingRepositoryListView>();
         containerRegistry.RegisterForNavigation<LlcAlgorithmView>();
         NavigationRegistrations.Register(new NavigationPanelItem
         {

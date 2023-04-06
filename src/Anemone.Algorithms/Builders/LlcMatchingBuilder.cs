@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Linq;
 using Anemone.Repository.HeatingSystemData;
 using FluentValidation;
 using MatchingAlgorithm;
 using MatchingAlgorithm.Llc;
-using HeatingSystem = Anemone.Algorithms.Models.HeatingSystem;
+using HeatingSystem = MatchingAlgorithm.HeatingSystem;
 using LlcMatchingParameter = Anemone.Algorithms.Models.LlcMatchingParameter;
 
 namespace Anemone.Algorithms.Builders;
@@ -22,8 +21,8 @@ public class LlcMatchingBuilder : ILlcMatchingBuilder
     {
 
         Validator.ValidateAndThrow(args);
-        
-        var topology = BuildLlcTopology(args.HeatingSystem);
+        var hs = ConvertToAlgorithmHeatingSystem(args.HeatingSystem);
+        var topology = BuildLlcTopology(hs);
         var p = BuildLlcParameters(args.Parameter);
 
         return args.Parameter.VariableInductance switch
@@ -32,6 +31,18 @@ public class LlcMatchingBuilder : ILlcMatchingBuilder
             false => new LlcPassiveMatching(topology, p)
         };
     }
+
+    private HeatingSystem ConvertToAlgorithmHeatingSystem(Repository.HeatingSystemData.HeatingSystem argsHeatingSystem)
+    {
+        var frequency = argsHeatingSystem.HeatingSystemPoints.Where(p => p.Type == HeatingSystemPointType.Frequency)
+            .Select(val => new HeatingSystemData {Key = val.TypeValue, Resistance = val.Resistance, Inductance = val.Inductance});
+        var temperature = argsHeatingSystem.HeatingSystemPoints.Where(p => p.Type == HeatingSystemPointType.Temperature)
+            .Select(val => new HeatingSystemData {Key = val.TypeValue, Resistance = val.Resistance, Inductance = val.Inductance});
+
+
+        return new HeatingSystem(frequency, temperature);
+    }
+
     private MatchingAlgorithm.Llc.LlcMatchingParameter BuildLlcParameters(LlcMatchingParameter parameter)
     {
         // disabled nullability warning, parameters should be null checked by the Validator
@@ -56,32 +67,6 @@ public class LlcMatchingBuilder : ILlcMatchingBuilder
         };
 #pragma warning restore CS8629
         return output;
-    }
-    private static MatchingAlgorithm.HeatingSystem BuildHeatingSystem(HeatingSystem data)
-    {
-        var frequency = new List<HeatingSystemData>();
-        var temperature = new List<HeatingSystemData>();
-        
-        foreach (var point in data.Points)
-        {
-            switch (point.Type)
-            {
-                case HeatingSystemPointType.Frequency :
-                    frequency.Add(new HeatingSystemData {Key = point.TypeValue, Resistance = point.Resistance, Inductance = point.Inductance});
-                    break;
-                case HeatingSystemPointType.Temperature :
-                    temperature.Add(new HeatingSystemData {Key = point.TypeValue, Resistance = point.Resistance, Inductance = point.Inductance});
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(point.Type));
-            }
-        }
-        return new MatchingAlgorithm.HeatingSystem(frequency, temperature);
-    }
-    private ILlcTopology BuildLlcTopology(HeatingSystem data)
-    {
-        var heatingData = BuildHeatingSystem(data);
-        return BuildLlcTopology(heatingData);
     }
     private ILlcTopology BuildLlcTopology(MatchingAlgorithm.HeatingSystem data)
     {

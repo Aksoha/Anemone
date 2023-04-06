@@ -30,11 +30,11 @@ public class MatchingCalculatorValidatorBase<TBuilder, TParameter> : AbstractVal
 #pragma warning restore CS8629
 
 
-        var heatingSystemFrequencies = (from p in data.HeatingSystem.Points
+        var heatingSystemFrequencies = (from p in data.HeatingSystem.HeatingSystemPoints
             where p.Type == HeatingSystemPointType.Frequency
             select p.TypeValue).ToArray();
 
-        var heatingSystemTemperature = (from p in data.HeatingSystem.Points
+        var heatingSystemTemperature = (from p in data.HeatingSystem.HeatingSystemPoints
             where p.Type == HeatingSystemPointType.Temperature
             select p.TypeValue).ToArray();
 

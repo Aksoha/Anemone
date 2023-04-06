@@ -10,6 +10,7 @@ using Anemone.Algorithms.Matching;
 using Anemone.Algorithms.Models;
 using Anemone.Algorithms.Report;
 using Anemone.Core;
+using Anemone.Repository.HeatingSystemData;
 using FluentValidation;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
@@ -19,7 +20,7 @@ using Microsoft.Extensions.Logging;
 using Prism.Commands;
 using Prism.Events;
 using SkiaSharp;
-using HeatingSystem = Anemone.Algorithms.Models.HeatingSystem;
+using HeatingSystem = Anemone.Repository.HeatingSystemData.HeatingSystem;
 
 namespace Anemone.Algorithms.ViewModels;
 
@@ -31,13 +32,13 @@ public class LlcAlgorithmViewModel : ViewModelBase
     private bool _isResultCalculated;
 
 
-    public LlcAlgorithmViewModel(HeatingRepositoryListViewModel heatingRepositoryListViewModel,
+    public LlcAlgorithmViewModel(IHeatingSystemRepository repository,
         IValidator<LlcMatchingBuildArgs> validator, IToastService toastService,
         ILogger<LlcAlgorithmViewModel> logger,
         IEventAggregator eventAggregator, ILlcMatchingCalculator matchingCalculator,
         IReportGenerator reportGenerator, IDataExporter dataExporter, ISaveFileDialog saveFileDialog)
     {
-        HeatingRepositoryListViewModel = heatingRepositoryListViewModel;
+        Repository = repository;
         Validator = validator;
         ToastService = toastService;
         Logger = logger;
@@ -90,6 +91,7 @@ public class LlcAlgorithmViewModel : ViewModelBase
         }
     }
 
+    private IHeatingSystemRepository Repository { get; }
     private IValidator<LlcMatchingBuildArgs> Validator { get; }
     private IToastService ToastService { get; }
     private ILogger<LlcAlgorithmViewModel> Logger { get; }
@@ -98,8 +100,6 @@ public class LlcAlgorithmViewModel : ViewModelBase
     private IReportGenerator ReportGenerator { get; }
     private IDataExporter DataExporter { get; }
     private ISaveFileDialog SaveFileDialog { get; }
-
-    public HeatingRepositoryListViewModel HeatingRepositoryListViewModel { get; }
     public LlcMatchingParameter Parameter { get; } = new();
 
     public LlcMatchingResult? Results
@@ -368,7 +368,7 @@ public class LlcAlgorithmViewModel : ViewModelBase
             return;
         }
 
-        var heatingSystem = await HeatingRepositoryListViewModel.Get(HeatingSystemListName);
+        var heatingSystem = await Repository.Get(HeatingSystemListName.Id);
         ArgumentNullException.ThrowIfNull(heatingSystem);
 
         if (CanExecuteCalculateCommand(heatingSystem!) is false)
