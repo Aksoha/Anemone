@@ -3,92 +3,118 @@ using Moq;
 
 namespace Anemone.RepositoryMock.HeatingSystemData;
 
-public class HeatingSystemRepositoryMock : IHeatingSystemRepository
+public class HeatingSystemRepositoryMock : Mock<IHeatingSystemRepository>
 {
-    private List<HeatingSystem> _data = new();
-    private Mock<IHeatingSystemRepository> _mock = new();
-    private IHeatingSystemRepository Object => _mock.Object;
-    private static DateTime CurrentDate => DateTime.UtcNow;
+    private readonly List<HeatingSystem> _data = new();
+    private readonly Random _random = new();
 
     public HeatingSystemRepositoryMock()
     {
-        _mock.Setup(x => x.GetAllNames()).Returns(() =>
-        {
-            var names = _data.Select(x => new HeatingSystemName { Id = x.Id, Name = x.Name });
-            return Task.FromResult(names);
-        });
-        
-        _mock.Setup(x => x.Create(It.IsAny<HeatingSystem>()))
-            .Callback<HeatingSystem>(heatingSystemModel =>
-            {
-                _data.Add(heatingSystemModel);
-                PropertyHelper.GetSetterForProperty<HeatingSystem, int?>(x => x.Id)?.Invoke(heatingSystemModel, GenerateId());
-                PropertyHelper.GetSetterForProperty<HeatingSystem, DateTime?>(x => x.CreationDate)?.Invoke(heatingSystemModel, CurrentDate);
-                foreach (var point in heatingSystemModel.HeatingSystemPoints)
-                {
-                    PropertyHelper.GetSetterForProperty<HeatingSystemPoint, int?>(x => x.Id)?.Invoke(point, GenerateId());
-                    PropertyHelper.GetSetterForProperty<HeatingSystemPoint, int?>(x => x.HeatingSystemId)?.Invoke(point, heatingSystemModel.Id);
-                    PropertyHelper.GetSetterForProperty<HeatingSystemPoint, HeatingSystem?>(x => x.HeatingSystem)?.Invoke(point, heatingSystemModel);
-                }
-            });
-        
-        _mock.Setup(x => x.GetAll()).Returns(() => Task.FromResult(_data.AsEnumerable()));
+        InitializeMethodsSetup();
+    }
 
-        _mock.Setup(x => x.Update(It.IsAny<HeatingSystem>()))
-            .Callback<HeatingSystem>(heatingSystemModel =>
-            {
-                if(_data.Contains(heatingSystemModel)) PropertyHelper.GetSetterForProperty<HeatingSystem, DateTime?>(x => x.ModificationDate)?.Invoke(heatingSystemModel, CurrentDate);
-            });
+    private static DateTime CurrentDate => DateTime.UtcNow;
 
-        _mock.Setup(x => x.Get(It.IsAny<int>()))
-            .Returns<int>(id =>
-            {
-                var model = _data.SingleOrDefault(x => x.Id == id);
-                return Task.FromResult(model);
-            });
+    private void InitializeMethodsSetup()
+    {
+        Setup(m => m.GetAllNames()).Returns(GetNamesFromCollection);
+        Setup(m => m.Exists(It.IsAny<int>())).Returns(CollectionItemExists);
+        Setup(m => m.Get(It.IsAny<int>())).Returns<int>(GetCollectionItem);
+        Setup(m => m.GetAll()).Returns(GetCollectionItems);
+        Setup(m => m.Create(It.IsAny<HeatingSystem>())).Callback<HeatingSystem>(AddHeatingSystemToCollection);
+        Setup(m => m.Update(It.IsAny<HeatingSystem>())).Callback<HeatingSystem>(UpdateCollectionItem);
+        Setup(m => m.Delete(It.IsAny<HeatingSystem>())).Callback<HeatingSystem>(DeleteCollectionItem);
+    }
 
+    private Task<IEnumerable<HeatingSystemName>> GetNamesFromCollection()
+    {
+        var names = _data.Select(x => new HeatingSystemName { Id = x.Id, Name = x.Name });
+        return Task.FromResult(names);
+    }
 
-        _mock.Setup(x => x.Delete(It.IsAny<HeatingSystem>()))
-            .Callback<HeatingSystem>(x => _data.Remove(x));
+    private Task<bool> CollectionItemExists(int id)
+    {
+        return Task.FromResult(_data.Exists(x => x.Id == id));
     }
 
 
-    private static readonly Random Random = new();
-
-    private static int GenerateId()
+    private Task<HeatingSystem?> GetCollectionItem(int id)
     {
-        return Random.Next();
+        var model = _data.SingleOrDefault(x => x.Id == id);
+        return Task.FromResult(model);
     }
 
-    public Task Create(HeatingSystem data)
+
+    private Task<IEnumerable<HeatingSystem>> GetCollectionItems()
     {
-        Object.Create(data);
-        return Task.CompletedTask;
+        return Task.FromResult(_data.AsEnumerable());
     }
 
-    public Task<HeatingSystem?> Get(int id)
+
+    private void AddHeatingSystemToCollection(HeatingSystem entity)
     {
-        return Object.Get(id);
+        _data.Add(entity);
+        SetDbEntityProperties(entity);
+        SetDbEntityProperties(entity, entity.HeatingSystemPoints);
     }
 
-    public Task<IEnumerable<HeatingSystem>> GetAll()
+
+    private void SetDbEntityProperties(HeatingSystem entity)
     {
-        return Object.GetAll();
+        PropertyRetriever.GetSetterForProperty<HeatingSystem, int?>(x => x.Id).Invoke(entity, GenerateId());
+        PropertyRetriever.GetSetterForProperty<HeatingSystem, DateTime?>(x => x.CreationDate)
+            .Invoke(entity, CurrentDate);
     }
 
-    public Task Update(HeatingSystem data)
+    private void SetDbEntityProperties(HeatingSystem entity, IEnumerable<HeatingSystemPoint> points)
     {
-        return Object.Update(data);
+        foreach (var point in points) SetDbPointProperties(entity, point);
     }
 
-    public Task Delete(HeatingSystem data)
+    private void SetDbPointProperties(HeatingSystem entity, HeatingSystemPoint point)
     {
-        Object.Delete(data);
-        return Task.CompletedTask;
+        PropertyRetriever.GetSetterForProperty<HeatingSystemPoint, int?>(x => x.Id).Invoke(point, GenerateId());
+        PropertyRetriever.GetSetterForProperty<HeatingSystemPoint, int?>(x => x.HeatingSystemId)
+            .Invoke(point, entity.Id);
+        PropertyRetriever.GetSetterForProperty<HeatingSystemPoint, HeatingSystem?>(x => x.HeatingSystem)
+            .Invoke(point, entity);
     }
 
-    public Task<IEnumerable<HeatingSystemName>> GetAllNames()
+    private int GenerateId()
     {
-        return Object.GetAllNames();
+        return _random.Next();
+    }
+
+    private void UpdateCollectionItem(HeatingSystem entity)
+    {
+        if (_data.Contains(entity))
+            PropertyRetriever.GetSetterForProperty<HeatingSystem, DateTime?>(x => x.ModificationDate)
+                .Invoke(entity, CurrentDate);
+    }
+
+    private void DeleteCollectionItem(HeatingSystem entity)
+    {
+        _data.Remove(entity);
+    }
+
+
+    public HeatingSystem CreateObjectInRepository()
+    {
+        var heatingSystem = CreateHeatingSystem();
+        Object.Create(heatingSystem);
+        return heatingSystem;
+    }
+
+    public HeatingSystem[] CreateObjectInRepository(int count)
+    {
+        var output = new List<HeatingSystem>();
+        for (var i = 0; i <= count; i++) output.Add(CreateObjectInRepository());
+
+        return output.ToArray();
+    }
+
+    private static HeatingSystem CreateHeatingSystem()
+    {
+        return HeatingSystemFaker.GenerateHeatingSystem();
     }
 }

@@ -25,7 +25,8 @@ public class HeatingRepositoryListViewModelTests
         const string newName = "hs new name";
 
         var testContext = HeatingSystemFaker.GenerateHeatingSystem(20).ToList();
-        var repository = new HeatingSystemRepositoryMock();
+        var repositoryMock = new HeatingSystemRepositoryMock();
+        var repository = repositoryMock.Object;
         foreach (var item in testContext) await repository.Create(item);
 
 
@@ -70,7 +71,8 @@ public class HeatingRepositoryListViewModelTests
         const string newName = "hs new name";
 
         var testContext = HeatingSystemFaker.GenerateHeatingSystem(20).ToList();
-        var repository = new HeatingSystemRepositoryMock();
+        var repositoryMock = new HeatingSystemRepositoryMock();
+        var repository = repositoryMock.Object;
         foreach (var item in testContext) await repository.Create(item);
 
         dialogServiceMock.Setup(x => x.ShowTextBoxDialog(It.IsAny<string>(), It.IsAny<string>())).Returns(() =>
@@ -122,7 +124,8 @@ public class HeatingRepositoryListViewModelTests
         var dialogService = dialogServiceMock.Object;
 
         var data = HeatingSystemFaker.GenerateHeatingSystem(20).ToList();
-        var repository = new HeatingSystemRepositoryMock();
+        var repositoryMock = new HeatingSystemRepositoryMock();
+        var repository = repositoryMock.Object;
         foreach (var item in data) await repository.Create(item);
 
         var testedModel = new HeatingRepositoryListViewModel(logger, repository, toastService, dialogService, eventAggregator);
@@ -171,7 +174,8 @@ public class HeatingRepositoryListViewModelTests
         var dialogService = dialogServiceMock.Object;
 
         var data = HeatingSystemFaker.GenerateHeatingSystem(20).ToList();
-        var repository = new HeatingSystemRepositoryMock();
+        var repositoryMock = new HeatingSystemRepositoryMock();
+        var repository = repositoryMock.Object;
         foreach (var item in data) await repository.Create(item);
 
         var testedModel = new HeatingRepositoryListViewModel(logger, repository, toastService, dialogService, eventAggregator);
