@@ -1,8 +1,9 @@
-﻿using Prism.Events;
+﻿using Anemone.Repository.HeatingSystemData;
+using Prism.Events;
 
 namespace Anemone.Algorithms.Models;
 
-public class HeatingSystemSelectionChangedEvent : PubSubEvent<HeatingSystemListName?>
+public class HeatingSystemSelectionChangedEvent : PubSubEvent<HeatingSystemNameDisplayModel?>
 {
     
 }

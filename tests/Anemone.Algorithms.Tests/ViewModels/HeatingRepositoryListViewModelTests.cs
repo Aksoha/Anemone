@@ -1,6 +1,10 @@
-﻿using Anemone.Algorithms.Models;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
+using Anemone.Algorithms.Models;
 using Anemone.Algorithms.ViewModels;
 using Anemone.Core;
+using Anemone.Repository;
+using Anemone.Repository.HeatingSystemData;
 using Anemone.RepositoryMock.HeatingSystemData;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -10,46 +14,385 @@ using IDialogService = Anemone.Core.IDialogService;
 
 namespace Anemone.Algorithms.Tests.ViewModels;
 
+[SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local")]
 public class HeatingRepositoryListViewModelTests
 {
+    private readonly Mock<IDialogService> _dialogMock = new();
+    private readonly Mock<IEventAggregator> _eaMock = new();
+    private readonly Mock<ILogger<HeatingRepositoryListViewModel>> _loggerMock = new();
+    private readonly HeatingSystemRepositoryMock _repositoryMock = new();
+    private readonly Mock<IToastService> _toastMock = new();
+
+    public HeatingRepositoryListViewModelTests()
+    {
+        SetInitialMockSetup();
+    }
+
+    private ILogger<HeatingRepositoryListViewModel> Logger => _loggerMock.Object;
+    private IHeatingSystemRepository Repository => _repositoryMock.Object;
+    private IToastService ToastService => _toastMock.Object;
+    private IDialogService DialogService => _dialogMock.Object;
+    private IEventAggregator EventAggregator => _eaMock.Object;
+
+
     [Fact]
-    public async Task Rename_WhenDialogIsConfirmed()
+    public void SelectionChanged_PublishesHeatingSystemSelectionChangedEvent()
     {
         // arrange
-        var logger = Mock.Of<ILogger<HeatingRepositoryListViewModel>>();
-        var toastService = Mock.Of<IToastService>();
-        var dialogServiceMock = new Mock<IDialogService>();
-        var eventAggregatorMock = new Mock<IEventAggregator>();
-        eventAggregatorMock.Setup(x => x.GetEvent<HeatingSystemSelectionChangedEvent>().Publish(It.IsAny<HeatingSystemListName>()));
-        var eventAggregator = eventAggregatorMock.Object;
-        const string newName = "hs new name";
-
-        var testContext = HeatingSystemFaker.GenerateHeatingSystem(20).ToList();
-        var repositoryMock = new HeatingSystemRepositoryMock();
-        var repository = repositoryMock.Object;
-        foreach (var item in testContext) await repository.Create(item);
-
-
-        dialogServiceMock.Setup(x => x.ShowTextBoxDialog(It.IsAny<string>(), It.IsAny<string>())).Returns(() =>
-        {
-            var dialogResult = new TextBoxDialogResult();
-            dialogResult.Result = ButtonResult.OK;
-            dialogResult.Text = newName;
-            return dialogResult;
-        });
-
-        var dialogService = dialogServiceMock.Object;
-        var testedModel = new HeatingRepositoryListViewModel(logger, repository, toastService, dialogService, eventAggregator);
+        var vm = CreateViewModel(false);
+        var model = new HeatingSystemNameDisplayModel();
 
         // act
-        var itemToUpdate = testedModel.ItemsSource.First();
-        testedModel.SelectedItem = itemToUpdate;
-        testedModel.RenameCommand.Execute(null);
+        vm.SelectedItem = model;
 
         // assert
-        Assert.Equal(newName, itemToUpdate.Name);
-        Assert.Same(itemToUpdate, testedModel.SelectedItem);
-        Assert.Equal(newName, (await repository.Get(itemToUpdate.Id))!.Name);
+        _eaMock.Verify(x => x.GetEvent<HeatingSystemSelectionChangedEvent>().Publish(model), Times.Once);
+    }
+
+
+    [Fact]
+    public void FilteredItems_IsUsingRepositoryEntities()
+    {
+        // arrange
+        _repositoryMock.DeleteAll();
+        var repositoryObjects = _repositoryMock.CreateObjectInRepository(5);
+
+        // act
+        var vm = CreateViewModel(false);
+
+        // assert
+        VerifyRepositoryGetAllNamesCalled(Times.Once);
+        Assert.Equal(repositoryObjects.Length, vm.FilteredItems.Count());
+        Assert.All(repositoryObjects,
+            repositoryObject => { Assert.Contains(vm.FilteredItems, x => x.Id == repositoryObject.Id); });
+    }
+
+    [Fact]
+    public void SearchString_FiltersFilteredItems()
+    {
+        // arrange
+        _repositoryMock.DeleteAll();
+        _repositoryMock.Setup(m => m.GetAllNames()).Returns(() =>
+        {
+            var list = new List<HeatingSystemName>
+            {
+                new() { Id = 1, Name = "S235 d=30mm" },
+                new() { Id = 2, Name = "S235 d=50mm" },
+                new() { Id = 3, Name = "Steel 275" }
+            };
+            return Task.FromResult(list.AsEnumerable());
+        });
+
+        var vm = CreateViewModel(false);
+
+
+        // act
+        vm.SearchString = "S235";
+
+
+        // arrange
+        Assert.Contains(vm.FilteredItems, item => item.Name == "S235 d=30mm");
+        Assert.Contains(vm.FilteredItems, item => item.Name == "S235 d=50mm");
+        Assert.DoesNotContain(vm.FilteredItems, item => item.Name == "Steel 275");
+    }
+
+    [Fact]
+    public void SearchString_RisesPropertyChangedOnFilteredItems()
+    {
+        // arrange
+        var vm = CreateViewModel(false);
+
+        // act
+        void Act()
+        {
+            vm.SearchString = "not relevant";
+        }
+
+        // assert
+        Assert.PropertyChanged(vm, nameof(vm.FilteredItems), Act);
+    }
+
+
+    [Fact]
+    public void SearchString_RisesPropertyChangedOnIsRepositoryListVisible()
+    {
+        // arrange
+        var vm = CreateViewModel(false);
+
+        // act
+        void Act()
+        {
+            vm.SearchString = "not relevant";
+        }
+
+        // assert
+        Assert.PropertyChanged(vm, nameof(vm.IsRepositoryListVisible), Act);
+    }
+
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void IsAscendingOrder_OrdersFilteredData(bool orderIsAscending)
+    {
+        // arrange
+        var vm = CreateViewModel(false);
+
+        var orderedCollection = vm.FilteredItems.OrderBy(p => p.Name).ToArray();
+        if (orderIsAscending is false)
+            orderedCollection = orderedCollection.Reverse().ToArray();
+
+
+        // act
+        vm.IsAscendingOrder = orderIsAscending;
+
+
+        // assert
+        for (var i = 0; i < orderedCollection.Length; i++)
+        {
+            var expected = orderedCollection[i];
+            var actual = vm.FilteredItems.ElementAt(i);
+            Assert.Same(expected, actual);
+        }
+    }
+
+
+    [Fact]
+    public void IsRepositoryListVisible_IsVisibleWhenFilterMatchesAtLeastOneElement()
+    {
+        // arrange
+        _repositoryMock.DeleteAll();
+        _repositoryMock.Setup(m => m.GetAllNames()).Returns(() =>
+        {
+            var list = new List<HeatingSystemName>
+            {
+                new() { Id = 1, Name = "S235 d=30mm" },
+                new() { Id = 2, Name = "S235 d=50mm" },
+                new() { Id = 3, Name = "Steel 275" }
+            };
+            return Task.FromResult(list.AsEnumerable());
+        });
+
+        var vm = CreateViewModel(false);
+
+        // act
+        vm.SearchString = "S235";
+
+
+        // assert
+        Assert.True(vm.IsRepositoryListVisible);
+    }
+
+    [Fact]
+    public void IsRepositoryListVisible_IsVisibleWhenFilterMatchesZeroElements()
+    {
+        // arrange
+        _repositoryMock.DeleteAll();
+        _repositoryMock.Setup(m => m.GetAllNames()).Returns(() =>
+        {
+            var list = new List<HeatingSystemName>
+            {
+                new() { Id = 1, Name = "S235 d=30mm" },
+                new() { Id = 2, Name = "S235 d=50mm" },
+                new() { Id = 3, Name = "Steel 275" }
+            };
+            return Task.FromResult(list.AsEnumerable());
+        });
+        var vm = CreateViewModel(false);
+
+
+        // act
+        vm.SearchString = "Iron";
+
+
+        // assert
+        Assert.False(vm.IsRepositoryListVisible);
+    }
+    
+    
+    [Fact]
+    public void FetchDataCommand_RisesPropertyChangedOnFilteredItems()
+    {
+        // arrange
+        var vm = CreateViewModel(false);
+
+        // act
+        void Act()
+        {
+            vm.FetchDataCommand.Execute(null);
+        }
+
+        // assert
+        Assert.PropertyChanged(vm, nameof(vm.FilteredItems), Act);
+    }
+
+    [Fact]
+    public void FetchDataCommand_RisesPropertyChangedOnIsRepositoryListVisible()
+    {
+        // arrange
+        var vm = CreateViewModel(false);
+
+        // act
+        void Act()
+        {
+            vm.FetchDataCommand.Execute(null);
+        }
+
+        // assert
+        Assert.PropertyChanged(vm, nameof(vm.IsRepositoryListVisible), Act);
+    }
+
+    [Fact]
+    public void FetchDataCommand_NotifiesUserOnRepositoryException()
+    {
+        // arrange
+        SetupConfirmationDialog(ButtonResult.OK);
+        SetupRepositoryException(m => m.GetAllNames());
+
+        // act
+        CreateViewModel(false);
+
+
+        // assert
+        VerifyToastShowed(It.IsAny<string>, Times.Once);
+    }
+
+
+    [Fact]
+    public void RenameCommand_UpdatesRepositoryWhenDialogIsConfirmed()
+    {
+        // arrange
+        const string newNameOfHeatingSystem = "New name of heating system";
+        SetupTextBoxDialog(ButtonResult.OK, newNameOfHeatingSystem);
+
+        var vm = CreateViewModel(false);
+        var selectedItem = SetSelectedItem(vm);
+        var oldName = selectedItem.Name;
+        var oldId = selectedItem.Id;
+
+        // act
+        vm.RenameCommand.Execute(null);
+
+        // assert
+        VerifyTextBoxDialogShowed(() => oldName, Times.Once);
+        VerifyRepositoryGetCalled(() => oldId!, Times.Once);
+        VerifyRepositoryUpdateCalled(() => It.Is<HeatingSystem>(p => p.Id == oldId), Times.Once);
+        Assert.Equal(newNameOfHeatingSystem, selectedItem.Name);
+        Assert.Same(selectedItem, vm.SelectedItem);
+    }
+
+    [Fact]
+    public void RenameCommand_NotifiesUserOnGetRepositoryException()
+    {
+        // arrange
+        SetupTextBoxDialog(ButtonResult.OK, "unrelated to the test");
+        SetupRepositoryException(m => m.Get(It.IsAny<int>()));
+        var vm = CreateViewModel(true);
+
+        // act
+        vm.RenameCommand.Execute(null);
+
+        // assert
+        VerifyToastShowed(It.IsAny<string>, Times.Once);
+    }
+
+    [Fact]
+    public void RenameCommand_NotifiesUserOnUpdateRepositoryException()
+    {
+        // arrange
+        SetupTextBoxDialog(ButtonResult.OK, "unrelated to the test");
+        SetupRepositoryException(m => m.Update(It.IsAny<HeatingSystem>()));
+        var vm = CreateViewModel(true);
+
+        // act
+        vm.RenameCommand.Execute(null);
+
+        // assert
+        VerifyToastShowed(It.IsAny<string>, Times.Once);
+    }
+
+
+    [Theory]
+    [InlineData(ButtonResult.Abort)]
+    [InlineData(ButtonResult.Cancel)]
+    [InlineData(ButtonResult.Ignore)]
+    [InlineData(ButtonResult.No)]
+    [InlineData(ButtonResult.None)]
+    [InlineData(ButtonResult.Retry)]
+    public void RenameCommand_DoesNotUpdateRepositoryWhenDialogIsNotConfirmed(ButtonResult buttonResult)
+    {
+        // arrange
+        SetupTextBoxDialog(buttonResult, "the name shouldn't have changed");
+
+        var vm = CreateViewModel(false);
+        var selectedItem = SetSelectedItem(vm);
+        var oldName = selectedItem.Name;
+
+
+        // act
+        vm.RenameCommand.Execute(null);
+
+
+        // assert
+        VerifyTextBoxDialogShowed(() => selectedItem.Name, Times.Once);
+        VerifyRepositoryUpdateCalled(It.IsAny<HeatingSystem>, Times.Never);
+        Assert.Equal(oldName, selectedItem.Name);
+        Assert.Same(selectedItem, vm.SelectedItem);
+    }
+
+    [Fact]
+    public void RenameCommand_RisesPropertyChangedOnFilteredItems()
+    {
+        // arrange
+        SetupTextBoxDialog(ButtonResult.OK, "not relevant to this test");
+        var vm = CreateViewModel(true);
+
+        // act
+        void Act()
+        {
+            vm.RenameCommand.Execute(null);
+        }
+
+        // assert
+        Assert.PropertyChanged(vm, nameof(vm.FilteredItems), Act);
+    }
+
+    [Fact]
+    public void RenameCommand_DoesNotUpdateRepositoryItemWhenHeatingSystemNameIsDidNotChange()
+    {
+        // arrange
+        var vm = CreateViewModel(false);
+        var selectedItem = SetSelectedItem(vm);
+        SetupTextBoxDialog(ButtonResult.OK, selectedItem.Name);
+
+        // act
+        vm.RenameCommand.Execute(null);
+
+        // assert
+        VerifyRepositoryUpdateCalled(It.IsAny<HeatingSystem>, Times.Never);
+    }
+
+
+    [Fact]
+    public void DeleteCommand_DeletesRepositoryItemWhenDialogIsConfirmed()
+    {
+        // arrange
+        SetupConfirmationDialog(ButtonResult.OK);
+
+        var vm = CreateViewModel(false);
+        var itemToDelete = SetSelectedItem(vm);
+
+
+        // act
+        vm.DeleteCommand.Execute(null);
+
+
+        // assert
+        VerifyConfirmationDialogShowed(It.IsAny<string>, Times.Once);
+        VerifyRepositoryGetCalled(() => itemToDelete.Id, Times.Once);
+        VerifyRepositoryDeleteCalled(() => It.Is<HeatingSystem>(p => p.Id == itemToDelete.Id), Times.Once);
+        Assert.Null(vm.SelectedItem);
+        Assert.DoesNotContain(vm.FilteredItems, x => x == itemToDelete);
     }
 
     [Theory]
@@ -59,137 +402,184 @@ public class HeatingRepositoryListViewModelTests
     [InlineData(ButtonResult.No)]
     [InlineData(ButtonResult.None)]
     [InlineData(ButtonResult.Retry)]
-    public async Task Rename_WhenDialogIsNotConfirmed(ButtonResult buttonResult)
+    public void DeleteCommand_DoesNotDeleteRepositoryItemWhenDialogIsNotConfirmed(ButtonResult buttonResult)
     {
         // arrange
-        var logger = Mock.Of<ILogger<HeatingRepositoryListViewModel>>();
-        var toastService = Mock.Of<IToastService>();
-        var dialogServiceMock = new Mock<IDialogService>();
-        var eventAggregatorMock = new Mock<IEventAggregator>();
-        eventAggregatorMock.Setup(x => x.GetEvent<HeatingSystemSelectionChangedEvent>().Publish(It.IsAny<HeatingSystemListName>()));
-        var eventAggregator = eventAggregatorMock.Object;
-        const string newName = "hs new name";
+        SetupConfirmationDialog(buttonResult);
 
-        var testContext = HeatingSystemFaker.GenerateHeatingSystem(20).ToList();
-        var repositoryMock = new HeatingSystemRepositoryMock();
-        var repository = repositoryMock.Object;
-        foreach (var item in testContext) await repository.Create(item);
+        var vm = CreateViewModel(false);
+        var itemToDelete = SetSelectedItem(vm);
 
-        dialogServiceMock.Setup(x => x.ShowTextBoxDialog(It.IsAny<string>(), It.IsAny<string>())).Returns(() =>
-        {
-            var dialogResult = new TextBoxDialogResult();
-            dialogResult.Result = buttonResult;
-            dialogResult.Text = newName;
-            return dialogResult;
-        });
-
-        var dialogService = dialogServiceMock.Object;
-        var testedModel = new HeatingRepositoryListViewModel(logger, repository, toastService, dialogService, eventAggregator);
 
         // act
-        var itemToUpdate = testedModel.ItemsSource.First();
-        var oldName = itemToUpdate.Name;
-        testedModel.SelectedItem = itemToUpdate;
-        testedModel.RenameCommand.Execute(null);
+        vm.DeleteCommand.Execute(null);
+
 
         // assert
-        Assert.Equal(oldName, itemToUpdate.Name);
-        Assert.Same(itemToUpdate, testedModel.SelectedItem);
-        Assert.Equal(oldName, (await repository.Get(itemToUpdate.Id))!.Name);
+        VerifyConfirmationDialogShowed(It.IsAny<string>, Times.Once);
+        VerifyRepositoryDeleteCalled(It.IsAny<HeatingSystem>, Times.Never);
+        Assert.Contains(vm.FilteredItems, x => x == itemToDelete);
+        Assert.Same(itemToDelete, vm.SelectedItem);
     }
-
 
     [Fact]
-    public async Task Delete_WhenDialogIsConfirmed()
+    public void DeleteCommand_RisesPropertyChangedOnFilteredItems()
     {
         // arrange
-        var logger = Mock.Of<ILogger<HeatingRepositoryListViewModel>>();
-        var toastService = Mock.Of<IToastService>();
-        var dialogServiceMock = new Mock<IDialogService>();
-        var eventAggregatorMock = new Mock<IEventAggregator>();
-        eventAggregatorMock.Setup(x => x.GetEvent<HeatingSystemSelectionChangedEvent>().Publish(It.IsAny<HeatingSystemListName>()));
-        var eventAggregator = eventAggregatorMock.Object;
-        
-        
-        dialogServiceMock.Setup(x =>
-                x.ShowConfirmationDialog(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
-                    It.IsAny<string>()))
-            .Returns(() =>
-            {
-                var dialogResult = new ConfirmationDialogResult();
-                dialogResult.Result = ButtonResult.OK;
-                return dialogResult;
-            });
-
-        var dialogService = dialogServiceMock.Object;
-
-        var data = HeatingSystemFaker.GenerateHeatingSystem(20).ToList();
-        var repositoryMock = new HeatingSystemRepositoryMock();
-        var repository = repositoryMock.Object;
-        foreach (var item in data) await repository.Create(item);
-
-        var testedModel = new HeatingRepositoryListViewModel(logger, repository, toastService, dialogService, eventAggregator);
-
+        SetupConfirmationDialog(ButtonResult.OK);
+        var vm = CreateViewModel(true);
 
         // act
-        var itemToDelete = testedModel.ItemsSource.First();
-        testedModel.SelectedItem = itemToDelete;
-        testedModel.DeleteCommand.Execute(null);
-
+        void Act()
+        {
+            vm.DeleteCommand.Execute(null);
+        }
 
         // assert
-        Assert.Null(await repository.Get(itemToDelete.Id));
-        Assert.DoesNotContain(testedModel.ItemsSource, s => s == itemToDelete);
-        Assert.Null(testedModel.SelectedItem);
+        Assert.PropertyChanged(vm, nameof(vm.FilteredItems), Act);
     }
 
-    [Theory]
-    [InlineData(ButtonResult.Abort)]
-    [InlineData(ButtonResult.Cancel)]
-    [InlineData(ButtonResult.Ignore)]
-    [InlineData(ButtonResult.No)]
-    [InlineData(ButtonResult.None)]
-    [InlineData(ButtonResult.Retry)]
-    public async Task Delete_WhenDialogIsNotConfirmed(ButtonResult buttonResult)
+    [Fact]
+    public void DeleteCommand_RisesPropertyChangedOnIsRepositoryListVisible()
     {
         // arrange
-        var logger = Mock.Of<ILogger<HeatingRepositoryListViewModel>>();
-        var toastService = Mock.Of<IToastService>();
-        var dialogServiceMock = new Mock<IDialogService>();
-        var eventAggregatorMock = new Mock<IEventAggregator>();
-        eventAggregatorMock.Setup(x => x.GetEvent<HeatingSystemSelectionChangedEvent>().Publish(It.IsAny<HeatingSystemListName>()));
-        var eventAggregator = eventAggregatorMock.Object;
+        SetupConfirmationDialog(ButtonResult.OK);
+        var vm = CreateViewModel(true);
+
+        // act
+        void Act()
+        {
+            vm.DeleteCommand.Execute(null);
+        }
+
+        // assert
+        Assert.PropertyChanged(vm, nameof(vm.IsRepositoryListVisible), Act);
+    }
+
+    [Fact]
+    public void DeleteCommand_NotifiesUserOnGetRepositoryException()
+    {
+        // arrange
+        const string newNameOfHeatingSystem = "New name of heating system";
+        SetupTextBoxDialog(ButtonResult.OK, newNameOfHeatingSystem);
+        SetupRepositoryException(m => m.Get(It.IsAny<int>()));
+        var vm = CreateViewModel(true);
+
+        // act
+        vm.DeleteCommand.Execute(null);
+
+        // assert
+        VerifyToastShowed(It.IsAny<string>, Times.Once);
+    }
+
+    [Fact]
+    public void DeleteCommand_NotifiesUserOnDeleteRepositoryException()
+    {
+        // arrange
+        SetupConfirmationDialog(ButtonResult.OK);
+        SetupRepositoryException(m => m.Delete(It.IsAny<HeatingSystem>()));
+        var vm = CreateViewModel(true);
+
+        // act
+        vm.DeleteCommand.Execute(null);
+
+        // assert
+        VerifyToastShowed(It.IsAny<string>, Times.Once);
+    }
 
 
-        dialogServiceMock.Setup(x =>
-                x.ShowConfirmationDialog(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+    private void SetInitialMockSetup()
+    {
+        _eaMock.Setup(x =>
+            x.GetEvent<HeatingSystemSelectionChangedEvent>().Publish(It.IsAny<HeatingSystemNameDisplayModel>()));
+        _repositoryMock.CreateObjectInRepository(2);
+    }
+
+    private HeatingRepositoryListViewModel CreateViewModel(bool setSelectedItem)
+    {
+        var vm = new HeatingRepositoryListViewModel(Logger, Repository, ToastService, DialogService, EventAggregator);
+
+        if (setSelectedItem)
+            SetSelectedItem(vm);
+
+        return vm;
+    }
+
+    private static HeatingSystemNameDisplayModel SetSelectedItem(HeatingRepositoryListViewModel vm)
+    {
+        var selectedItem = vm.FilteredItems.First();
+        vm.SelectedItem = selectedItem;
+        return selectedItem;
+    }
+
+    private void SetupTextBoxDialog(ButtonResult buttonResult, string returnedText)
+    {
+        _dialogMock.Setup(x => x.ShowTextBoxDialog(It.IsAny<string>(), It.IsAny<string>())).Returns(() =>
+        {
+            var dialogResult = new TextBoxDialogResult
+            {
+                Result = buttonResult,
+                Text = returnedText
+            };
+            return dialogResult;
+        });
+    }
+
+    private void SetupConfirmationDialog(ButtonResult buttonResult)
+    {
+        _dialogMock.Setup(m =>
+                m.ShowConfirmationDialog(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
                     It.IsAny<string>()))
             .Returns(() =>
             {
-                var dialogResult = new ConfirmationDialogResult();
-                dialogResult.Result = buttonResult;
+                var dialogResult = new ConfirmationDialogResult
+                {
+                    Result = buttonResult
+                };
                 return dialogResult;
             });
+    }
 
-        var dialogService = dialogServiceMock.Object;
-
-        var data = HeatingSystemFaker.GenerateHeatingSystem(20).ToList();
-        var repositoryMock = new HeatingSystemRepositoryMock();
-        var repository = repositoryMock.Object;
-        foreach (var item in data) await repository.Create(item);
-
-        var testedModel = new HeatingRepositoryListViewModel(logger, repository, toastService, dialogService, eventAggregator);
+    private void SetupRepositoryException(Expression<Action<IHeatingSystemRepository>> expression)
+    {
+        _repositoryMock.Setup(expression).Throws(new RepositoryWriteException("not relevant to the test"));
+    }
 
 
-        // act
-        var itemToDelete = testedModel.ItemsSource.First();
-        testedModel.SelectedItem = itemToDelete;
-        testedModel.DeleteCommand.Execute(null);
+    private void VerifyTextBoxDialogShowed(Func<string> textDelegate, Func<Times> times)
+    {
+        _dialogMock.Verify(m => m.ShowTextBoxDialog(textDelegate.Invoke(), It.IsAny<string>()), times);
+    }
+
+    private void VerifyConfirmationDialogShowed(Func<string> messageDelegate, Func<Times> times)
+    {
+        _dialogMock.Verify(
+            m => m.ShowConfirmationDialog(messageDelegate.Invoke(), It.IsAny<string>(), "Cancel", "Delete"), times);
+    }
+
+    private void VerifyToastShowed(Func<string> message, Func<Times> times)
+    {
+        _toastMock.Verify(m => m.Show(message.Invoke()), times);
+    }
 
 
-        // assert
-        Assert.NotNull(await repository.Get(itemToDelete.Id));
-        Assert.Contains(testedModel.ItemsSource, s => s == itemToDelete);
-        Assert.Same(itemToDelete, testedModel.SelectedItem);
+    private void VerifyRepositoryGetCalled(Func<int> idDelegate, Func<Times> times)
+    {
+        _repositoryMock.Verify(m => m.Get(idDelegate.Invoke()), times);
+    }
+
+    private void VerifyRepositoryGetAllNamesCalled(Func<Times> times)
+    {
+        _repositoryMock.Verify(m => m.GetAllNames(), times);
+    }
+
+    private void VerifyRepositoryUpdateCalled(Func<HeatingSystem> heatingSystemDelegate, Func<Times> times)
+    {
+        _repositoryMock.Verify(m => m.Update(heatingSystemDelegate.Invoke()), times);
+    }
+
+    private void VerifyRepositoryDeleteCalled(Func<HeatingSystem> heatingSystemDelegate, Func<Times> times)
+    {
+        _repositoryMock.Verify(m => m.Delete(heatingSystemDelegate.Invoke()), times);
     }
 }

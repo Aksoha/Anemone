@@ -121,7 +121,7 @@ public class LlcAlgorithmViewModel : ViewModelBase
 
     private bool CanExecuteExportDataCommand => Results is not null;
 
-    private HeatingSystemListName? HeatingSystemListName { get; set; }
+    private HeatingSystemNameDisplayModel? HeatingSystemListName { get; set; }
 
     public ICommand ViewDetailedResultsCommand { get; }
     public ICommand CalculateCommand { get; }
@@ -292,7 +292,7 @@ public class LlcAlgorithmViewModel : ViewModelBase
         };
     }
 
-    private void SelectionChanged(HeatingSystemListName? obj)
+    private void SelectionChanged(HeatingSystemNameDisplayModel? obj)
     {
         HeatingSystemListName = obj;
     }

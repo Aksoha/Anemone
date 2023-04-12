@@ -29,6 +29,8 @@
                         materialDesign:TextFieldAssist.HasClearButton="True"
                         Margin="0 5"
                         Text="{Binding SearchString, UpdateSourceTrigger=PropertyChanged }" />
+                    
+                    
                     <!-- items -->
                     <ListView ItemsSource="{Binding FilteredItems}" SelectedItem="{Binding SelectedItem}"
                               SelectionMode="Single">
@@ -39,6 +41,8 @@
                                 <MenuItem Header="Rename" Icon="{components:PackIcon Delete}"
                                           Command="{Binding Path=DataContext.DeleteCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" />
                             </ContextMenu>
+                            
+                            
                             <Style TargetType="GridViewColumnHeader">
                                 <Setter Property="Visibility" Value="Collapsed"/>
                             </Style>
@@ -63,7 +67,6 @@
                     Margin="5 10">
                     <TextBlock HorizontalAlignment="Center" Text="oops, look's like there is no data available"
                                TextWrapping="Wrap" Margin="5 10" />
-                    <Button Command="{Binding FetchDataCommand}" Content="add" Margin="5 0" />
                 </StackPanel>
             </StackPanel>
         </materialDesign:Card>

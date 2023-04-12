@@ -23,6 +23,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+    </ItemGroup>    
+    
+    <ItemGroup>
         <ProjectReference Include="..\..\src\Anemone.Algorithms\Anemone.Algorithms.csproj" />
         <ProjectReference Include="..\Anemone.RepositoryMock\Anemone.RepositoryMock.csproj" />
     </ItemGroup>

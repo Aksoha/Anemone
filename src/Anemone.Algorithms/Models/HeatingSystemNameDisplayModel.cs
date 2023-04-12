@@ -1,21 +1,15 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Anemone.Repository.HeatingSystemData;
 
 namespace Anemone.Algorithms.Models;
 
-public class HeatingSystemListName : INotifyPropertyChanged
+public class HeatingSystemNameDisplayModel : INotifyPropertyChanged
 {
     private int _id;
     private string _name = string.Empty;
-    
-
-    public HeatingSystemListName(HeatingSystemName heatingSystemName)
-    {
-        Id = (int)heatingSystemName.Id!;
-        Name = heatingSystemName.Name;
-    }
 
     public int Id
     {
@@ -29,6 +23,18 @@ public class HeatingSystemListName : INotifyPropertyChanged
         set => SetField(ref _name, value);
     }
 
+    public HeatingSystemNameDisplayModel()
+    {
+        
+    }
+
+    public HeatingSystemNameDisplayModel(HeatingSystem heatingSystem)
+    {
+        ArgumentNullException.ThrowIfNull(heatingSystem.Id);
+        Id = (int)heatingSystem.Id;
+        Name = heatingSystem.Name;
+    }
+    
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

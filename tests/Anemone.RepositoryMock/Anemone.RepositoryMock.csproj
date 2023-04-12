@@ -24,6 +24,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+    </ItemGroup>
+    
+    <ItemGroup>
         <ProjectReference Include="..\..\src\Anemone.Repository\Anemone.Repository.csproj" />
     </ItemGroup>
 

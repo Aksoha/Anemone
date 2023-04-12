@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Anemone.Algorithms.Models;
 using Anemone.Core;
+using Anemone.Repository;
 using Anemone.Repository.HeatingSystemData;
 using Microsoft.Extensions.Logging;
 using Prism.Events;
@@ -16,30 +16,11 @@ namespace Anemone.Algorithms.ViewModels;
 
 public class HeatingRepositoryListViewModel : ViewModelBase
 {
-    private HeatingSystemListName? _selectedItem;
-    private string? _searchString;
-    private IEnumerable<HeatingSystemListName> _filteredItems = null!;
+    private IEnumerable<HeatingSystemNameDisplayModel> _filteredItems = null!;
     private bool _isAscendingOrder = true;
-
-    public bool IsAscendingOrder
-    {
-        get => _isAscendingOrder;
-        set
-        {
-            SetProperty(ref _isAscendingOrder, value);
-            OrderItems();
-        }
-    }
-
-    private void OrderItems()
-    {
-        if (IsAscendingOrder)
-        {
-            FilteredItems = FilteredItems.OrderBy(x => x.Name);
-            return;
-        }
-        FilteredItems = FilteredItems.OrderByDescending(x => x.Name);
-    }
+    private List<HeatingSystemNameDisplayModel> _itemsSource = null!;
+    private string? _searchString;
+    private HeatingSystemNameDisplayModel? _selectedItem;
 
     public HeatingRepositoryListViewModel(ILogger<HeatingRepositoryListViewModel> logger,
         IHeatingSystemRepository repository, IToastService toastService, IDialogService dialogService,
@@ -54,21 +35,24 @@ public class HeatingRepositoryListViewModel : ViewModelBase
         RenameCommand = new ActionCommandAsync(ExecuteRenameCommand);
         DeleteCommand = new ActionCommandAsync(ExecuteDeleteCommand);
         FetchDataCommand.Execute(null);
-        UpdateDataSource = ExecuteFetchDataCommand;
-        FilteredItems = ItemsSource;
-
-        ItemsSource.CollectionChanged += (_, _) => RaisePropertyChanged(nameof(IsRepositoryListVisible));
+        FilteredItems = _itemsSource;
     }
 
+    public IEnumerable<HeatingSystemNameDisplayModel> FilteredItems
+    {
+        get => _filteredItems;
+        private set => SetProperty(ref _filteredItems, value);
+    }
 
-    private ILogger<HeatingRepositoryListViewModel> Logger { get; }
-    private IHeatingSystemRepository Repository { get; }
-    private IToastService ToastService { get; }
-    private IDialogService DialogService { get; }
-    private IEventAggregator EventAggregator { get; }
-    public ICommand FetchDataCommand { get; set; }
-    public ICommand RenameCommand { get; set; }
-    public ICommand DeleteCommand { get; set; }
+    public HeatingSystemNameDisplayModel? SelectedItem
+    {
+        get => _selectedItem;
+        set
+        {
+            if (SetProperty(ref _selectedItem, value))
+                PublishCollectionChangedEvent(value);
+        }
+    }
 
     public string? SearchString
     {
@@ -80,104 +64,171 @@ public class HeatingRepositoryListViewModel : ViewModelBase
         }
     }
 
-    
-    public IEnumerable<HeatingSystemListName> FilteredItems
+    public bool IsAscendingOrder
     {
-        get => _filteredItems;
-        set => SetProperty(ref _filteredItems, value);
-    }
-
-    public Func<Task> UpdateDataSource { get; }
-
-    // public bool IsRepositoryListVisible => false;
-    public bool IsRepositoryListVisible => ItemsSource.Count > 0;
-
-    /// <summary>
-    ///     Item on which <see cref="RenameCommand" /> and <see cref="DeleteCommand" /> will be performed.
-    /// </summary>
-    public HeatingSystemListName? SelectedItem
-    {
-        get => _selectedItem;
+        get => _isAscendingOrder;
         set
         {
-            if (SetProperty(ref _selectedItem, value))
-                PublishEvent(value);
+            SetProperty(ref _isAscendingOrder, value);
+            OrderItems();
         }
     }
 
-    private void PublishEvent(HeatingSystemListName? value)
+    public bool IsRepositoryListVisible => FilteredItems.Any();
+
+
+    public ICommand FetchDataCommand { get; }
+    public ICommand RenameCommand { get; }
+    public ICommand DeleteCommand { get; }
+
+
+    private ILogger<HeatingRepositoryListViewModel> Logger { get; }
+    private IHeatingSystemRepository Repository { get; }
+    private IToastService ToastService { get; }
+    private IDialogService DialogService { get; }
+    private IEventAggregator EventAggregator { get; }
+
+
+    private void PublishCollectionChangedEvent(HeatingSystemNameDisplayModel? value)
     {
         EventAggregator.GetEvent<HeatingSystemSelectionChangedEvent>().Publish(value);
     }
 
-    public ObservableCollection<HeatingSystemListName> ItemsSource { get; } = new();
+
+    private void FilterItems()
+    {
+        FilteredItems = _itemsSource.Where(x =>
+            x.Name.StartsWith(SearchString?.Trim() ?? string.Empty, StringComparison.OrdinalIgnoreCase));
+        RaisePropertyChanged(nameof(IsRepositoryListVisible));
+    }
+
+    private void OrderItems()
+    {
+        FilteredItems = IsAscendingOrder
+            ? FilteredItems.OrderBy(x => x.Name)
+            : FilteredItems.OrderByDescending(x => x.Name);
+    }
+
 
     private async Task ExecuteFetchDataCommand()
     {
-        var results = await Repository.GetAllNames();
-        ItemsSource.Clear();
-        foreach (var item in results) ItemsSource.Add(new HeatingSystemListName(item));
+        try
+        {
+            _itemsSource = (await Repository.GetAllNames())
+                .Select(x => new HeatingSystemNameDisplayModel { Id = (int)x.Id!, Name = x.Name })
+                .ToList();
+            OrderItems();
+            RaisePropertyChanged(nameof(IsRepositoryListVisible));
+        }
+        catch (RepositoryException e)
+        {
+            DisplayErrorMessage(e);
+        }
     }
 
     private async Task ExecuteRenameCommand()
     {
-        ArgumentNullException.ThrowIfNull(SelectedItem);
-
-
-        var data = await Repository.Get(SelectedItem.Id);
-        if (data is null)
+        HeatingSystem hs;
+        try
         {
-            OnItemNotFoundInRepository(SelectedItem);
+            hs = await GetRepositoryItem();
+        }
+        catch (RepositoryException e)
+        {
+            DisplayErrorMessage(e);
             return;
         }
 
 
-        var result = DialogService.ShowTextBoxDialog(data.Name);
-        if (result.Result != ButtonResult.OK)
+        var dialogResult = DialogService.ShowTextBoxDialog(hs.Name);
+        if (dialogResult.Result != ButtonResult.OK)
             return;
 
-        var newName = result.Text.Trim();
-        if (result.Text != data.Name)
+
+        var newName = dialogResult.Text.Trim();
+        if (newName == hs.Name)
+            return;
+
+        try
         {
-            data.Name = newName;
-            SelectedItem.Name = newName;
-            await Repository.Update(data);
+            await UpdateSelectedItemName(newName, hs);
+        }
+        catch (RepositoryException e)
+        {
+            DisplayErrorMessage(e);
         }
     }
 
     private async Task ExecuteDeleteCommand()
     {
-        ArgumentNullException.ThrowIfNull(SelectedItem);
-
-
-        var data = await Repository.Get(SelectedItem.Id);
-        if (data is null)
+        HeatingSystem hs;
+        try
         {
-            OnItemNotFoundInRepository(SelectedItem);
+            hs = await GetRepositoryItem();
+        }
+        catch (RepositoryException e)
+        {
+            DisplayErrorMessage(e);
             return;
         }
 
-        var result = DialogService.ShowConfirmationDialog($"Are you sure you want to delete {data.Name}",
-            cancelButtonText: "Cancel", confirmButtonText: "Delete");
-        if (result.Result != ButtonResult.OK)
+
+        var dialogResult = ShowDeletionDialog(hs.Name);
+        if (dialogResult.Result != ButtonResult.OK)
             return;
 
+
+        try
+        {
+            await DeleteSelectedItem(hs);
+        }
+        catch (RepositoryException e)
+        {
+            DisplayErrorMessage(e);
+        }
+    }
+
+
+    private async Task<HeatingSystem> GetRepositoryItem()
+    {
+        ArgumentNullException.ThrowIfNull(SelectedItem);
+
+        var output = await Repository.Get(SelectedItem.Id);
+        return output ?? throw new ArgumentNullException(nameof(output));
+    }
+
+    private async Task UpdateSelectedItemName(string newName, HeatingSystem heatingSystem)
+    {
+        ArgumentNullException.ThrowIfNull(SelectedItem);
+
+        heatingSystem.Name = newName;
+        await Repository.Update(heatingSystem);
+        SelectedItem.Name = newName;
+        RaisePropertyChanged(nameof(FilteredItems));
+    }
+
+    private async Task DeleteSelectedItem(HeatingSystem data)
+    {
+        ArgumentNullException.ThrowIfNull(SelectedItem);
+
         await Repository.Delete(data);
-        ItemsSource.Remove(SelectedItem);
+        _itemsSource.Remove(SelectedItem);
         SelectedItem = null;
+        RaisePropertyChanged(nameof(FilteredItems));
+        RaisePropertyChanged(nameof(IsRepositoryListVisible));
     }
 
-    private void FilterItems()
+
+    private ConfirmationDialogResult ShowDeletionDialog(string heatingSystemName)
     {
-        FilteredItems = ItemsSource.Where(x =>
-            x.Name.StartsWith(SearchString?.Trim() ?? string.Empty, StringComparison.OrdinalIgnoreCase));
+        return DialogService.ShowConfirmationDialog($"Are you sure you want to delete {heatingSystemName}",
+            cancelButtonText: "Cancel", confirmButtonText: "Delete");
     }
 
-    private void OnItemNotFoundInRepository(HeatingSystemListName item)
+
+    private void DisplayErrorMessage(RepositoryException e)
     {
-        const string errorMessage = "item not found in repository";
-        Logger.LogWarning("item {Item} with Id {Id} was not found in the repository", item.Name, item.Id);
-        ToastService.Show(errorMessage, "refresh data", () => FetchDataCommand.Execute(null));
-        ItemsSource.Remove(item);
+        Logger.LogError(e, "There has been a problem while trying to access repository data");
+        ToastService.Show("There has been a problem when trying to execute the action.");
     }
 }

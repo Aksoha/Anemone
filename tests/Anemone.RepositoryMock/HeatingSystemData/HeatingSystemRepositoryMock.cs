@@ -108,10 +108,17 @@ public class HeatingSystemRepositoryMock : Mock<IHeatingSystemRepository>
     public HeatingSystem[] CreateObjectInRepository(int count)
     {
         var output = new List<HeatingSystem>();
-        for (var i = 0; i <= count; i++) output.Add(CreateObjectInRepository());
+        for (var i = 0; i < count; i++) output.Add(CreateObjectInRepository());
 
         return output.ToArray();
     }
+
+    public void DeleteAll()
+    {
+        _data.Clear();
+    }
+
+    public int Count => _data.Count;
 
     private static HeatingSystem CreateHeatingSystem()
     {
