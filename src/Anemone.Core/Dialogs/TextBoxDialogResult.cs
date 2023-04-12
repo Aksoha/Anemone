@@ -1,7 +1,7 @@
 ﻿using Anemone.Core.ViewModels;
 using Prism.Services.Dialogs;
 
-namespace Anemone.Core;
+namespace Anemone.Core.Dialogs;
 
 public class TextBoxDialogResult : IDialogResult
 {

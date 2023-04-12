@@ -10,6 +10,7 @@ using System.Windows.Threading;
 using Anemone.Algorithms;
 using Anemone.Core;
 using Anemone.Core.Components;
+using Anemone.Core.Dialogs;
 using Anemone.Core.ViewModels;
 using Anemone.DataImport;
 using Anemone.Repository;

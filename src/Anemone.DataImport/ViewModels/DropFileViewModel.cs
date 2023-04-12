@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Anemone.Core;
+using Anemone.Core.Dialogs;
 using Microsoft.Xaml.Behaviors.Core;
 using Prism.Commands;
 
@@ -57,7 +58,9 @@ internal class DropFileViewModel : ViewModelBase
     {
         OpenFileDialog.Multiselect = false;
         OpenFileDialog.Title = "Choose file";
-        OpenFileDialog.Filter = DataImportFileExtensions.Filters;
+        var filter = new DialogFilterCollection();
+        filter.AddFilterRow(DialogCommonFilters.SheetFiles);
+        OpenFileDialog.Filter = filter;
 
         var opened = OpenFileDialog.ShowDialog();
         if (opened is true) UploadedFile = OpenFileDialog.FileName;

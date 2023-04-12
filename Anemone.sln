@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anemone.Algorithms.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anemone.Algorithms", "src\Anemone.Algorithms\Anemone.Algorithms.csproj", "{6135DEDB-4D8F-4491-B2B7-F92B7B4D6011}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anemone.Core.Tests", "tests\Anemone.Core.Tests\Anemone.Core.Tests.csproj", "{5D198222-3698-4E5E-BD38-6140F4FABCC9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -127,6 +129,14 @@ Global
 		{6135DEDB-4D8F-4491-B2B7-F92B7B4D6011}.Release|x64.Build.0 = Release|Any CPU
 		{6135DEDB-4D8F-4491-B2B7-F92B7B4D6011}.Release|x86.ActiveCfg = Release|Any CPU
 		{6135DEDB-4D8F-4491-B2B7-F92B7B4D6011}.Release|x86.Build.0 = Release|Any CPU
+		{5D198222-3698-4E5E-BD38-6140F4FABCC9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5D198222-3698-4E5E-BD38-6140F4FABCC9}.Debug|x64.Build.0 = Debug|Any CPU
+		{5D198222-3698-4E5E-BD38-6140F4FABCC9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5D198222-3698-4E5E-BD38-6140F4FABCC9}.Debug|x86.Build.0 = Debug|Any CPU
+		{5D198222-3698-4E5E-BD38-6140F4FABCC9}.Release|x64.ActiveCfg = Release|Any CPU
+		{5D198222-3698-4E5E-BD38-6140F4FABCC9}.Release|x64.Build.0 = Release|Any CPU
+		{5D198222-3698-4E5E-BD38-6140F4FABCC9}.Release|x86.ActiveCfg = Release|Any CPU
+		{5D198222-3698-4E5E-BD38-6140F4FABCC9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,6 +152,7 @@ Global
 		{29CFE7E3-82AE-4F1C-8843-F2A7BB83B51D} = {F2E08F7B-8F89-47D0-A399-B2ADA24FD835}
 		{B70D7F5D-DA9C-4FD0-BE57-ED7AA787F390} = {F2E08F7B-8F89-47D0-A399-B2ADA24FD835}
 		{6135DEDB-4D8F-4491-B2B7-F92B7B4D6011} = {05AEB28A-FB37-4153-8FD5-2D93A931D1E7}
+		{5D198222-3698-4E5E-BD38-6140F4FABCC9} = {F2E08F7B-8F89-47D0-A399-B2ADA24FD835}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B7C3DFE-1EA2-424D-934B-388E7A485DA8}

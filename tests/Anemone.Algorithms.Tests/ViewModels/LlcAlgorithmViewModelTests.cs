@@ -4,6 +4,7 @@ using Anemone.Algorithms.Models;
 using Anemone.Algorithms.Report;
 using Anemone.Algorithms.ViewModels;
 using Anemone.Core;
+using Anemone.Core.Dialogs;
 using Anemone.Repository.HeatingSystemData;
 using Anemone.RepositoryMock.HeatingSystemData;
 using FluentValidation;

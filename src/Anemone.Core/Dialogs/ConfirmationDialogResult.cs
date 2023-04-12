@@ -1,6 +1,6 @@
 ﻿using Prism.Services.Dialogs;
 
-namespace Anemone.Core;
+namespace Anemone.Core.Dialogs;
 
 public class ConfirmationDialogResult : IDialogResult
 {

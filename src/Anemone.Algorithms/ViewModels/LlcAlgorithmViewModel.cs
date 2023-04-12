@@ -10,6 +10,7 @@ using Anemone.Algorithms.Matching;
 using Anemone.Algorithms.Models;
 using Anemone.Algorithms.Report;
 using Anemone.Core;
+using Anemone.Core.Dialogs;
 using Anemone.Repository.HeatingSystemData;
 using FluentValidation;
 using FluentValidation.Results;
@@ -69,8 +70,10 @@ public class LlcAlgorithmViewModel : ViewModelBase
     private async Task ExecuteExportDataCommand()
     {
         SaveFileDialog.FileName = "doc";
-        SaveFileDialog.DefaultExt = ".csv";
-        SaveFileDialog.Filter = "csv files (.csv)|*.csv";
+        SaveFileDialog.DefaultExt = DialogFilterExtension.Csv();
+        var filter = new DialogFilterCollection();
+        filter.AddFilterRow(DialogCommonFilters.CsvFiles);
+        SaveFileDialog.Filter = filter;
 
         var result = SaveFileDialog.ShowDialog();
         if (result is false)

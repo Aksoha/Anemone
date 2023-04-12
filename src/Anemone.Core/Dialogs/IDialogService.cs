@@ -1,4 +1,4 @@
-﻿namespace Anemone.Core;
+﻿namespace Anemone.Core.Dialogs;
 
 public interface IDialogService
 {

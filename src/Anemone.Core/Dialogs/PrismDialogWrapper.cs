@@ -4,7 +4,7 @@ using Anemone.Core.ViewModels;
 using Prism.Services.Dialogs;
 using PrismDialog = Prism.Services.Dialogs.IDialogService;
 
-namespace Anemone.Core;
+namespace Anemone.Core.Dialogs;
 
 public class PrismDialogWrapper : IDialogService
 {

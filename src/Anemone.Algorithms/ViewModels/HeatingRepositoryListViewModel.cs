@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Anemone.Algorithms.Models;
 using Anemone.Core;
+using Anemone.Core.Dialogs;
 using Anemone.Repository;
 using Anemone.Repository.HeatingSystemData;
 using Microsoft.Extensions.Logging;
 using Prism.Events;
 using Prism.Services.Dialogs;
-using IDialogService = Anemone.Core.IDialogService;
+using IDialogService = Anemone.Core.Dialogs.IDialogService;
 
 namespace Anemone.Algorithms.ViewModels;
 

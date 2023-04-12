@@ -10,7 +10,7 @@ using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using Microsoft.Extensions.Logging;
 using Prism.Services.Dialogs;
-using IDialogService = Anemone.Core.IDialogService;
+using IDialogService = Anemone.Core.Dialogs.IDialogService;
 
 namespace Anemone.DataImport.ViewModels;
 

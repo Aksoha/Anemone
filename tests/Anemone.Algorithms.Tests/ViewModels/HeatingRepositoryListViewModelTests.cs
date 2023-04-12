@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using Anemone.Algorithms.Models;
 using Anemone.Algorithms.ViewModels;
 using Anemone.Core;
+using Anemone.Core.Dialogs;
 using Anemone.Repository;
 using Anemone.Repository.HeatingSystemData;
 using Anemone.RepositoryMock.HeatingSystemData;
@@ -10,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Prism.Events;
 using Prism.Services.Dialogs;
-using IDialogService = Anemone.Core.IDialogService;
+using IDialogService = Anemone.Core.Dialogs.IDialogService;
 
 namespace Anemone.Algorithms.Tests.ViewModels;
 
