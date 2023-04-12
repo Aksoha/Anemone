@@ -12,6 +12,7 @@ using Anemone.Algorithms.Report;
 using Anemone.Core;
 using Anemone.Repository.HeatingSystemData;
 using FluentValidation;
+using FluentValidation.Results;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
@@ -50,7 +51,7 @@ public class LlcAlgorithmViewModel : ViewModelBase
         ViewDetailedResultsCommand =
             new DelegateCommand(ExecuteViewDetailedResultsCommand).ObservesCanExecute(() =>
                 CanExecuteExportDataCommand);
-        CalculateCommand = new ActionCommandAsync(ExecuteCalculateCommand);
+        CalculateCommand = new ActionCommandAsync(TryExecuteCalculateCommand);
         ExportDataCommand =
             new DelegateCommand(async () => await ExecuteExportDataCommand()).ObservesCanExecute(() =>
                 CanExecuteExportDataCommand);
@@ -70,9 +71,9 @@ public class LlcAlgorithmViewModel : ViewModelBase
         SaveFileDialog.FileName = "doc";
         SaveFileDialog.DefaultExt = ".csv";
         SaveFileDialog.Filter = "csv files (.csv)|*.csv";
-        
+
         var result = SaveFileDialog.ShowDialog();
-        if(result is false)
+        if (result is false)
             return;
 
         var fileName = SaveFileDialog.FileName;
@@ -352,34 +353,76 @@ public class LlcAlgorithmViewModel : ViewModelBase
 
         return Task.CompletedTask;
     }
+    
 
-    private async Task ExecuteCalculateCommand()
+    private async Task TryExecuteCalculateCommand()
     {
-        if (CalculationInProgress)
-        {
-            _cancellationToken?.Cancel();
-            CalculationInProgress = !CalculationInProgress;
-            return;
-        }
+        var heatingSystem = await GetHeatingSystem();
 
-        if (HeatingSystemListName is null)
-        {
-            ToastService.Show("select heating system");
-            return;
-        }
-
-        var heatingSystem = await Repository.Get(HeatingSystemListName.Id);
-        ArgumentNullException.ThrowIfNull(heatingSystem);
-
-        if (CanExecuteCalculateCommand(heatingSystem!) is false)
+        if (ValidateAndDisplayErrors(heatingSystem) is false)
             return;
 
+        await RunCalculationTask(heatingSystem);
+    }
 
+    private async Task RunCalculationTask(HeatingSystem heatingSystem)
+    {
         Logger.LogDebug("starting llc calculation");
         CalculationInProgress = true;
         _cancellationToken = new CancellationTokenSource();
         await Task.Run(() => Calculate(heatingSystem), _cancellationToken.Token);
         CalculationInProgress = false;
         Logger.LogDebug("finished llc calculation");
+    }
+
+
+    private bool ValidateAndDisplayErrors([NotNullWhen(true)] HeatingSystem? heatingSystem)
+    {
+        if (heatingSystem is null)
+        {
+            DisplayValidationErrors("select heating system");
+            return false;
+        }
+
+        var validationResult = ValidateBuildArgs(new LlcMatchingBuildArgs {Parameter = Parameter, HeatingSystem = heatingSystem});
+        if (validationResult.IsValid)
+            return true;
+
+        var errorBuilder = FormatValidationErrors(validationResult);
+        DisplayValidationErrors(errorBuilder);
+
+        return false;
+    }
+
+    private ValidationResult ValidateBuildArgs(LlcMatchingBuildArgs args)
+    {
+        return Validator.Validate(args);
+    }
+
+    private static string FormatValidationErrors(ValidationResult validationResult)
+    {
+        var errorBuilder = new StringBuilder();
+        foreach (var validationError in validationResult.Errors) errorBuilder.Append(validationError.ErrorMessage);
+        return errorBuilder.ToString();
+    }
+
+    private async ValueTask<HeatingSystem?> GetHeatingSystem()
+    {
+        if (HeatingSystemListName is null) return null;
+
+        var heatingSystem = await Repository.Get((int)HeatingSystemListName.Id!);
+        return heatingSystem;
+    }
+
+    private void CancelCalculation()
+    {
+        _cancellationToken?.Cancel();
+        CalculationInProgress = false;
+    }
+
+    private void DisplayValidationErrors(string errors)
+    {
+        ToastService.Show(errors);
+        Logger.LogInformation("model has failed validation for fallowing reasons: {Errors}", errors);
     }
 }
