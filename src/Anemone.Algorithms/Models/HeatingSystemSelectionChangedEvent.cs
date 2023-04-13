@@ -1,5 +1,4 @@
-﻿using Anemone.Repository.HeatingSystemData;
-using Prism.Events;
+﻿using Prism.Events;
 
 namespace Anemone.Algorithms.Models;
 

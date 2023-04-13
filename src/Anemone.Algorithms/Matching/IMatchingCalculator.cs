@@ -10,7 +10,7 @@ namespace Anemone.Algorithms.Matching;
 /// <typeparam name="TParameters">The type of matching parameters.</typeparam>
 /// <typeparam name="TResult">The type of result.</typeparam>
 public interface IMatchingCalculator<in TParameters, out TResult>
-    where TParameters : MatchingParameterBase 
+    where TParameters : MatchingParametersBase 
     where TResult : MatchingResultBase
 {
     TResult Calculate(TParameters parameters, HeatingSystem heatingSystem);

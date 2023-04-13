@@ -1,7 +1,7 @@
 ﻿
 namespace Anemone.Algorithms.Models;
 
-public class LlcMatchingParameter : MatchingParameterBase
+public class LlcMatchingParameters : MatchingParametersBase
 {
     public double? InductanceMin { get; set; }
     public double? InductanceMax { get; set; }

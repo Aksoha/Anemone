@@ -1,10 +1,10 @@
 ﻿using System.Linq;
+using Anemone.Algorithms.Models;
 using Anemone.Repository.HeatingSystemData;
 using FluentValidation;
 using MatchingAlgorithm;
 using MatchingAlgorithm.Llc;
 using HeatingSystem = MatchingAlgorithm.HeatingSystem;
-using LlcMatchingParameter = Anemone.Algorithms.Models.LlcMatchingParameter;
 
 namespace Anemone.Algorithms.Builders;
 
@@ -43,7 +43,7 @@ public class LlcMatchingBuilder : ILlcMatchingBuilder
         return new HeatingSystem(frequency, temperature);
     }
 
-    private MatchingAlgorithm.Llc.LlcMatchingParameter BuildLlcParameters(LlcMatchingParameter parameter)
+    private MatchingAlgorithm.Llc.LlcMatchingParameter BuildLlcParameters(LlcMatchingParameters parameter)
     {
         // disabled nullability warning, parameters should be null checked by the Validator
 #pragma warning disable CS8629

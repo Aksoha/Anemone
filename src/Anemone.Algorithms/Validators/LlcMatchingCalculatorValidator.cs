@@ -5,9 +5,9 @@ using FluentValidation;
 namespace Anemone.Algorithms.Validators;
 
 public class
-    LlcMatchingCalculatorValidator : MatchingCalculatorValidatorBase<LlcMatchingBuildArgs, LlcMatchingParameter>
+    LlcMatchingCalculatorValidator : MatchingCalculatorValidatorBase<LlcMatchingBuildArgs, LlcMatchingParameters>
 {
-    public LlcMatchingCalculatorValidator(IValidator<LlcMatchingParameter> validator) : base(validator)
+    public LlcMatchingCalculatorValidator(IValidator<LlcMatchingParameters> validator) : base(validator)
     {
     }
 }

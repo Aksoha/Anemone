@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Anemone.Algorithms.Validators;
 
-public class AlgorithmParameterValidatorBase<T> : AbstractValidator<T> where T : MatchingParameterBase
+public class AlgorithmParameterValidatorBase<T> : AbstractValidator<T> where T : MatchingParametersBase
 {
     public AlgorithmParameterValidatorBase()
     {

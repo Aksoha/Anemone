@@ -2,7 +2,7 @@
 
 namespace Anemone.Algorithms.Builders;
 
-public class LlcMatchingBuildArgs : MatchingBuildArgs<LlcMatchingParameter>
+public class LlcMatchingBuildArgs : MatchingBuildArgs<LlcMatchingParameters>
 {
     
 }

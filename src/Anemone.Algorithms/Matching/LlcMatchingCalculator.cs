@@ -14,7 +14,7 @@ public class LlcMatchingCalculator : ILlcMatchingCalculator
         Builder = builder;
     }
     
-    public LlcMatchingResult Calculate(LlcMatchingParameter parameter, HeatingSystem heatingSystem)
+    public LlcMatchingResult Calculate(LlcMatchingParameters parameter, HeatingSystem heatingSystem)
     {
         var matching = Builder.Build(new LlcMatchingBuildArgs {Parameter = parameter, HeatingSystem = heatingSystem});
         var results = matching.EnergyMatching().ToArray();

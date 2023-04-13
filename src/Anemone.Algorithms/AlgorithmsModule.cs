@@ -9,7 +9,6 @@ using FluentValidation;
 using MatchingAlgorithm.Llc;
 using Prism.Ioc;
 using Prism.Modularity;
-using LlcMatchingParameter = Anemone.Algorithms.Models.LlcMatchingParameter;
 using LlcMatchingResult = Anemone.Algorithms.Models.LlcMatchingResult;
 
 namespace Anemone.Algorithms;
@@ -27,8 +26,8 @@ public class AlgorithmsModule : IModule
     
     public void RegisterTypes(IContainerRegistry containerRegistry)
     {
-        containerRegistry.Register<IValidator<MatchingParameterBase>, AlgorithmParameterValidatorBase<MatchingParameterBase>>();
-        containerRegistry.Register<IValidator<LlcMatchingParameter>, LlcAlgorithmParameterValidator>();
+        containerRegistry.Register<IValidator<MatchingParametersBase>, AlgorithmParameterValidatorBase<MatchingParametersBase>>();
+        containerRegistry.Register<IValidator<LlcMatchingParameters>, LlcAlgorithmParameterValidator>();
         containerRegistry.Register<IValidator<LlcMatchingBuildArgs>, LlcMatchingCalculatorValidator>();
         
         
@@ -37,13 +36,13 @@ public class AlgorithmsModule : IModule
         containerRegistry.Register<HeatingRepositoryListView>();
 
         containerRegistry.Register<ILlcMatchingCalculator, LlcMatchingCalculator>();
-        containerRegistry.Register<IMatchingCalculator<LlcMatchingParameter, LlcMatchingResult>>(x =>
+        containerRegistry.Register<IMatchingCalculator<LlcMatchingParameters, LlcMatchingResult>>(x =>
             x.Resolve<ILlcMatchingCalculator>());
 
         containerRegistry.Register<IDataExporter, DataExporter>();
         containerRegistry.Register<IReportGenerator, ReportGenerator>();
         
-        
+        containerRegistry.RegisterForNavigation<LlcChartsView>();
         containerRegistry.RegisterForNavigation<HeatingRepositoryListView>();
         containerRegistry.RegisterForNavigation<LlcAlgorithmView>();
         NavigationRegistrations.Register(new NavigationPanelItem

@@ -8,7 +8,7 @@ namespace Anemone.Algorithms.Validators;
 
 public class MatchingCalculatorValidatorBase<TBuilder, TParameter> : AbstractValidator<TBuilder>
     where TBuilder : MatchingBuildArgs<TParameter>
-    where TParameter : MatchingParameterBase
+    where TParameter : MatchingParametersBase
 {
     public MatchingCalculatorValidatorBase(IValidator<TParameter> validator)
     {

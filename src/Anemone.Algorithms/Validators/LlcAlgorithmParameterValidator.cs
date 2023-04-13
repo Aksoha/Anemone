@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Anemone.Algorithms.Validators;
 
-public class LlcAlgorithmParameterValidator : AlgorithmParameterValidatorBase<LlcMatchingParameter>
+public class LlcAlgorithmParameterValidator : AlgorithmParameterValidatorBase<LlcMatchingParameters>
 {
     public LlcAlgorithmParameterValidator()
     {

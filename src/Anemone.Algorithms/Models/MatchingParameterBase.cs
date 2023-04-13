@@ -1,6 +1,6 @@
 ﻿namespace Anemone.Algorithms.Models;
 
-public class MatchingParameterBase
+public class MatchingParametersBase
 {
     public double? FrequencyMin { get; set; }
     public double? FrequencyMax { get; set; }

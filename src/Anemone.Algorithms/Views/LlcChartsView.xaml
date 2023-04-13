@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="Anemone.Algorithms.Views.LlcChartsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Anemone.Algorithms.Views"
+             xmlns:viewModels="clr-namespace:Anemone.Algorithms.ViewModels"
+             xmlns:mvvm="http://prismlibrary.com/"
+             mvvm:ViewModelLocator.AutoWireViewModel="True"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewModels:LlcChartsViewModel, IsDesignTimeCreatable=False}"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <local:MatchingChartView Grid.Row="0" DataContext="{Binding PowerMatchingChartViewModel}"/>
+        <local:MatchingChartView Grid.Row="1" DataContext="{Binding FrequencyMatchingChartViewModel}"/>
+        <local:MatchingChartView Grid.Row="2" DataContext="{Binding InductanceMatchingChartViewModel}"/>
+    </Grid>
+</UserControl>

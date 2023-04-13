@@ -35,11 +35,11 @@
                     <!-- frequency -->
                     <Expander Header="Frequency" IsExpanded="True"  >
                         <StackPanel>
-                            <TextBox Text="{Binding Parameter.FrequencyMin}"
+                            <TextBox Text="{Binding MatchingParameters.FrequencyMin}"
                                      materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding Parameter.FrequencyMax}"
+                            <TextBox Text="{Binding MatchingParameters.FrequencyMax}"
                                      materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding Parameter.FrequencyStep}"
+                            <TextBox Text="{Binding MatchingParameters.FrequencyStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -47,11 +47,11 @@
                     <!-- temperature -->
                     <Expander Header="Temperature" IsExpanded="True">
                         <StackPanel>
-                            <TextBox Text="{Binding Parameter.TemperatureMin}"
+                            <TextBox Text="{Binding MatchingParameters.TemperatureMin}"
                                      materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding Parameter.TemperatureMax}"
+                            <TextBox Text="{Binding MatchingParameters.TemperatureMax}"
                                      materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding Parameter.TemperatureStep}"
+                            <TextBox Text="{Binding MatchingParameters.TemperatureStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -59,9 +59,9 @@
                     <!-- turn ratio -->
                     <Expander Header="Turn ratio" IsExpanded="True">
                         <StackPanel>
-                            <TextBox Text="{Binding Parameter.TurnRatioMin}" materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding Parameter.TurnRatioMax}" materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding Parameter.TurnRatioStep}"
+                            <TextBox Text="{Binding MatchingParameters.TurnRatioMin}" materialDesign:HintAssist.Hint="min" />
+                            <TextBox Text="{Binding MatchingParameters.TurnRatioMax}" materialDesign:HintAssist.Hint="max" />
+                            <TextBox Text="{Binding MatchingParameters.TurnRatioStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -72,14 +72,14 @@
                             <DockPanel VerticalAlignment="Stretch">
                                 <TextBlock Text="variable inductance" Margin="20" />
                                 <ToggleButton
-                                    HorizontalAlignment="Right" IsChecked="{Binding Parameter.VariableInductance}"
+                                    HorizontalAlignment="Right" IsChecked="{Binding MatchingParameters.VariableInductance}"
                                     Margin="20" />
                             </DockPanel>
-                            <TextBox Text="{Binding Parameter.InductanceMin}"
+                            <TextBox Text="{Binding MatchingParameters.InductanceMin}"
                                      materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding Parameter.InductanceMax}"
+                            <TextBox Text="{Binding MatchingParameters.InductanceMax}"
                                      materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding Parameter.InductanceStep}"
+                            <TextBox Text="{Binding MatchingParameters.InductanceStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -87,11 +87,11 @@
                     <!-- capacitance -->
                     <Expander Header="Capacitance" IsExpanded="True">
                         <StackPanel>
-                            <TextBox Text="{Binding Parameter.CapacitanceMin}"
+                            <TextBox Text="{Binding MatchingParameters.CapacitanceMin}"
                                      materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding Parameter.CapacitanceMax}"
+                            <TextBox Text="{Binding MatchingParameters.CapacitanceMax}"
                                      materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding Parameter.CapacitanceStep}"
+                            <TextBox Text="{Binding MatchingParameters.CapacitanceStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -99,11 +99,11 @@
                     <!-- voltage, current and power -->
                     <Expander Header="Power" IsExpanded="True">
                         <StackPanel>
-                            <TextBox Text="{Binding Parameter.Voltage}"
+                            <TextBox Text="{Binding MatchingParameters.Voltage}"
                                      materialDesign:HintAssist.Hint="voltage" />
-                            <TextBox Text="{Binding Parameter.Current}"
+                            <TextBox Text="{Binding MatchingParameters.Current}"
                                      materialDesign:HintAssist.Hint="current" />
-                            <TextBox Text="{Binding Parameter.Power}"
+                            <TextBox Text="{Binding MatchingParameters.Power}"
                                      materialDesign:HintAssist.Hint="power" />
                         </StackPanel>
                     </Expander>
@@ -186,42 +186,19 @@
             
             <!-- calculate and export data buttons -->
             <StackPanel Grid.Row="3" VerticalAlignment="Bottom" Margin="20 0">
-                <Button Command="{Binding ExportDataCommand}" Content="ExportToCsv data"
+                <Button Command="{Binding ExportDataCommand}" Content="Export results"
                         Margin="0 20"
                         Style="{StaticResource MaterialDesignOutlinedButton}" Visibility="{Binding IsResultCalculated, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <Button
                     materialDesign:ButtonProgressAssist.IsIndeterminate="True"
                     materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding CalculationInProgress}"
                     materialDesign:ButtonProgressAssist.Value="-1"
-                    Command="{Binding CalculateCommand}" Content="{Binding ButtonText}" Margin="0 0 0 20" />
+                    Command="{Binding CalculateCommand}" Content="{Binding CalculationButtonText}" Margin="0 0 0 20" />
             </StackPanel>
         </Grid>
 
         <!-- charts -->
-        <Grid Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-
-            <!-- power chart -->
-            <wpf:CartesianChart Grid.Row="0"
-                                Series="{Binding PowerChartSeriesCollection}"
-                                XAxes="{Binding XAxesCollection}"
-                                YAxes="{Binding PowerChartYAxesCollection}" />
-            <!-- frequency chart -->
-            <wpf:CartesianChart Grid.Row="1"
-                                Series="{Binding FrequencyChartSeriesCollection}"
-                                XAxes="{Binding XAxesCollection}"
-                                YAxes="{Binding FrequencyChartYAxesCollection}" />
-            <!-- inductance chart -->
-            <wpf:CartesianChart Grid.Row="2"
-                                Series="{Binding InductanceChartSeriesCollection}"
-                                XAxes="{Binding XAxesCollection}"
-                                YAxes="{Binding InductanceChartYAxesCollection}" />
-
-        </Grid>
-
+        <views:LlcChartsView Grid.Column="2"/>
+        
     </Grid>
 </UserControl>

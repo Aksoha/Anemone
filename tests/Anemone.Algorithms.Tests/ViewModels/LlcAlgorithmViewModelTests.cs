@@ -45,7 +45,7 @@ public class LlcAlgorithmViewModelTests
     public void NotifiesUserOnCalculationError()
     {
         // arrange
-        _mcMock.Setup(m => m.Calculate(It.IsAny<LlcMatchingParameter>(), It.IsAny<HeatingSystem>()))
+        _mcMock.Setup(m => m.Calculate(It.IsAny<LlcMatchingParameters>(), It.IsAny<HeatingSystem>()))
             .Throws<Exception>();
 
         var vm = CreateViewModel();
