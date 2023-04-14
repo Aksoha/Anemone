@@ -35,7 +35,7 @@ public class HeatingRepositoryListViewModel : ViewModelBase
         FetchDataCommand = new ActionCommandAsync(ExecuteFetchDataCommand);
         RenameCommand = new ActionCommandAsync(ExecuteRenameCommand);
         DeleteCommand = new ActionCommandAsync(ExecuteDeleteCommand);
-        FetchDataCommand.Execute(null);
+        FetchDataCommand.ExecuteAsync(null);
         FilteredItems = _itemsSource;
     }
 
@@ -78,9 +78,9 @@ public class HeatingRepositoryListViewModel : ViewModelBase
     public bool IsRepositoryListVisible => FilteredItems.Any();
 
 
-    public ICommand FetchDataCommand { get; }
-    public ICommand RenameCommand { get; }
-    public ICommand DeleteCommand { get; }
+    public ICommandAsync FetchDataCommand { get; }
+    public ICommandAsync RenameCommand { get; }
+    public ICommandAsync DeleteCommand { get; }
 
 
     private ILogger<HeatingRepositoryListViewModel> Logger { get; }

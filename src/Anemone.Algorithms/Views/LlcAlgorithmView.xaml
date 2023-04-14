@@ -6,7 +6,6 @@
              xmlns:viewModels="clr-namespace:Anemone.Algorithms.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:views="clr-namespace:Anemone.Algorithms.Views"
-             xmlns:wpf="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=viewModels:LlcAlgorithmViewModel, IsDesignTimeCreatable=False}"
              d:DesignHeight="300" d:DesignWidth="300">
@@ -35,11 +34,11 @@
                     <!-- frequency -->
                     <Expander Header="Frequency" IsExpanded="True"  >
                         <StackPanel>
-                            <TextBox Text="{Binding MatchingParameters.FrequencyMin}"
+                            <TextBox Text="{Binding InputParameters.FrequencyMin}"
                                      materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding MatchingParameters.FrequencyMax}"
+                            <TextBox Text="{Binding InputParameters.FrequencyMax}"
                                      materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding MatchingParameters.FrequencyStep}"
+                            <TextBox Text="{Binding InputParameters.FrequencyStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -47,11 +46,11 @@
                     <!-- temperature -->
                     <Expander Header="Temperature" IsExpanded="True">
                         <StackPanel>
-                            <TextBox Text="{Binding MatchingParameters.TemperatureMin}"
+                            <TextBox Text="{Binding InputParameters.TemperatureMin}"
                                      materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding MatchingParameters.TemperatureMax}"
+                            <TextBox Text="{Binding InputParameters.TemperatureMax}"
                                      materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding MatchingParameters.TemperatureStep}"
+                            <TextBox Text="{Binding InputParameters.TemperatureStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -59,9 +58,9 @@
                     <!-- turn ratio -->
                     <Expander Header="Turn ratio" IsExpanded="True">
                         <StackPanel>
-                            <TextBox Text="{Binding MatchingParameters.TurnRatioMin}" materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding MatchingParameters.TurnRatioMax}" materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding MatchingParameters.TurnRatioStep}"
+                            <TextBox Text="{Binding InputParameters.TurnRatioMin}" materialDesign:HintAssist.Hint="min" />
+                            <TextBox Text="{Binding InputParameters.TurnRatioMax}" materialDesign:HintAssist.Hint="max" />
+                            <TextBox Text="{Binding InputParameters.TurnRatioStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -72,14 +71,14 @@
                             <DockPanel VerticalAlignment="Stretch">
                                 <TextBlock Text="variable inductance" Margin="20" />
                                 <ToggleButton
-                                    HorizontalAlignment="Right" IsChecked="{Binding MatchingParameters.VariableInductance}"
+                                    HorizontalAlignment="Right" IsChecked="{Binding InputParameters.VariableInductance}"
                                     Margin="20" />
                             </DockPanel>
-                            <TextBox Text="{Binding MatchingParameters.InductanceMin}"
+                            <TextBox Text="{Binding InputParameters.InductanceMin}"
                                      materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding MatchingParameters.InductanceMax}"
+                            <TextBox Text="{Binding InputParameters.InductanceMax}"
                                      materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding MatchingParameters.InductanceStep}"
+                            <TextBox Text="{Binding InputParameters.InductanceStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -87,11 +86,11 @@
                     <!-- capacitance -->
                     <Expander Header="Capacitance" IsExpanded="True">
                         <StackPanel>
-                            <TextBox Text="{Binding MatchingParameters.CapacitanceMin}"
+                            <TextBox Text="{Binding InputParameters.CapacitanceMin}"
                                      materialDesign:HintAssist.Hint="min" />
-                            <TextBox Text="{Binding MatchingParameters.CapacitanceMax}"
+                            <TextBox Text="{Binding InputParameters.CapacitanceMax}"
                                      materialDesign:HintAssist.Hint="max" />
-                            <TextBox Text="{Binding MatchingParameters.CapacitanceStep}"
+                            <TextBox Text="{Binding InputParameters.CapacitanceStep}"
                                      materialDesign:HintAssist.Hint="step" />
                         </StackPanel>
                     </Expander>
@@ -99,11 +98,11 @@
                     <!-- voltage, current and power -->
                     <Expander Header="Power" IsExpanded="True">
                         <StackPanel>
-                            <TextBox Text="{Binding MatchingParameters.Voltage}"
+                            <TextBox Text="{Binding InputParameters.Voltage}"
                                      materialDesign:HintAssist.Hint="voltage" />
-                            <TextBox Text="{Binding MatchingParameters.Current}"
+                            <TextBox Text="{Binding InputParameters.Current}"
                                      materialDesign:HintAssist.Hint="current" />
-                            <TextBox Text="{Binding MatchingParameters.Power}"
+                            <TextBox Text="{Binding InputParameters.Power}"
                                      materialDesign:HintAssist.Hint="power" />
                         </StackPanel>
                     </Expander>
@@ -154,27 +153,27 @@
                         
                         <TextBlock Grid.Column="0" Grid.Row="0" Text="mean power" />
                         <TextBlock Grid.Column="1" Grid.Row="0"
-                                   Text="{Binding Results.MeanPower, FallbackValue='', StringFormat={}{0:0.00}}" />
+                                   Text="{Binding MatchingResult.MeanPower, FallbackValue='', StringFormat={}{0:0.00}}" />
 
                         <TextBlock Grid.Column="0" Grid.Row="1" Text="turn ratio" />
                         <TextBlock Grid.Column="1" Grid.Row="1"
-                                   Text="{Binding Results.TurnRatio, FallbackValue='', StringFormat={}{0:0}}" />
+                                   Text="{Binding MatchingResult.TurnRatio, FallbackValue='', StringFormat={}{0:0}}" />
 
                         <TextBlock Grid.Column="0" Grid.Row="2" Text="capacitance" />
                         <TextBlock Grid.Column="1" Grid.Row="2"
-                                   Text="{Binding Results.Capacitance, FallbackValue='', StringFormat={}{0:0.00e0}}" />
+                                   Text="{Binding MatchingResult.Capacitance, FallbackValue='', StringFormat={}{0:0.00e0}}" />
 
                         <TextBlock Grid.Column="0" Grid.Row="3" Text="df/dt" />
                         <TextBlock Grid.Column="1" Grid.Row="3"
-                                   Text="{Binding Results.MaxFrequencyDerivative, FallbackValue='', StringFormat={}{0:0.00e0}}" />
+                                   Text="{Binding MatchingResult.MaxFrequencyDerivative, FallbackValue='', StringFormat={}{0:0.00e0}}" />
 
                         <TextBlock Grid.Column="0" Grid.Row="4" Text="dl/dt" />
                         <TextBlock Grid.Column="1" Grid.Row="4"
-                                   Text="{Binding Results.MaxInductanceDerivative, FallbackValue='', StringFormat={}{0:0.00e0}}" />
+                                   Text="{Binding MatchingResult.MaxInductanceDerivative, FallbackValue='', StringFormat={}{0:0.00e0}}" />
 
                         <TextBlock Grid.Column="0" Grid.Row="5" Text="phase shift" />
                         <TextBlock Grid.Column="1" Grid.Row="5"
-                                   Text="{Binding Results.MaxPhaseShift, FallbackValue='', StringFormat={}{0:0.00e0}}" />
+                                   Text="{Binding MatchingResult.MaxPhaseShift, FallbackValue='', StringFormat={}{0:0.00e0}}" />
 
                     </Grid>
                 </materialDesign:Card>
@@ -189,11 +188,14 @@
                 <Button Command="{Binding ExportDataCommand}" Content="Export results"
                         Margin="0 20"
                         Style="{StaticResource MaterialDesignOutlinedButton}" Visibility="{Binding IsResultCalculated, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <Button Visibility="{Binding CalculationInProgress, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                    Command="{Binding CalculateCommand}" Content="Calculate" Margin="0 0 0 20" />
                 <Button
                     materialDesign:ButtonProgressAssist.IsIndeterminate="True"
-                    materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding CalculationInProgress}"
+                    materialDesign:ButtonProgressAssist.IsIndicatorVisible="True"
                     materialDesign:ButtonProgressAssist.Value="-1"
-                    Command="{Binding CalculateCommand}" Content="{Binding CalculationButtonText}" Margin="0 0 0 20" />
+                    Visibility="{Binding CalculationInProgress, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Command="{Binding CancelCalculateCommand}" Content="Cancel" Margin="0 0 0 20" />
             </StackPanel>
         </Grid>
 

@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Anemone.Algorithms.Builders;
 using Anemone.Algorithms.Matching;
 using Anemone.Algorithms.Models;
@@ -16,7 +16,6 @@ using FluentValidation;
 using FluentValidation.Results;
 using MatchingAlgorithm;
 using Microsoft.Extensions.Logging;
-using Prism.Commands;
 using Prism.Events;
 using HeatingSystem = Anemone.Repository.HeatingSystemData.HeatingSystem;
 
@@ -25,9 +24,9 @@ namespace Anemone.Algorithms.ViewModels;
 public class LlcAlgorithmViewModel : ViewModelBase
 {
     private bool _calculationInProgress;
-    private CancellationTokenSource? _cancellationToken;
+    private CancellationTokenSource? _cts;
     private bool _isResultCalculated;
-    private LlcMatchingResult? _results;
+    private LlcMatchingResult? _matchingResult;
 
 
     public LlcAlgorithmViewModel(IHeatingSystemRepository repository,
@@ -45,72 +44,25 @@ public class LlcAlgorithmViewModel : ViewModelBase
         ReportGenerator = reportGenerator;
         DataExporter = dataExporter;
         SaveFileDialog = saveFileDialog;
-        
-        CalculateCommand = new ActionCommandAsync(TryExecuteCalculateCommand);
+
+        CalculateCommand = new DelegateCommandAsync(TryExecuteCalculateCommand);
+        CancelCalculateCommand = new ActionCommandAsync(ExecuteCancelCalculateCommand);
         ExportDataCommand =
-            new DelegateCommand(async () => await ExecuteExportDataCommand()).ObservesCanExecute(() =>
-                CanExecuteExportDataCommand);
-
-        EventAggregator.GetEvent<HeatingSystemSelectionChangedEvent>().Subscribe(SelectionChanged);
+            new DelegateCommandAsync(ExecuteExportDataCommand).ObservesCanExecute(() => CanExecuteExportDataCommand);
+        EventAggregator.GetEvent<HeatingSystemSelectionChangedEvent>().Subscribe(HeatingSystemSelectionChangedHandler);
     }
 
-    private void ExecuteViewDetailedResultsCommand()
+    public LlcMatchingParameters InputParameters { get; } = new();
+
+    public LlcMatchingResult? MatchingResult
     {
-        throw new NotImplementedException();
-    }
-
-    private async Task ExecuteExportDataCommand()
-    {
-        SaveFileDialog.FileName = "doc";
-        SaveFileDialog.DefaultExt = DialogFilterExtension.Csv();
-        var filter = new DialogFilterCollection();
-        filter.AddFilterRow(DialogCommonFilters.CsvFiles);
-        SaveFileDialog.Filter = filter;
-
-        var result = SaveFileDialog.ShowDialog();
-        if (result is false)
-            return;
-
-        var fileName = SaveFileDialog.FileName;
-
-        try
+        get => _matchingResult;
+        set
         {
-            ArgumentNullException.ThrowIfNull(Results);
-            var dataToExport = ReportGenerator.Generate(Results);
-            await DataExporter.ExportToCsv(fileName, dataToExport);
-            Logger.LogInformation("created new csv file at {Path}", fileName);
-            ToastService.Show("exported file");
-        }
-        finally
-        {
-            SaveFileDialog.Reset();
-        }
-    }
-
-    private IHeatingSystemRepository Repository { get; }
-    private IValidator<LlcMatchingBuildArgs> Validator { get; }
-    private IToastService ToastService { get; }
-    private ILogger<LlcAlgorithmViewModel> Logger { get; }
-    private IEventAggregator EventAggregator { get; }
-    
-    private ILlcMatchingCalculator MatchingCalculator { get; }
-    private IReportGenerator ReportGenerator { get; }
-    private IDataExporter DataExporter { get; }
-    private ISaveFileDialog SaveFileDialog { get; }
-    
-    
-    public LlcMatchingParameters MatchingParameters { get; } = new();
-
-    public LlcMatchingResult? Results
-    {
-        get => _results;
-        private set
-        {
-            if (SetProperty(ref _results, value))
+            if (SetProperty(ref _matchingResult, value))
                 RaisePropertyChanged(nameof(CanExecuteExportDataCommand));
         }
     }
-
 
     public bool IsResultCalculated
     {
@@ -118,145 +70,200 @@ public class LlcAlgorithmViewModel : ViewModelBase
         set => SetProperty(ref _isResultCalculated, value);
     }
 
-    private bool CanExecuteExportDataCommand => Results is not null;
-
-    private HeatingSystemNameDisplayModel? HeatingSystemListName { get; set; }
-    
-    public ICommand CalculateCommand { get; }
-    public ICommand ExportDataCommand { get; }
-
     public bool CalculationInProgress
     {
         get => _calculationInProgress;
-        set
-        {
-            if (SetProperty(ref _calculationInProgress, value))
-                RaisePropertyChanged(nameof(CalculationButtonText));
-        }
+        set => SetProperty(ref _calculationInProgress, value);
     }
 
-    public string CalculationButtonText => CalculationInProgress ? "Cancel" : "Calculate";
-    
-
-    private void SelectionChanged(HeatingSystemNameDisplayModel? obj)
-    {
-        HeatingSystemListName = obj;
-    }
+    public ICommandAsync CalculateCommand { get; }
+    public ICommandAsync CancelCalculateCommand { get; }
+    public ICommandAsync ExportDataCommand { get; }
+    public bool CanExecuteExportDataCommand => MatchingResult is not null;
 
 
-    private bool CanExecuteCalculateCommand(HeatingSystem heatingSystem)
-    {
-        var validationResult = Validator.Validate(new LlcMatchingBuildArgs
-            { Parameter = MatchingParameters, HeatingSystem = heatingSystem });
-        if (validationResult.IsValid)
-            return true;
+    private ILogger<LlcAlgorithmViewModel> Logger { get; }
+    private IToastService ToastService { get; }
+    private IEventAggregator EventAggregator { get; }
+    private ISaveFileDialog SaveFileDialog { get; }
+    private IHeatingSystemRepository Repository { get; }
+    private IValidator<LlcMatchingBuildArgs> Validator { get; }
 
-        var errorBuilder = new StringBuilder();
-        foreach (var validationError in validationResult.Errors) errorBuilder.Append(validationError.ErrorMessage);
-
-        ToastService.Show(errorBuilder.ToString());
-        Logger.LogInformation(errorBuilder.ToString());
-
-        return false;
-    }
-
-    private Task Calculate(HeatingSystem heatingSystem)
-    {
-        try
-        {
-            Results = MatchingCalculator.Calculate(MatchingParameters, heatingSystem);
-        }
-        catch (SolutionNotFoundException e)
-        {
-            const string message = "no solution was found for given parameter";
-            Logger.LogWarning($"{message}: reason: {{reason}}", e.Message);
-            ToastService.Show(message);
-        }
-        catch (Exception e)
-        {
-            Logger.LogError(e, "an error has occured while performing llc calculation");
-        }
-
-        return Task.CompletedTask;
-    }
-
-    private void UpdateCharts()
-    {
-        EventAggregator.GetEvent<CalculationFinishedEvent>().Publish(Results.Points.ToArray());
-    }
+    private ILlcMatchingCalculator MatchingCalculator { get; }
+    private IReportGenerator ReportGenerator { get; }
+    private IDataExporter DataExporter { get; }
+    private int? HeatingSystemId { get; set; }
 
 
     private async Task TryExecuteCalculateCommand()
     {
-        var heatingSystem = await GetHeatingSystem();
-
-        if (ValidateAndDisplayErrors(heatingSystem) is false)
-            return;
-
-        await RunCalculationTask(heatingSystem);
-    }
-
-    private async Task RunCalculationTask(HeatingSystem heatingSystem)
-    {
-        Logger.LogDebug("starting llc calculation");
+        _cts = new CancellationTokenSource();
+        var cancellationToken = _cts.Token;
         CalculationInProgress = true;
-        _cancellationToken = new CancellationTokenSource();
-        await Task.Run(() => Calculate(heatingSystem), _cancellationToken.Token);
-        UpdateCharts();
-        CalculationInProgress = false;
-        IsResultCalculated = true;
-        Logger.LogDebug("finished llc calculation");
-    }
 
+        HeatingSystem heatingSystem;
 
-    private bool ValidateAndDisplayErrors([NotNullWhen(true)] HeatingSystem? heatingSystem)
-    {
-        if (heatingSystem is null)
+        try
         {
-            DisplayValidationErrors("select heating system");
-            return false;
+            heatingSystem = await GetHeatingSystem();
+        }
+        catch (ArgumentNullException)
+        {
+            DisplayValidationErrors("heating system was not selected");
+            return;
         }
 
-        var validationResult = ValidateBuildArgs(new LlcMatchingBuildArgs
-            { Parameter = MatchingParameters, HeatingSystem = heatingSystem });
-        if (validationResult.IsValid)
-            return true;
+        // copy data to ensure that user does not modify parameters in middle of the validation which could cause
+        // invalidation of the data sent for the further calculation
+        var parameters = (LlcMatchingParameters)InputParameters.Clone();
 
-        var errorBuilder = FormatValidationErrors(validationResult);
-        DisplayValidationErrors(errorBuilder);
-
-        return false;
+        try
+        {
+            await ValidateMatchingArguments(parameters, heatingSystem, cancellationToken);
+            MatchingResult = await Calculate(parameters, heatingSystem, cancellationToken);
+            IsResultCalculated = true;
+            UpdateCharts();
+        }
+        catch (OperationCanceledException)
+        {
+            Logger.LogDebug("calculation task has been cancelled");
+        }
+        catch (ValidationException e)
+        {
+            var errorBuilder = FormatValidationErrors(e.Errors);
+            DisplayValidationErrors(errorBuilder);
+        }
+        catch (SolutionNotFoundException e)
+        {
+            DisplaySolutionNotFoundError(e);
+        }
+        finally
+        {
+            CalculationInProgress = false;
+        }
     }
 
-    private ValidationResult ValidateBuildArgs(LlcMatchingBuildArgs args)
+
+    private async Task<HeatingSystem> GetHeatingSystem()
     {
-        return Validator.Validate(args);
+        ArgumentNullException.ThrowIfNull(HeatingSystemId);
+
+        var heatingSystem = await Repository.Get((int)HeatingSystemId);
+        return heatingSystem!;
     }
 
-    private static string FormatValidationErrors(ValidationResult validationResult)
+    private Task ValidateMatchingArguments(LlcMatchingParameters parameters, HeatingSystem heatingSystem,
+        CancellationToken cancellationToken)
+    {
+        var args = new LlcMatchingBuildArgs
+            { Parameter = parameters, HeatingSystem = heatingSystem };
+
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.Run(async () => await Validator.ValidateAndThrowAsync(args, cancellationToken), cancellationToken);
+    }
+
+    private Task<LlcMatchingResult> Calculate(LlcMatchingParameters parameters, HeatingSystem heatingSystem,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.Run(() => MatchingCalculator.Calculate(parameters, heatingSystem), cancellationToken);
+    }
+
+    private void UpdateCharts()
+    {
+        ArgumentNullException.ThrowIfNull(MatchingResult);
+
+        EventAggregator.GetEvent<CalculationFinishedEvent>()
+            .Publish(MatchingResult.Points
+                .Cast<MatchingResultPoint>()
+                .ToArray());
+    }
+
+    private static string FormatValidationErrors(IEnumerable<ValidationFailure> validationFailures)
     {
         var errorBuilder = new StringBuilder();
-        foreach (var validationError in validationResult.Errors) errorBuilder.Append(validationError.ErrorMessage);
+        foreach (var validationError in validationFailures) errorBuilder.Append(validationError.ErrorMessage);
         return errorBuilder.ToString();
-    }
-
-    private async ValueTask<HeatingSystem?> GetHeatingSystem()
-    {
-        if (HeatingSystemListName is null) return null;
-
-        var heatingSystem = await Repository.Get(HeatingSystemListName.Id);
-        return heatingSystem;
-    }
-
-    private void CancelCalculation()
-    {
-        _cancellationToken?.Cancel();
-        CalculationInProgress = false;
     }
 
     private void DisplayValidationErrors(string errors)
     {
         ToastService.Show(errors);
         Logger.LogInformation("model has failed validation for fallowing reasons: {Errors}", errors);
+    }
+
+    private void DisplaySolutionNotFoundError(SolutionNotFoundException e)
+    {
+        const string message = "no solution was found for given parameter";
+        Logger.LogWarning($"{message}: reason: {{reason}}", e.Message);
+        ToastService.Show(message);
+    }
+
+    private async Task ExecuteExportDataCommand()
+    {
+        ArgumentNullException.ThrowIfNull(MatchingResult);
+
+        SetSaveDialogParameters();
+        var result = ShowSaveDialog();
+        if (result is false)
+            return;
+
+        var fileName = GetFileNameFromDialog();
+
+        try
+        {
+            var report = GenerateReport(MatchingResult);
+            await ExportReport(fileName, report);
+        }
+        finally
+        {
+            SaveFileDialog.Reset();
+        }
+    }
+
+    private void SetSaveDialogParameters()
+    {
+        SaveFileDialog.FileName = "doc";
+        SaveFileDialog.DefaultExt = DialogFilterExtension.Csv();
+        var filter = new DialogFilterCollection();
+        filter.AddFilterRow(DialogCommonFilters.CsvFiles);
+        SaveFileDialog.Filter = filter;
+    }
+
+    private bool? ShowSaveDialog()
+    {
+        return SaveFileDialog.ShowDialog();
+    }
+
+    private string GetFileNameFromDialog()
+    {
+        return SaveFileDialog.FileName;
+    }
+
+    private DataTable GenerateReport(MatchingResultBase matchingResult)
+    {
+        return ReportGenerator.Generate(matchingResult);
+    }
+
+    private async Task ExportReport(string fileName, DataTable report)
+    {
+        await DataExporter.ExportToCsv(fileName, report);
+        Logger.LogInformation("created new csv file at {Path}", fileName);
+        ToastService.Show($"exported file {fileName}");
+    }
+
+    private Task ExecuteCancelCalculateCommand()
+    {
+        return Task.Run(() =>
+        {
+            Logger.LogDebug("requested task cancellation");
+            _cts?.Cancel();
+            CalculationInProgress = false;
+        });
+    }
+
+    private void HeatingSystemSelectionChangedHandler(HeatingSystemNameDisplayModel? obj)
+    {
+        HeatingSystemId = obj?.Id;
     }
 }

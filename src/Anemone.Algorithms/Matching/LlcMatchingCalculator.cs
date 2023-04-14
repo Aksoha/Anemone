@@ -1,7 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Anemone.Algorithms.Builders;
 using Anemone.Algorithms.Models;
 using Anemone.Repository.HeatingSystemData;
+using MatchingAlgorithm.Llc;
+using LlcMatchingResult = Anemone.Algorithms.Models.LlcMatchingResult;
 
 namespace Anemone.Algorithms.Matching;
 
@@ -14,12 +18,18 @@ public class LlcMatchingCalculator : ILlcMatchingCalculator
         Builder = builder;
     }
     
-    public LlcMatchingResult Calculate(LlcMatchingParameters parameter, HeatingSystem heatingSystem)
+    public async Task<LlcMatchingResult> Calculate(LlcMatchingParameters parameter, HeatingSystem heatingSystem)
     {
-        var matching = Builder.Build(new LlcMatchingBuildArgs {Parameter = parameter, HeatingSystem = heatingSystem});
-        var results = matching.EnergyMatching().ToArray();
+        var algorithm = CreateMatchingAlgorithm(parameter, heatingSystem);
+        var results = await Solve(algorithm);
         
-        var output = results.Select(x => new LlcMatchingResultPoint
+        var output = ConvertResult(results);
+        return new LlcMatchingResult(output, results.First().TurnRatio);
+    }
+
+    private static IEnumerable<LlcMatchingResultPoint> ConvertResult(MatchingAlgorithm.Llc.LlcMatchingResult[] results)
+    {
+        return results.Select(x => new LlcMatchingResultPoint
         {
             Resistance = x.Resistance,
             Reactance = x.Reactance,
@@ -31,6 +41,15 @@ public class LlcMatchingCalculator : ILlcMatchingCalculator
             Capacitance = x.Capacitance,
             Inductance = x.Inductance,
         });
-        return new LlcMatchingResult(output, results.First().TurnRatio);
+    }
+
+    private static Task<MatchingAlgorithm.Llc.LlcMatchingResult[]> Solve(LlcMatching matching)
+    {
+       return Task.Run(() =>  matching.EnergyMatching().ToArray());
+    }
+
+    private LlcMatching CreateMatchingAlgorithm(LlcMatchingParameters parameter, HeatingSystem heatingSystem)
+    {
+        return Builder.Build(new LlcMatchingBuildArgs {Parameter = parameter, HeatingSystem = heatingSystem});
     }
 }

@@ -8,6 +8,11 @@ public class LlcMatchingResult : MatchingResult<LlcMatchingResultPoint>
 {
     public double Capacitance { get; }
     public double MaxInductanceDerivative { get; }
+
+    public LlcMatchingResult()
+    {
+        
+    }
     
     public LlcMatchingResult(IEnumerable<LlcMatchingResultPoint> points, double turnRatio) : base(points, turnRatio)
     {

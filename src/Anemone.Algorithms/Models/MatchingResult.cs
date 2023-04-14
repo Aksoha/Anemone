@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Anemone.Core;
 
@@ -18,6 +19,10 @@ public class MatchingResult<T> : MatchingResultBase where T : MatchingResultPoin
     public double MaxFrequencyDerivative { get; }
     public double MaxPhaseShift { get; }
 
+    public MatchingResult()
+    {
+        Points = Array.Empty<T>();
+    }
     public MatchingResult(IEnumerable<T> points, double turnRatio)
     {
         Points = points as T[] ?? points.ToArray();
@@ -26,5 +31,5 @@ public class MatchingResult<T> : MatchingResultBase where T : MatchingResultPoin
         MaxFrequencyDerivative = Points.Derivative(x => x.Temperature, x => x.Frequency).Max();
         MaxPhaseShift = Points.Derivative(x => x.Temperature, x => x.PhaseShift).Max();
     }
-    
+
 }

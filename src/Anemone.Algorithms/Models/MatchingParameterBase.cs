@@ -1,6 +1,8 @@
-﻿namespace Anemone.Algorithms.Models;
+﻿using System;
 
-public class MatchingParametersBase
+namespace Anemone.Algorithms.Models;
+
+public class MatchingParametersBase : ICloneable
 {
     public double? FrequencyMin { get; set; }
     public double? FrequencyMax { get; set; }
@@ -20,4 +22,8 @@ public class MatchingParametersBase
     public double? Voltage { get; set; }
     public double? Current { get; set; }
     public double? Power { get; set; }
+    public object Clone()
+    {
+        return MemberwiseClone();
+    }
 }

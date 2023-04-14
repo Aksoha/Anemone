@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace Anemone.Core;
 
-public class ActionCommandAsync : ICommand
+public class ActionCommandAsync : ICommandAsync
 {
     private readonly Func<bool>? _canExecuteHandler;
     private readonly Func<Task> _executedHandler;
@@ -20,10 +19,14 @@ public class ActionCommandAsync : ICommand
         return _canExecuteHandler == null || _canExecuteHandler();
     }
 
-    public void Execute(object? parameter)
+    public async void Execute(object? parameter)
     {
-        _executedHandler();
+        await ExecuteAsync(parameter);
     }
 
     public event EventHandler? CanExecuteChanged;
+    public Task ExecuteAsync(object? parameters)
+    {
+        return _executedHandler();
+    }
 }

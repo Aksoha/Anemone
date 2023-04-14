@@ -2,7 +2,7 @@
 
 namespace Anemone.Algorithms.Models;
 
-internal class CalculationFinishedEvent : PubSubEvent<MatchingResultPoint[]>
+public class CalculationFinishedEvent : PubSubEvent<MatchingResultPoint[]>
 {
     
 }
