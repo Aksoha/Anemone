@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Anemone.Algorithms.Builders;
 using Anemone.Algorithms.Models;
 using Anemone.Repository.HeatingSystemData;
@@ -12,46 +14,50 @@ public class MatchingCalculatorValidatorBase<TBuilder, TParameter> : AbstractVal
 {
     public MatchingCalculatorValidatorBase(IValidator<TParameter> validator)
     {
-        RuleFor(x => x.Parameter).Cascade(CascadeMode.Stop).SetValidator(validator).DependentRules(() =>
-        {
-            RuleFor(x => x).Must(HaveAllCalculationPoints);
-        });
+        RuleFor(x => x.Parameter)
+            .Cascade(CascadeMode.Stop)
+            .SetValidator(validator)
+            .DependentRules(() => { RuleFor(x => x).Must(HaveAllCalculationPoints); });
     }
 
     private static bool HaveAllCalculationPoints(TBuilder data)
     {
-        // disabled nullability warning, parameters should be null checked by the another validator
-#pragma warning disable CS8629
-        var frequencyParameter = EnumerableExtensions.CreateRange((double)data.Parameter.FrequencyMin,
-            (double)data.Parameter.FrequencyMax,
-            (double)data.Parameter.FrequencyStep);
-        var temperatureParameter = EnumerableExtensions.CreateRange((double)data.Parameter.TemperatureMin,
-            (double)data.Parameter.TemperatureMax, (double)data.Parameter.TemperatureStep);
-#pragma warning restore CS8629
+        var parameters = data.Parameter;
+        var heatingSystemPoints = data.HeatingSystem.HeatingSystemPoints;
 
-
-        var heatingSystemFrequencies = (from p in data.HeatingSystem.HeatingSystemPoints
-            where p.Type == HeatingSystemPointType.Frequency
-            select p.TypeValue).ToArray();
-
-        var heatingSystemTemperature = (from p in data.HeatingSystem.HeatingSystemPoints
-            where p.Type == HeatingSystemPointType.Temperature
-            select p.TypeValue).ToArray();
-
-
-        foreach (var point in frequencyParameter)
-        {
-            if (heatingSystemFrequencies.Contains(point)) continue;
+        
+        var requiredTemperatures = CreateHashSetFromRange(parameters.TemperatureMin, parameters.TemperatureMax,
+            parameters.TemperatureStep);
+        var actualTemperatures = SelectPointKeys(heatingSystemPoints, HeatingSystemPointType.Temperature);
+        if (requiredTemperatures.IsSubsetOf(actualTemperatures) is false)
             return false;
-        }
 
-
-        foreach (var point in temperatureParameter)
-        {
-            if (heatingSystemTemperature.Contains(point)) continue;
+        var requiredFrequencies =
+            CreateHashSetFromRange(parameters.FrequencyMin, parameters.FrequencyMax, parameters.FrequencyStep);
+        var actualFrequencies = SelectPointKeys(heatingSystemPoints, HeatingSystemPointType.Frequency);
+        if (requiredFrequencies.IsSubsetOf(actualFrequencies) is false)
             return false;
-        }
 
         return true;
+    }
+
+    private static HashSet<double> CreateHashSetFromRange(double? min, double? max, double? step)
+    {
+        // arguments should never be null by this point
+        ArgumentNullException.ThrowIfNull(min);
+        ArgumentNullException.ThrowIfNull(max);
+        ArgumentNullException.ThrowIfNull(step);
+
+        return EnumerableExtensions.CreateRange((double)min,
+            (double)max,
+            (double)step).ToHashSet();
+    }
+
+    private static IEnumerable<double> SelectPointKeys(IEnumerable<HeatingSystemPoint> points,
+        HeatingSystemPointType type)
+    {
+        return from point in points
+            where point.Type == type
+            select point.TypeValue;
     }
 }
