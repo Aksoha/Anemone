@@ -10,17 +10,8 @@ namespace Anemone.Algorithms.Builders;
 
 public class LlcMatchingBuilder : ILlcMatchingBuilder
 {
-    private IValidator<LlcMatchingBuildArgs> Validator { get; }
-
-    public LlcMatchingBuilder(IValidator<LlcMatchingBuildArgs> validator)
-    {
-        Validator = validator;
-    }
-
     public LlcMatching Build(LlcMatchingBuildArgs args)
     {
-
-        Validator.ValidateAndThrow(args);
         var hs = ConvertToAlgorithmHeatingSystem(args.HeatingSystem);
         var topology = BuildLlcTopology(hs);
         var p = BuildLlcParameters(args.Parameter);
