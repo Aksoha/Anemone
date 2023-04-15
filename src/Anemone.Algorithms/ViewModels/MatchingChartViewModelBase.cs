@@ -20,8 +20,8 @@ public abstract class MatchingChartViewModelBase<TResult>
 {
     private IEventAggregator EventAggregator { get; }
     public ObservableCollection<ISeries> Series { get; } = new();
-    private LineSeries<TResult> CurrentSeries => (LineSeries<TResult>)Series[0];
-    private LineSeries<TResult> PreviousSeries => (LineSeries<TResult>)Series[1];
+    private LineSeries<TResult> CurrentSeries => (LineSeries<TResult>)Series[1];
+    private LineSeries<TResult> PreviousSeries => (LineSeries<TResult>)Series[0];
     public Axis[] XAxesCollection { get; private set; }
     public Axis[] YAxesCollection { get; private set; }
 
@@ -36,8 +36,8 @@ public abstract class MatchingChartViewModelBase<TResult>
         var purple = new SKColor(143, 88, 191);
         var purpleDark = new SKColor(81, 46, 112);
 
-        Series.Add(CreateSeries("Current", purple));
         Series.Add(CreateSeries("Previous", purpleDark));
+        Series.Add(CreateSeries("Current", purple));
 
         EventAggregator.GetEvent<CalculationFinishedEvent>().Subscribe(CalculationFinishedEventHandler);
     }
