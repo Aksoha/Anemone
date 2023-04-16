@@ -59,7 +59,7 @@ public class LlcAlgorithmViewModelTests
         // arrange
         CreateViewModelWithValidSetup();
 
-        var matchingResult = new LlcMatchingResult();
+        var matchingResult = new LlcMatchingResultSummary();
         SetupMatchingCalculator(It.IsAny<LlcMatchingParameters>, () => HeatingSystem, matchingResult);
 
 
@@ -88,7 +88,8 @@ public class LlcAlgorithmViewModelTests
     {
         // arrange
         SetupValidator(It.IsAny<LlcMatchingBuildArgs>, new ValidationResult());
-        SetupMatchingCalculator(It.IsAny<LlcMatchingParameters>, It.IsAny<HeatingSystem>, new LlcMatchingResult());
+        SetupMatchingCalculator(It.IsAny<LlcMatchingParameters>, It.IsAny<HeatingSystem>,
+            new LlcMatchingResultSummary());
 
         CreateViewModel();
 
@@ -238,10 +239,10 @@ public class LlcAlgorithmViewModelTests
         const string fileName = "filename";
         _sdMock.Setup(m => m.ShowDialog()).Returns(true);
         _sdMock.Setup(p => p.FileName).Returns(fileName);
-        _rgMock.Setup(m => m.Generate(It.IsAny<MatchingResultBase>())).Returns(dt);
+        _rgMock.Setup(m => m.CreateSheetReport(It.IsAny<MatchingResultSummaryBase>())).Returns(dt);
 
         CreateViewModel();
-        var matchingResults = new LlcMatchingResult();
+        var matchingResults = new LlcMatchingResultSummary();
         ViewModel.MatchingResult = matchingResults;
 
 
@@ -264,7 +265,7 @@ public class LlcAlgorithmViewModelTests
         CreateViewModelWithValidSetup();
 
         _sdMock.Setup(m => m.ShowDialog()).Returns(false);
-        var matchingResults = new LlcMatchingResult();
+        var matchingResults = new LlcMatchingResultSummary();
         ViewModel.MatchingResult = matchingResults;
 
 
@@ -274,7 +275,7 @@ public class LlcAlgorithmViewModelTests
 
         // assert
         VerifyDataExporterCalled(It.IsAny<string>, It.IsAny<DataTable>, Times.Never);
-        VerifyReportGeneratorCalled(It.IsAny<LlcMatchingResult>, Times.Never);
+        VerifyReportGeneratorCalled(It.IsAny<LlcMatchingResultSummary>, Times.Never);
     }
 
 
@@ -300,7 +301,8 @@ public class LlcAlgorithmViewModelTests
         HeatingSystem = _repositoryMock.CreateObjectInRepository();
 
         SetupValidator(It.IsAny<LlcMatchingBuildArgs>, new ValidationResult());
-        SetupMatchingCalculator(It.IsAny<LlcMatchingParameters>, It.IsAny<HeatingSystem>, new LlcMatchingResult());
+        SetupMatchingCalculator(It.IsAny<LlcMatchingParameters>, It.IsAny<HeatingSystem>,
+            new LlcMatchingResultSummary());
 
         CreateViewModel();
         PublishSelectionChangedEvent(HeatingSystem);
@@ -338,10 +340,10 @@ public class LlcAlgorithmViewModelTests
     }
 
     private void SetupMatchingCalculator(Func<LlcMatchingParameters> parameters, Func<HeatingSystem> hs,
-        LlcMatchingResult matchingResult)
+        LlcMatchingResultSummary matchingResultSummary)
     {
         _mcMock.Setup(m => m.Calculate(parameters.Invoke(), hs.Invoke()))
-            .Returns(Task.FromResult(matchingResult));
+            .Returns(Task.FromResult(matchingResultSummary));
     }
 
 
@@ -374,9 +376,9 @@ public class LlcAlgorithmViewModelTests
     }
 
 
-    private void VerifyReportGeneratorCalled(Func<LlcMatchingResult> result, Func<Times> times)
+    private void VerifyReportGeneratorCalled(Func<LlcMatchingResultSummary> result, Func<Times> times)
     {
-        _rgMock.Verify(m => m.Generate(result.Invoke()), times);
+        _rgMock.Verify(m => m.CreateSheetReport(result.Invoke()), times);
     }
 
     private void VerifyDataExporterCalled(Func<string> fileName, Func<DataTable> data, Func<Times> times)

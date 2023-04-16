@@ -9,39 +9,40 @@ using FluentValidation;
 using MatchingAlgorithm.Llc;
 using Prism.Ioc;
 using Prism.Modularity;
-using LlcMatchingResult = Anemone.Algorithms.Models.LlcMatchingResult;
 
 namespace Anemone.Algorithms;
 
 public class AlgorithmsModule : IModule
 {
-    private INavigationRegistrations NavigationRegistrations { get; }
-    private IApplicationCommands ApplicationCommands { get; }
-    
     public AlgorithmsModule(INavigationRegistrations navigationRegistrations, IApplicationCommands applicationCommands)
     {
         NavigationRegistrations = navigationRegistrations;
         ApplicationCommands = applicationCommands;
     }
-    
+
+    private INavigationRegistrations NavigationRegistrations { get; }
+    private IApplicationCommands ApplicationCommands { get; }
+
     public void RegisterTypes(IContainerRegistry containerRegistry)
     {
-        containerRegistry.Register<IValidator<MatchingParametersBase>, AlgorithmParameterValidatorBase<MatchingParametersBase>>();
+        containerRegistry
+            .Register<IValidator<MatchingParametersBase>, AlgorithmParameterValidatorBase<MatchingParametersBase>>();
         containerRegistry.Register<IValidator<LlcMatchingParameters>, LlcAlgorithmParameterValidator>();
         containerRegistry.Register<IValidator<LlcMatchingBuildArgs>, LlcMatchingCalculatorValidator>();
-        
-        
+
+
         containerRegistry.Register<ILlcMatchingBuilder, LlcMatchingBuilder>();
-        containerRegistry.Register<IMatchingBuilder<LlcMatching, LlcMatchingBuildArgs>>(x => x.Resolve<ILlcMatchingBuilder>());
+        containerRegistry.Register<IMatchingBuilder<LlcMatching, LlcMatchingBuildArgs>>(x =>
+            x.Resolve<ILlcMatchingBuilder>());
         containerRegistry.Register<HeatingRepositoryListView>();
 
         containerRegistry.Register<ILlcMatchingCalculator, LlcMatchingCalculator>();
-        containerRegistry.Register<IMatchingCalculator<LlcMatchingParameters, LlcMatchingResult>>(x =>
+        containerRegistry.Register<IMatchingCalculator<LlcMatchingParameters, LlcMatchingResultSummary>>(x =>
             x.Resolve<ILlcMatchingCalculator>());
 
         containerRegistry.Register<IDataExporter, DataExporter>();
         containerRegistry.Register<IReportGenerator, ReportGenerator>();
-        
+
         containerRegistry.RegisterForNavigation<LlcChartsView>();
         containerRegistry.RegisterForNavigation<HeatingRepositoryListView>();
         containerRegistry.RegisterForNavigation<LlcAlgorithmView>();

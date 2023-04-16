@@ -26,7 +26,7 @@ public class LlcAlgorithmViewModel : ViewModelBase
     private bool _calculationInProgress;
     private CancellationTokenSource? _cts;
     private bool _isResultCalculated;
-    private LlcMatchingResult? _matchingResult;
+    private LlcMatchingResultSummary? _matchingResult;
 
 
     public LlcAlgorithmViewModel(IHeatingSystemRepository repository,
@@ -54,7 +54,7 @@ public class LlcAlgorithmViewModel : ViewModelBase
 
     public LlcMatchingParameters InputParameters { get; } = new();
 
-    public LlcMatchingResult? MatchingResult
+    public LlcMatchingResultSummary? MatchingResult
     {
         get => _matchingResult;
         set
@@ -162,7 +162,7 @@ public class LlcAlgorithmViewModel : ViewModelBase
         return Task.Run(async () => await Validator.ValidateAndThrowAsync(args, cancellationToken), cancellationToken);
     }
 
-    private Task<LlcMatchingResult> Calculate(LlcMatchingParameters parameters, HeatingSystem heatingSystem,
+    private Task<LlcMatchingResultSummary> Calculate(LlcMatchingParameters parameters, HeatingSystem heatingSystem,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -240,9 +240,9 @@ public class LlcAlgorithmViewModel : ViewModelBase
         return SaveFileDialog.FileName;
     }
 
-    private DataTable GenerateReport(MatchingResultBase matchingResult)
+    private DataTable GenerateReport(MatchingResultSummaryBase matchingResultSummary)
     {
-        return ReportGenerator.Generate(matchingResult);
+        return ReportGenerator.CreateSheetReport(matchingResultSummary);
     }
 
     private async Task ExportReport(string fileName, DataTable report)
