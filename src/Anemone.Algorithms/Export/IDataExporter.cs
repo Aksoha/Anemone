@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Threading.Tasks;
 
-namespace Anemone.Algorithms.Report;
+namespace Anemone.Algorithms.Export;
 
 public interface IDataExporter
 {
