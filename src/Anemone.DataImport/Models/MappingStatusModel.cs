@@ -2,7 +2,7 @@
 
 namespace Anemone.DataImport.Models;
 
-internal enum MappingStatusModel
+public enum MappingStatusModel
 {
     [Display(Description = "column not mapped")]
     NotAssigned,

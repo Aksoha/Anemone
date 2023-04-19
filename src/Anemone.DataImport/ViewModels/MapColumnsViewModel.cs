@@ -12,7 +12,7 @@ using Anemone.DataImport.Views;
 
 namespace Anemone.DataImport.ViewModels;
 
-internal class MapColumnsViewModel : ViewModelBase
+public class MapColumnsViewModel : ViewModelBase
 {
     private DataTable _displayedSheet = new();
     private bool _isSheetHeaderVisible;

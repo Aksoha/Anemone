@@ -3,7 +3,7 @@ using Anemone.Core;
 
 namespace Anemone.DataImport.Models;
 
-internal enum HeatingSystemColumnMappingModel
+public enum HeatingSystemColumnMappingModel
 {
     Frequency,
     Temperature,

@@ -10,7 +10,7 @@ using EnumConverter = Anemone.Core.Converters.EnumConverter;
 
 namespace Anemone.DataImport.Models;
 
-internal class MappingInformationModel : INotifyPropertyChanged
+public class MappingInformationModel : INotifyPropertyChanged
 {
     private HeatingSystemColumnMappingModel _mappedValue;
     private MappingStatusModel _statusModel;

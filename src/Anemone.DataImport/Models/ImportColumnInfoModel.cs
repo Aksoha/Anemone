@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Anemone.DataImport.Models;
 
-internal class ImportColumnInfoModel : INotifyPropertyChanged
+public class ImportColumnInfoModel : INotifyPropertyChanged
 {
     private string _columnName = string.Empty;
     private HeatingSystemColumnMappingModel? _columnType;

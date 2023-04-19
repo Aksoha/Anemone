@@ -9,7 +9,7 @@ using Prism.Commands;
 
 namespace Anemone.DataImport.ViewModels;
 
-internal class DropFileViewModel : ViewModelBase
+public class DropFileViewModel : ViewModelBase
 {
     private string? _uploadedFile;
 
