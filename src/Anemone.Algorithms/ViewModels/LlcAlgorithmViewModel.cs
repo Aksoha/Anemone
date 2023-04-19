@@ -10,6 +10,7 @@ using Anemone.Algorithms.Export;
 using Anemone.Algorithms.Matching;
 using Anemone.Algorithms.Models;
 using Anemone.Algorithms.Report;
+using Anemone.Algorithms.Views;
 using Anemone.Core;
 using Anemone.Core.Dialogs;
 using Anemone.Repository.HeatingSystemData;
@@ -22,6 +23,7 @@ using HeatingSystem = Anemone.Repository.HeatingSystemData.HeatingSystem;
 
 namespace Anemone.Algorithms.ViewModels;
 
+[SidebarElement("LLC", PackIconKind.HeatingSystemMatching, nameof(LlcAlgorithmView))]
 public class LlcAlgorithmViewModel : ViewModelBase
 {
     private bool _calculationInProgress;

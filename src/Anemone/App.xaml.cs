@@ -11,6 +11,8 @@ using Anemone.Algorithms;
 using Anemone.Core;
 using Anemone.Core.Components;
 using Anemone.Core.Dialogs;
+using Anemone.Core.Navigation;
+using Anemone.Core.Navigation.Regions;
 using Anemone.Core.ViewModels;
 using Anemone.DataImport;
 using Anemone.Repository;
@@ -39,12 +41,12 @@ namespace Anemone;
 /// </summary>
 public partial class App
 {
+    private ApplicationArguments _arguments = default!;
+
     /// <summary>
     ///     a queue of logging data used for storing logging messages before logger is created
     /// </summary>
-    private Queue<LoggingQueueItem> _loggerQueue = new();
-
-    private ApplicationArguments _arguments = default!;
+    private readonly Queue<LoggingQueueItem> _loggerQueue = new();
 
     protected override void RegisterTypes(IContainerRegistry containerRegistry)
     {
@@ -61,20 +63,27 @@ public partial class App
             Left = 0,
             Height = 500,
             Width = 800,
-            WindowState = WindowState.Maximized,
-            NavigationDrawerExpanded = true
+            WindowState = WindowState.Maximized
         });
 
-        if(_arguments.AttachDebugger)
+        containerRegistry.RegisterSettings(new SidebarSettings
+        {
+            IsExpanded = true,
+            MinWidth = 60,
+            MaxWidth = 230
+        });
+
+
+        if (_arguments.AttachDebugger)
             RegisterDebuggingSettings(containerRegistry);
-        
+
         containerRegistry.RegisterDialog<TextBoxDialog, TextBoxDialogViewModel>();
         containerRegistry.RegisterDialog<ConfirmationDialog, ConfirmationDialogViewModel>();
         containerRegistry.RegisterDialogWindow<DialogWindow>();
-        containerRegistry.RegisterSingleton<INavigationRegistrations, NavigationRegistrations>();
+        containerRegistry.RegisterSingleton<INavigationManager, NavigationManager>();
+        containerRegistry.RegisterSingleton<IRegionCollection, RegionCollection>();
         containerRegistry.RegisterSingleton<ISnackbarMessageQueue, SnackbarMessageQueue>();
         containerRegistry.RegisterSingleton<IToastService, ToastService>();
-        containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
         containerRegistry.Register<IOpenFileDialog, OpenFileDialog>();
         containerRegistry.Register<IDialogService, PrismDialogWrapper>();
         containerRegistry.Register<IFile, FileWrapper>();
@@ -100,7 +109,7 @@ public partial class App
     }
 
     /// <summary>
-    /// Registers a service from <see cref="IServiceCollection"/> in the <paramref name="containerRegistry"/>.
+    ///     Registers a service from <see cref="IServiceCollection" /> in the <paramref name="containerRegistry" />.
     /// </summary>
     /// <param name="containerRegistry">The container.</param>
     /// <param name="service">The service to register.</param>
@@ -211,8 +220,8 @@ public partial class App
     {
         Log.Logger.Information("stopping application");
         SaveDebuggingSettings();
-        
-        if(_arguments.AttachDebugger)
+
+        if (_arguments.AttachDebugger)
             FreeConsole();
         base.OnExit(e);
     }

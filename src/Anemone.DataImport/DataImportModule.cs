@@ -1,4 +1,6 @@
 ﻿using Anemone.Core;
+using Anemone.Core.Navigation;
+using Anemone.Core.Navigation.Regions;
 using Anemone.DataImport.Services;
 using Anemone.DataImport.ViewModels;
 using Anemone.DataImport.Views;
@@ -9,24 +11,19 @@ namespace Anemone.DataImport;
 
 public class DataImportModule : IModule
 {
-    public DataImportModule(INavigationRegistrations navigationRegistrations, IApplicationCommands applicationCommands)
+    public DataImportModule(INavigationManager navigationManager, IRegionCollection regionCollection)
     {
-        NavigationRegistrations = navigationRegistrations;
-        ApplicationCommands = applicationCommands;
+        NavigationManager = navigationManager;
+        RegionCollection = regionCollection;
     }
 
-    private INavigationRegistrations NavigationRegistrations { get; }
-    private IApplicationCommands ApplicationCommands { get; }
+    private INavigationManager NavigationManager { get; }
+    private IRegionCollection RegionCollection { get; }
 
     public void RegisterTypes(IContainerRegistry containerRegistry)
     {
         containerRegistry.Register<ISheetFileReader, SheetFileReader>();
 
-        NavigationRegistrations.Register(new NavigationPanelItem
-        {
-            Header = "Import data", NavigationPath = nameof(DataImportView),
-            Icon = PackIconKind.ImportInductionHeatingData
-        });
         containerRegistry.Register<DropFileViewModel>();
         containerRegistry.Register<MapColumnsViewModel>();
         containerRegistry.Register<SaveDataViewModel>();
@@ -37,5 +34,6 @@ public class DataImportModule : IModule
 
     public void OnInitialized(IContainerProvider containerProvider)
     {
+        RegionCollection.Add(RegionNames.Sidebar, typeof(DataImportViewModel));
     }
 }

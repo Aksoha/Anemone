@@ -1,14 +1,18 @@
-﻿<UserControl x:Class="Anemone.Views.NavigationPanel" x:Name="NavDrawer"
+﻿<UserControl x:Class="Anemone.Views.SidebarView"
+             x:Name="NavDrawer"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:components="clr-namespace:Anemone.Core.Components;assembly=Anemone.Core"
+             xmlns:viewModels="clr-namespace:Anemone.ViewModels"
+             xmlns:mvvm="http://prismlibrary.com/"
              mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewModels:SidebarViewModel, IsDesignTimeCreatable=False}"
+             mvvm:ViewModelLocator.AutoWireViewModel="True"
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
-
 
         <!-- toggle button -->
         <Style TargetType="ToggleButton" x:Key="HamburgerButton">
@@ -74,12 +78,13 @@
     </UserControl.Resources>
 
     <Grid>
-        <Grid x:Name="NavPanel" Background="{StaticResource TitleBarBrush}" HorizontalAlignment="Left">
+        <Grid x:Name="NavPanel" Width="{Binding CurrentWidth}" Background="{StaticResource TitleBarBrush}"
+              HorizontalAlignment="Left">
             <StackPanel>
                 <!-- toggle button -->
                 <ToggleButton x:Name="HamburgerButton" Style="{StaticResource HamburgerButton}"
                               HorizontalAlignment="Left"
-                              IsChecked="{Binding IsExpanded, ElementName=NavDrawer, Mode=TwoWay, 
+                              IsChecked="{Binding Settings.IsExpanded, Mode=TwoWay, 
                               Converter={StaticResource InvertBooleanConverter}}">
                     <components:PackIcon Kind="HamburgerMenu" />
 
@@ -93,7 +98,7 @@
                                         Storyboard.TargetName="NavPanel"
                                         Storyboard.TargetProperty="Width"
                                         BeginTime="0:0:0"
-                                        From="60" To="230"
+                                        From="{Binding Settings.MinWidth}" To="{Binding Settings.MaxWidth}"
                                         Duration="0:0:0.5">
                                         <DoubleAnimation.EasingFunction>
                                             <ExponentialEase EasingMode="EaseOut" />
@@ -109,7 +114,7 @@
                                         Storyboard.TargetName="NavPanel"
                                         Storyboard.TargetProperty="Width"
                                         BeginTime="0:0:0"
-                                        From="230" To="60"
+                                        From="{Binding Settings.MaxWidth}" To="{Binding Settings.MinWidth}"
                                         Duration="0:0:0.5">
                                         <DoubleAnimation.EasingFunction>
                                             <ExponentialEase EasingMode="EaseOut" />
@@ -125,12 +130,12 @@
                 <Separator Style="{StaticResource ContentSeparatorStyle}" />
 
                 <!-- navigation items -->
-                <ListBox SelectionChanged="SelectionChanged"
-                         ItemsSource="{Binding ItemsSource, ElementName=NavDrawer}"
-                         SelectedItem="{Binding SelectedPanelItem, ElementName=NavDrawer, Mode=TwoWay}"
-                         ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                         SelectionMode="Single"
-                         ItemContainerStyle="{StaticResource NavigationItemStyle}">
+                <ListBox
+                    ItemsSource="{Binding ItemsSource}"
+                    SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                    SelectionMode="Single"
+                    ItemContainerStyle="{StaticResource NavigationItemStyle}">
 
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -145,7 +150,7 @@
                                     <components:PackIcon.ToolTip>
                                         <ToolTip
                                             Style="{StaticResource ToolTipStyle}"
-                                            Visibility="{Binding IsExpanded, ElementName=NavDrawer, Converter={StaticResource InvertBooleanConverter}}"
+                                            Visibility="{Binding DataContext.Settings.IsExpanded, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource InvertBooleanConverter}}"
                                             Content="{Binding Header}" />
                                     </components:PackIcon.ToolTip>
                                 </components:PackIcon>
@@ -166,4 +171,5 @@
             </StackPanel>
         </Grid>
     </Grid>
+
 </UserControl>

@@ -4,8 +4,11 @@ using Anemone.Algorithms.Matching;
 using Anemone.Algorithms.Models;
 using Anemone.Algorithms.Report;
 using Anemone.Algorithms.Validators;
+using Anemone.Algorithms.ViewModels;
 using Anemone.Algorithms.Views;
 using Anemone.Core;
+using Anemone.Core.Navigation;
+using Anemone.Core.Navigation.Regions;
 using FluentValidation;
 using MatchingAlgorithm.Llc;
 using Prism.Ioc;
@@ -15,14 +18,14 @@ namespace Anemone.Algorithms;
 
 public class AlgorithmsModule : IModule
 {
-    public AlgorithmsModule(INavigationRegistrations navigationRegistrations, IApplicationCommands applicationCommands)
+    public AlgorithmsModule(INavigationManager navigationManager, IRegionCollection regionCollection)
     {
-        NavigationRegistrations = navigationRegistrations;
-        ApplicationCommands = applicationCommands;
+        NavigationManager = navigationManager;
+        RegionCollection = regionCollection;
     }
 
-    private INavigationRegistrations NavigationRegistrations { get; }
-    private IApplicationCommands ApplicationCommands { get; }
+    private INavigationManager NavigationManager { get; }
+    private IRegionCollection RegionCollection { get; }
 
     public void RegisterTypes(IContainerRegistry containerRegistry)
     {
@@ -47,16 +50,11 @@ public class AlgorithmsModule : IModule
         containerRegistry.RegisterForNavigation<LlcChartsView>();
         containerRegistry.RegisterForNavigation<HeatingRepositoryListView>();
         containerRegistry.RegisterForNavigation<LlcAlgorithmView>();
-        NavigationRegistrations.Register(new NavigationPanelItem
-        {
-            Header = "Llc",
-            NavigationPath = nameof(LlcAlgorithmView),
-            Icon = PackIconKind.HeatingSystemMatching
-        });
     }
 
     public void OnInitialized(IContainerProvider containerProvider)
     {
-        ApplicationCommands.NavigateCommand.Execute(nameof(LlcAlgorithmView));
+        RegionCollection.Add(RegionNames.Sidebar, typeof(LlcAlgorithmViewModel));
+        NavigationManager.Navigate(RegionNames.ContentRegion, nameof(LlcAlgorithmView));
     }
 }

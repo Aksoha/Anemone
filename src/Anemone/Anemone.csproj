@@ -10,37 +10,32 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Anemone.Algorithms\Anemone.Algorithms.csproj" />
-        <ProjectReference Include="..\Anemone.Core\Anemone.Core.csproj" />
-        <ProjectReference Include="..\Anemone.DataImport\Anemone.DataImport.csproj" />
-        <ProjectReference Include="..\Anemone.Repository\Anemone.Repository.csproj" />
-        <ProjectReference Include="..\MatchingAlgorithm\MatchingAlgorithm.csproj" />
+        <ProjectReference Include="..\Anemone.Algorithms\Anemone.Algorithms.csproj"/>
+        <ProjectReference Include="..\Anemone.Core\Anemone.Core.csproj"/>
+        <ProjectReference Include="..\Anemone.DataImport\Anemone.DataImport.csproj"/>
+        <ProjectReference Include="..\Anemone.Repository\Anemone.Repository.csproj"/>
+        <ProjectReference Include="..\MatchingAlgorithm\MatchingAlgorithm.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Holize.PersistenceFramework.Extensions.Prism" Version="1.0.1" />
-        <PackageReference Include="Prism.Unity" Version="8.1.97" />
-        <PackageReference Include="Serilog" Version="2.12.0" />
-        <PackageReference Include="Serilog.Enrichers.Context" Version="4.6.0" />
-        <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
-        <PackageReference Include="Serilog.Expressions" Version="3.4.1" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
-        <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
-        <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-        <PackageReference Include="Unity.Microsoft.DependencyInjection" Version="5.11.5" />
+        <PackageReference Include="Holize.PersistenceFramework.Extensions.Prism" Version="1.0.1"/>
+        <PackageReference Include="Prism.Unity" Version="8.1.97"/>
+        <PackageReference Include="Serilog" Version="2.12.0"/>
+        <PackageReference Include="Serilog.Enrichers.Context" Version="4.6.0"/>
+        <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0"/>
+        <PackageReference Include="Serilog.Expressions" Version="3.4.1"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0"/>
+        <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0"/>
+        <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0"/>
+        <PackageReference Include="Unity.Microsoft.DependencyInjection" Version="5.11.5"/>
     </ItemGroup>
 
     <ItemGroup>
         <Page Update="Views\ShellView.xaml">
-            <Generator>MSBuild:Compile</Generator>
-            <XamlRuntime>Wpf</XamlRuntime>
-            <SubType>Designer</SubType>
-        </Page>
-        <Page Update="Views\NavigationPanel.xaml">
             <Generator>MSBuild:Compile</Generator>
             <XamlRuntime>Wpf</XamlRuntime>
             <SubType>Designer</SubType>
@@ -54,12 +49,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="favicon.ico" />
-        <Resource Include="favicon.ico" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Models" />
+        <None Remove="favicon.ico"/>
+        <Resource Include="favicon.ico"/>
     </ItemGroup>
 
 </Project>

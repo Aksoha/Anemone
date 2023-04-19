@@ -43,22 +43,16 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <views:NavigationPanel Grid.Column="0" ItemsSource="{Binding NavigationRegistrations}"
-                               SelectedPanelItem="{Binding SelectedNavigationItem}"
-                               IsExpanded="{Binding Settings.NavigationDrawerExpanded}">
-            <behaviors:Interaction.Triggers>
-                <behaviors:EventTrigger EventName="SelectedItemChanged">
-                    <behaviors:InvokeCommandAction Command="{Binding SelectedNavigationItemChangedCommand }" />
-                </behaviors:EventTrigger>
-            </behaviors:Interaction.Triggers>
-        </views:NavigationPanel>
+
+        <views:SidebarView Grid.Column="0" />
+
 
         <Grid Grid.Column="1">
             <ContentControl Margin="10" prism:RegionManager.RegionName="{x:Static anemone:RegionNames.ContentRegion}" />
 
-        <materialDesign:Snackbar Margin="10"
-                                 HorizontalAlignment="Center" MessageQueue="{Binding SnackbarMessageQueue}"/>
+            <materialDesign:Snackbar Margin="10"
+                                     HorizontalAlignment="Center" MessageQueue="{Binding SnackbarMessageQueue}" />
         </Grid>
-        
+
     </Grid>
 </mah:MetroWindow>
