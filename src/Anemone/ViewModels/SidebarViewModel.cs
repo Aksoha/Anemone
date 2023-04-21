@@ -3,15 +3,18 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using Anemone.Core;
-using Anemone.Core.Navigation;
-using Anemone.Core.Navigation.Regions;
+using Anemone.Models;
 using Anemone.Settings;
+using Anemone.UI;
+using Anemone.UI.Core;
+using Anemone.UI.Core.Navigation;
+using Anemone.UI.Core.Navigation.Regions;
 
 namespace Anemone.ViewModels;
 
 public class SidebarViewModel : ViewModelBase, IDisposable
 {
-    private NavigationPanelItem? _selectedItem;
+    private SidebarElement? _selectedItem;
 
     public SidebarViewModel(SidebarSettings settings, INavigationManager navigationManager,
         IRegionCollection regionCollection)
@@ -28,9 +31,9 @@ public class SidebarViewModel : ViewModelBase, IDisposable
     private INavigationManager NavigationManager { get; }
     private IRegionCollection RegionCollection { get; }
 
-    public ObservableCollection<NavigationPanelItem> ItemsSource { get; } = new();
+    public ObservableCollection<SidebarElement> ItemsSource { get; } = new();
 
-    public NavigationPanelItem? SelectedItem
+    public SidebarElement? SelectedItem
     {
         get => _selectedItem;
         set
@@ -90,7 +93,7 @@ public class SidebarViewModel : ViewModelBase, IDisposable
         switch (context.Action)
         {
             case RegionCollectionAction.Add:
-                ItemsSource.Add(new NavigationPanelItem
+                ItemsSource.Add(new SidebarElement
                     { Header = attribute.Header, Icon = attribute.Icon, Uri = attribute.Uri });
                 break;
             case RegionCollectionAction.Remove:

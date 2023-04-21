@@ -1,5 +1,7 @@
 ﻿using Anemone.Core;
 using Anemone.Settings;
+using Anemone.UI;
+using Anemone.UI.Core;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
 

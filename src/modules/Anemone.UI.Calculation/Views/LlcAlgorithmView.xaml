@@ -1,0 +1,206 @@
+﻿<UserControl x:Class="Anemone.UI.Calculation.Views.LlcAlgorithmView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:views="clr-namespace:Anemone.UI.Calculation.Views"
+             xmlns:viewModels="clr-namespace:Anemone.UI.Calculation.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewModels:LlcAlgorithmViewModel, IsDesignTimeCreatable=False}"
+             d:DesignHeight="300" d:DesignWidth="300">
+
+
+    <UserControl.Resources>
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignFilledTextBox}">
+            <Setter Property="MinWidth" Value="100" />
+            <Setter Property="Margin" Value="10"></Setter>
+        </Style>
+    </UserControl.Resources>
+
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- input data -->
+        <materialDesign:Card Grid.Column="0" VerticalAlignment="Top">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    
+                    <!-- frequency -->
+                    <Expander Header="Frequency" IsExpanded="True"  >
+                        <StackPanel>
+                            <TextBox Text="{Binding InputParameters.FrequencyMin}"
+                                     materialDesign:HintAssist.Hint="min" />
+                            <TextBox Text="{Binding InputParameters.FrequencyMax}"
+                                     materialDesign:HintAssist.Hint="max" />
+                            <TextBox Text="{Binding InputParameters.FrequencyStep}"
+                                     materialDesign:HintAssist.Hint="step" />
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- temperature -->
+                    <Expander Header="Temperature" IsExpanded="True">
+                        <StackPanel>
+                            <TextBox Text="{Binding InputParameters.TemperatureMin}"
+                                     materialDesign:HintAssist.Hint="min" />
+                            <TextBox Text="{Binding InputParameters.TemperatureMax}"
+                                     materialDesign:HintAssist.Hint="max" />
+                            <TextBox Text="{Binding InputParameters.TemperatureStep}"
+                                     materialDesign:HintAssist.Hint="step" />
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- turn ratio -->
+                    <Expander Header="Turn ratio" IsExpanded="True">
+                        <StackPanel>
+                            <TextBox Text="{Binding InputParameters.TurnRatioMin}" materialDesign:HintAssist.Hint="min" />
+                            <TextBox Text="{Binding InputParameters.TurnRatioMax}" materialDesign:HintAssist.Hint="max" />
+                            <TextBox Text="{Binding InputParameters.TurnRatioStep}"
+                                     materialDesign:HintAssist.Hint="step" />
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- inductance -->
+                    <Expander Header="Inductance" IsExpanded="True" MinWidth="230">
+                        <StackPanel>
+                            <DockPanel VerticalAlignment="Stretch">
+                                <TextBlock Text="variable inductance" Margin="20" />
+                                <ToggleButton
+                                    HorizontalAlignment="Right" IsChecked="{Binding InputParameters.VariableInductance}"
+                                    Margin="20" />
+                            </DockPanel>
+                            <TextBox Text="{Binding InputParameters.InductanceMin}"
+                                     materialDesign:HintAssist.Hint="min" />
+                            <TextBox Text="{Binding InputParameters.InductanceMax}"
+                                     materialDesign:HintAssist.Hint="max" />
+                            <TextBox Text="{Binding InputParameters.InductanceStep}"
+                                     materialDesign:HintAssist.Hint="step" />
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- capacitance -->
+                    <Expander Header="Capacitance" IsExpanded="True">
+                        <StackPanel>
+                            <TextBox Text="{Binding InputParameters.CapacitanceMin}"
+                                     materialDesign:HintAssist.Hint="min" />
+                            <TextBox Text="{Binding InputParameters.CapacitanceMax}"
+                                     materialDesign:HintAssist.Hint="max" />
+                            <TextBox Text="{Binding InputParameters.CapacitanceStep}"
+                                     materialDesign:HintAssist.Hint="step" />
+                        </StackPanel>
+                    </Expander>
+                    
+                    <!-- voltage, current and power -->
+                    <Expander Header="Power" IsExpanded="True">
+                        <StackPanel>
+                            <TextBox Text="{Binding InputParameters.Voltage}"
+                                     materialDesign:HintAssist.Hint="voltage" />
+                            <TextBox Text="{Binding InputParameters.Current}"
+                                     materialDesign:HintAssist.Hint="current" />
+                            <TextBox Text="{Binding InputParameters.Power}"
+                                     materialDesign:HintAssist.Hint="power" />
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
+        </materialDesign:Card>
+
+        
+        <!-- heating system selector, simple results and buttons -->
+        <Grid Grid.Column="1" MinWidth="200">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- heating system selector -->
+            <StackPanel Grid.Row="0" Margin="20 0">
+                <TextBlock Text="heating systems" Margin="0 0 0 10" />
+                <views:HeatingRepositoryListView />
+            </StackPanel>
+            
+            <!-- simple results and detailed result navigation button -->
+            <StackPanel Grid.Row="2" Margin="20 0"
+                        Visibility="{Binding IsResultCalculated, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="results" Margin="5" />
+                <materialDesign:Card>
+                    <Grid VerticalAlignment="Bottom">
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignTextBlock}">
+                                <Setter Property="Margin" Value="10 5" />
+                            </Style>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Grid.Row="0" Text="mean power" />
+                        <TextBlock Grid.Column="1" Grid.Row="0"
+                                   Text="{Binding MatchingResult.MeanPower, FallbackValue='', StringFormat={}{0:0.00}}" />
+
+                        <TextBlock Grid.Column="0" Grid.Row="1" Text="turn ratio" />
+                        <TextBlock Grid.Column="1" Grid.Row="1"
+                                   Text="{Binding MatchingResult.TurnRatio, FallbackValue='', StringFormat={}{0:0}}" />
+
+                        <TextBlock Grid.Column="0" Grid.Row="2" Text="capacitance" />
+                        <TextBlock Grid.Column="1" Grid.Row="2"
+                                   Text="{Binding MatchingResult.Capacitance, FallbackValue='', StringFormat={}{0:0.00e0}}" />
+
+                        <TextBlock Grid.Column="0" Grid.Row="3" Text="df/dt" />
+                        <TextBlock Grid.Column="1" Grid.Row="3"
+                                   Text="{Binding MatchingResult.MaxFrequencyDerivative, FallbackValue='', StringFormat={}{0:0.00e0}}" />
+
+                        <TextBlock Grid.Column="0" Grid.Row="4" Text="dl/dt" />
+                        <TextBlock Grid.Column="1" Grid.Row="4"
+                                   Text="{Binding MatchingResult.MaxInductanceDerivative, FallbackValue='', StringFormat={}{0:0.00e0}}" />
+
+                        <TextBlock Grid.Column="0" Grid.Row="5" Text="phase shift" />
+                        <TextBlock Grid.Column="1" Grid.Row="5"
+                                   Text="{Binding MatchingResult.MaxPhaseShift, FallbackValue='', StringFormat={}{0:0.00e0}}" />
+
+                    </Grid>
+                </materialDesign:Card>
+                <Button Command="{Binding}" Content="View results" Margin="0 20 0 0"
+                        Style="{StaticResource MaterialDesignOutlinedButton}">
+                </Button>
+            </StackPanel>
+
+            
+            <!-- calculate and export data buttons -->
+            <StackPanel Grid.Row="3" VerticalAlignment="Bottom" Margin="20 0">
+                <Button Command="{Binding ExportDataCommand}" Content="Export results"
+                        Margin="0 20"
+                        Style="{StaticResource MaterialDesignOutlinedButton}" Visibility="{Binding IsResultCalculated, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <Button Visibility="{Binding CalculationInProgress, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                    Command="{Binding CalculateCommand}" Content="Calculate" Margin="0 0 0 20" />
+                <Button
+                    materialDesign:ButtonProgressAssist.IsIndeterminate="True"
+                    materialDesign:ButtonProgressAssist.IsIndicatorVisible="True"
+                    materialDesign:ButtonProgressAssist.Value="-1"
+                    Visibility="{Binding CalculationInProgress, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Command="{Binding CancelCalculateCommand}" Content="Cancel" Margin="0 0 0 20" />
+            </StackPanel>
+        </Grid>
+
+        <!-- charts -->
+        <views:LlcChartsView Grid.Column="2"/>
+        
+    </Grid>
+</UserControl>

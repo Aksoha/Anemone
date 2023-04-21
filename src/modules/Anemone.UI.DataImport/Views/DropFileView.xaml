@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="Anemone.UI.DataImport.Views.DropFileView"
+             x:ClassModifier="internal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:viewModels="clr-namespace:Anemone.UI.DataImport.ViewModels"
+             xmlns:icons="clr-namespace:Anemone.UI.Core.Icons;assembly=Anemone.UI.Core"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance Type=viewModels:DropFileViewModel, IsDesignTimeCreatable=False}"
+             Background="Transparent"
+             AllowDrop="True">
+
+
+    <behaviors:Interaction.Triggers>
+        <behaviors:EventTrigger EventName="Drop">
+            <behaviors:InvokeCommandAction Command="{Binding DropFileCommand }" PassEventArgsToCommand="True" />
+        </behaviors:EventTrigger>
+    </behaviors:Interaction.Triggers>
+
+
+    <Border BorderThickness="1">
+
+        <Border.BorderBrush>
+            <VisualBrush>
+                <VisualBrush.Visual>
+                    <Rectangle StrokeDashArray="1" Stroke="{DynamicResource PrimaryHueMidBrush}" StrokeThickness="5"
+                               Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                               Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}" />
+                </VisualBrush.Visual>
+            </VisualBrush>
+        </Border.BorderBrush>
+
+        <Grid>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Margin" Value="0 5 0 5" />
+                    </Style>
+
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+                        <Setter Property="Margin" Value="0 5 0 5" />
+                    </Style>
+                </StackPanel.Resources>
+                <icons:PackIcon Kind="UploadFile" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                     Width="40"
+                                     Height="40" />
+                <TextBlock TextAlignment="Center" Text="Drag &amp; Drop" />
+                <TextBlock TextAlignment="Center" Text="or" />
+                <Button Content="Choose file" Command="{Binding ChooseFileCommand}" />
+
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

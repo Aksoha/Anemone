@@ -13,8 +13,8 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
 
-
-                <ResourceDictionary Source="pack://application:,,,/Anemone.Core;component/Components/ResourceDictionary.xaml" />
+                
+                <ResourceDictionary Source="pack://application:,,,/Anemone.UI.Core;component/ResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

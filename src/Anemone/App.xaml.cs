@@ -1,24 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Abstractions;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Threading;
-using Anemone.Algorithms;
-using Anemone.Core;
-using Anemone.Core.Components;
-using Anemone.Core.Dialogs;
-using Anemone.Core.Navigation;
-using Anemone.Core.Navigation.Regions;
-using Anemone.Core.ViewModels;
-using Anemone.DataImport;
-using Anemone.Repository;
-using Anemone.Services;
+using Anemone.Core.Persistence;
+using Anemone.Infrastructure;
 using Anemone.Settings;
 using Anemone.Startup;
+using Anemone.UI.Calculation;
+using Anemone.UI.Core;
+using Anemone.UI.DataImport;
 using Anemone.Views;
 using Holize.PersistenceFramework;
 using Holize.PersistenceFramework.Extensions.Prism;
@@ -77,26 +71,17 @@ public partial class App
         if (_arguments.AttachDebugger)
             RegisterDebuggingSettings(containerRegistry);
 
-        containerRegistry.RegisterDialog<TextBoxDialog, TextBoxDialogViewModel>();
-        containerRegistry.RegisterDialog<ConfirmationDialog, ConfirmationDialogViewModel>();
-        containerRegistry.RegisterDialogWindow<DialogWindow>();
-        containerRegistry.RegisterSingleton<INavigationManager, NavigationManager>();
-        containerRegistry.RegisterSingleton<IRegionCollection, RegionCollection>();
+
+
         containerRegistry.RegisterSingleton<ISnackbarMessageQueue, SnackbarMessageQueue>();
-        containerRegistry.RegisterSingleton<IToastService, ToastService>();
-        containerRegistry.Register<IOpenFileDialog, OpenFileDialog>();
-        containerRegistry.Register<IDialogService, PrismDialogWrapper>();
-        containerRegistry.Register<IFile, FileWrapper>();
-        containerRegistry.Register<IDirectory, DirectoryWrapper>();
-        containerRegistry.Register<IProcess, ProcessWrapper>();
-        containerRegistry.Register<ISaveFileDialog, SaveFileDialog>();
+
+        containerRegistry.AddUi();
+
 
 
         var serviceCollection = new ServiceCollection();
         containerRegistry.RegisterInstance<IServiceCollection>(serviceCollection);
-
-        Container.Resolve<IServiceCollection>().ConfigureDatabase(new RepositoryOptions
-            { ConnectionString = ApplicationInfo.ConnectionString });
+        serviceCollection.AddInfrastructure(new RepositoryOptions { ConnectionString = ApplicationInfo.ConnectionString });
 
         foreach (var service in serviceCollection)
             Register(containerRegistry, service);
@@ -105,7 +90,7 @@ public partial class App
 
 
         containerRegistry.RegisterInstance<IServiceProvider>(serviceProvider);
-        Container.Resolve<IServiceProvider>().UseDatabase();
+        Container.Resolve<IServiceProvider>().UseInfrastructure();
     }
 
     /// <summary>
@@ -127,11 +112,48 @@ public partial class App
                 var provider = containerProvider.Resolve<IServiceProvider>();
                 return factory(provider);
             };
-            containerRegistry.Register(service.ServiceType, factoryMethod);
+            RegisterType(containerRegistry, service, factoryMethod);
         }
         else
         {
-            containerRegistry.Register(service.ServiceType, service.ImplementationType);
+            RegisterType(containerRegistry, service);
+        }
+    }
+
+    private static void RegisterType(IContainerRegistry containerRegistry, ServiceDescriptor service, Func<IContainerProvider, object> factoryMethod)
+    {
+        switch (service.Lifetime)
+        {
+            case ServiceLifetime.Singleton:
+                containerRegistry.RegisterSingleton(service.ServiceType, factoryMethod);
+                break;
+            case ServiceLifetime.Scoped:
+                containerRegistry.RegisterScoped(service.ServiceType, factoryMethod);
+                break;
+            case ServiceLifetime.Transient:
+                containerRegistry.Register(service.ServiceType, factoryMethod);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+
+    private static void RegisterType(IContainerRegistry containerRegistry, ServiceDescriptor service)
+    {
+        switch (service.Lifetime)
+        {
+            case ServiceLifetime.Singleton:
+                containerRegistry.RegisterSingleton(service.ServiceType, service.ImplementationType);
+                break;
+            case ServiceLifetime.Scoped:
+                containerRegistry.RegisterScoped(service.ServiceType, service.ImplementationType);
+                break;
+            case ServiceLifetime.Transient:
+                containerRegistry.Register(service.ServiceType, service.ImplementationType);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 

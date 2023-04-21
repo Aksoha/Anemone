@@ -1,26 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0-windows</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <UseWPF>true</UseWPF>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-beta.701" />
-        <PackageReference Include="MahApps.Metro" Version="2.4.9" />
-        <PackageReference Include="MaterialDesignThemes" Version="4.7.1" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
-        <PackageReference Include="Prism.Wpf" Version="8.1.97" />
         <PackageReference Include="System.IO.Abstractions" Version="19.1.14" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Page Update="Components\ResourceDictionary.xaml">
-            <Generator>MSBuild:Compile</Generator>
-            <XamlRuntime>Wpf</XamlRuntime>
-            <SubType>Designer</SubType>
-        </Page>
     </ItemGroup>
 
 </Project>

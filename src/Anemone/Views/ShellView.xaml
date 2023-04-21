@@ -10,6 +10,9 @@
                  xmlns:prism="http://prismlibrary.com/"
                  xmlns:anemone="clr-namespace:Anemone.Core;assembly=Anemone.Core"
                  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                 xmlns:ui="clr-namespace:Anemone.UI;assembly=Anemone.UI.Core"
+                 xmlns:core="clr-namespace:Anemone.UI.Core;assembly=Anemone.UI.Core"
+                 xmlns:regions="clr-namespace:Anemone.UI.Core.Navigation.Regions;assembly=Anemone.UI.Core"
                  mc:Ignorable="d"
                  d:DataContext="{d:DesignInstance Type=vm:ShellViewModel, IsDesignTimeCreatable=False}"
 
@@ -48,7 +51,7 @@
 
 
         <Grid Grid.Column="1">
-            <ContentControl Margin="10" prism:RegionManager.RegionName="{x:Static anemone:RegionNames.ContentRegion}" />
+            <ContentControl Margin="10" prism:RegionManager.RegionName="{x:Static regions:RegionNames.ContentRegion}" />
 
             <materialDesign:Snackbar Margin="10"
                                      HorizontalAlignment="Center" MessageQueue="{Binding SnackbarMessageQueue}" />
