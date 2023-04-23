@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Windows;
 
-namespace Anemone.Startup;
+namespace Anemone.Models;
 
 public class ApplicationArguments
 {

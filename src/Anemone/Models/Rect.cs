@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace Anemone.Startup;
+namespace Anemone.Models;
 
 [StructLayout(LayoutKind.Sequential)]
 internal struct Rect

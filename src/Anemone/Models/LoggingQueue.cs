@@ -1,7 +1,7 @@
 ﻿using System;
 using Serilog.Events;
 
-namespace Anemone.Startup;
+namespace Anemone.Models;
 
 internal class LoggingQueueItem
 {

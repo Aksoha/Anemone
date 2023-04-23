@@ -1,4 +1,5 @@
 ﻿using System.IO.Abstractions;
+using System.Text;
 using Anemone.Core.Common.Entities;
 using Anemone.Core.EnergyMatching;
 using Anemone.Core.Export;
@@ -28,10 +29,11 @@ public static class Configuration
 
         serviceCollection.AddTransient<IDataExporter, DataExporter>();
         serviceCollection.AddTransient<IReportGenerator, ReportGenerator>();
-
+        
         serviceCollection.AddTransient<IProcess, ProcessWrapper>();
 
         serviceCollection.AddTransient<IFileReader, FileReader>();
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         
         serviceCollection.AddSingleton<IFile, FileWrapper>();
         serviceCollection.AddSingleton<IDirectory, DirectoryWrapper>();
