@@ -185,21 +185,22 @@ public class MapColumnsViewModel : ViewModelBase
 
         foreach (DataRow row in DisplayedSheet.Rows)
         {
-            if (row[frequency] is double fVal)
+            
+            if (double.TryParse(row[frequency].ToString(), out var fVal))
                 fData.Add(new HeatingSystemData
                     {
                         Key = fVal,
-                        Resistance = (double)row[resistanceF],
-                        Inductance = (double)row[inductanceF]
+                        Resistance = ConvertToDouble(row[resistanceF]),
+                        Inductance = ConvertToDouble(row[inductanceF])
                     }
                 );
 
-            if (row[temperature] is double tVal)
+            if (double.TryParse(row[temperature].ToString(), out var tVal))
                 tData.Add(new HeatingSystemData
                     {
                         Key = tVal,
-                        Resistance = (double)row[resistanceT],
-                        Inductance = (double)row[inductanceT]
+                        Resistance = ConvertToDouble(row[resistanceT]),
+                        Inductance = ConvertToDouble(row[inductanceT])
                     }
                 );
         }
@@ -208,7 +209,15 @@ public class MapColumnsViewModel : ViewModelBase
         DataChanged.Invoke(this, new HeatingDataEventArgs { FrequencyData = fData, TemperatureData = tData });
     }
 
-
+    private static double ConvertToDouble(object obj)
+    {
+        return obj switch
+        {
+            double d => d,
+            string s => double.Parse(s),
+            _ => double.Parse(obj.ToString() ?? throw new NullReferenceException())
+        };
+    }
     private void SetMappingStatus(MappingInformationModel mappingInformationModel, DataColumn column)
     {
         var fieldsInfo =
