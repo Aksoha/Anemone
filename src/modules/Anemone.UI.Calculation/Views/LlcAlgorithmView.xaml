@@ -8,7 +8,7 @@
              xmlns:viewModels="clr-namespace:Anemone.UI.Calculation.ViewModels"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=viewModels:LlcAlgorithmViewModel, IsDesignTimeCreatable=False}"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="500" d:DesignWidth="800">
 
 
     <UserControl.Resources>
@@ -114,20 +114,23 @@
         <!-- heating system selector, simple results and buttons -->
         <Grid Grid.Column="1" MinWidth="200">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-
+            
             <!-- heating system selector -->
-            <StackPanel Grid.Row="0" Margin="20 0">
-                <TextBlock Text="heating systems" Margin="0 0 0 10" />
-                <views:HeatingRepositoryListView />
-            </StackPanel>
+            <Grid Grid.Row="0" Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="heating systems" Margin="0 0 0 10" />
+                <views:HeatingRepositoryListView Grid.Row="1" />
+            </Grid>
             
             <!-- simple results and detailed result navigation button -->
-            <StackPanel Grid.Row="2" Margin="20 0"
+            <StackPanel Grid.Row="1" Margin="20 0"
                         Visibility="{Binding IsResultCalculated, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="results" Margin="5" />
                 <materialDesign:Card>
@@ -184,7 +187,7 @@
 
             
             <!-- calculate and export data buttons -->
-            <StackPanel Grid.Row="3" VerticalAlignment="Bottom" Margin="20 0">
+            <StackPanel Grid.Row="2" VerticalAlignment="Bottom" Margin="20 0">
                 <Button Command="{Binding ExportDataCommand}" Content="Export results"
                         Margin="0 20"
                         Style="{StaticResource MaterialDesignOutlinedButton}" Visibility="{Binding IsResultCalculated, Converter={StaticResource BooleanToVisibilityConverter}}" />
