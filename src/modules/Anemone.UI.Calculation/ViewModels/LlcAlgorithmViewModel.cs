@@ -19,6 +19,7 @@ using Anemone.UI.Core;
 using Anemone.UI.Core.Commands;
 using Anemone.UI.Core.Dialogs;
 using Anemone.UI.Core.Icons;
+using Anemone.UI.Core.Navigation;
 using Anemone.UI.Core.Notifications;
 using FluentValidation;
 using FluentValidation.Results;
@@ -28,7 +29,7 @@ using HeatingSystem = Anemone.Core.Common.Entities.HeatingSystem;
 
 namespace Anemone.UI.Calculation.ViewModels;
 
-[SidebarElement("LLC", PackIconKind.HeatingSystemMatching, nameof(LlcAlgorithmView))]
+[SidebarElement("LLC", PackIconKind.HeatingSystemMatching, NavigationNames.Calculation)]
 public class LlcAlgorithmViewModel : ViewModelBase
 {
     private bool _calculationInProgress;

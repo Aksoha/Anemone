@@ -12,15 +12,15 @@ using Anemone.Core.Import;
 using Anemone.Core.Process;
 using Anemone.UI.Core;
 using Anemone.UI.Core.Icons;
+using Anemone.UI.Core.Navigation;
 using Anemone.UI.DataImport.Models;
-using Anemone.UI.DataImport.Views;
 using Microsoft.Xaml.Behaviors.Core;
 using Prism.Commands;
 using Prism.Regions;
 
 namespace Anemone.UI.DataImport.ViewModels;
 
-[SidebarElement("Import data", PackIconKind.ImportInductionHeatingData, nameof(DataImportView))]
+[SidebarElement("Import data", PackIconKind.ImportInductionHeatingData, NavigationNames.DataImport)]
 public class DataImportViewModel : ViewModelBase, IRegionMemberLifetime
 {
     private const int SlideCount = 2;

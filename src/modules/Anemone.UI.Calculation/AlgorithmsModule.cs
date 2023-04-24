@@ -40,12 +40,12 @@ public class AlgorithmsModule : IModule
         
         containerRegistry.RegisterForNavigation<LlcChartsView>();
         containerRegistry.RegisterForNavigation<HeatingRepositoryListView>();
-        containerRegistry.RegisterForNavigation<LlcAlgorithmView>();
+        containerRegistry.RegisterForNavigation<LlcAlgorithmView>(NavigationNames.Calculation);
     }
 
     public void OnInitialized(IContainerProvider containerProvider)
     {
         RegionCollection.Add(RegionNames.Sidebar, typeof(LlcAlgorithmViewModel));
-        NavigationManager.Navigate(RegionNames.ContentRegion, nameof(LlcAlgorithmView));
+        NavigationManager.Navigate(RegionNames.ContentRegion, NavigationNames.Calculation);
     }
 }
