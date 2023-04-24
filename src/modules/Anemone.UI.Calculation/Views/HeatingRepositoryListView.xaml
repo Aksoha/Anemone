@@ -14,61 +14,107 @@
 
     <UserControl.Resources>
         <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}" />
+        
+        <Style TargetType="ToggleButton" x:Key="ItemsOrderToggle">
+            <Setter Property="Background" Value="{StaticResource PrimaryHueDarkBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Margin" Value="0 0"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderThickness" Value="0 0 0 1"/>
+            <Setter Property="BorderBrush"
+                    Value="{StaticResource MaterialDesignTextBoxBorder}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
     </UserControl.Resources>
-    <StackPanel>
+    <!-- controls -->
+    <materialDesign:Card>
+        <Grid>
+            <Grid
+            Visibility="{Binding IsRepositoryListVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <!-- search box -->
+            <TextBox Grid.Row="0"
+                     materialDesign:HintAssist.Hint="search"
+                     materialDesign:TextFieldAssist.HasClearButton="True"
+                     Margin="0 5"
+                     Text="{Binding SearchString, UpdateSourceTrigger=PropertyChanged }" />
 
-        <!-- controls -->
-        <materialDesign:Card>
-            <StackPanel>
-                <StackPanel
-                    Visibility="{Binding IsRepositoryListVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 
-                    <!-- search box -->
-                    <TextBox
-                        materialDesign:HintAssist.Hint="search"
-                        materialDesign:TextFieldAssist.HasClearButton="True"
-                        Margin="0 5"
-                        Text="{Binding SearchString, UpdateSourceTrigger=PropertyChanged }" />
-                    
-                    
-                    <!-- items -->
-                    <ListView ItemsSource="{Binding FilteredItems}" SelectedItem="{Binding SelectedItem}"
-                              SelectionMode="Single">
-                        <ListView.Resources>
-                            <ContextMenu x:Key="ItemContextMenu">
-                                <MenuItem Header="Rename" Icon="{icons:PackIcon Rename}"
-                                          Command="{Binding Path=DataContext.RenameCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" />
-                                <MenuItem Header="Delete" Icon="{icons:PackIcon Delete}"
-                                          Command="{Binding Path=DataContext.DeleteCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" />
-                            </ContextMenu>
-                            
-                            
-                            <Style TargetType="GridViewColumnHeader">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </Style>
-                        </ListView.Resources>
-
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="{x:Type ListViewItem}"
-                                   BasedOn="{StaticResource MaterialDesignGridViewItem}">
-                                <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}" />
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn DisplayMemberBinding="{Binding Name}"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-
+            <ToggleButton x:Name="ToggleButton" Grid.Row="1"
+                          Style="{StaticResource ItemsOrderToggle}"
+                          IsChecked="{Binding IsAscendingOrder}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Margin="0 0 5 0">Name</TextBlock>
+                    <icons:PackIcon Margin="5 0 0 0" Height="22" Width="22">
+                    <icons:PackIcon.Style>
+                        <Style TargetType="{x:Type icons:PackIcon}" BasedOn="{StaticResource {x:Type icons:PackIcon}}">
+                            <Setter Property="Kind" Value="OrderAlphabeticalDescending"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=ToggleButton, Path=IsChecked}" Value="True">
+                                    <Setter Property="Kind" Value="OrderAlphabeticalAscending"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </icons:PackIcon.Style>
+                    </icons:PackIcon>
                 </StackPanel>
-                <StackPanel
-                    Visibility="{Binding IsRepositoryListVisible, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
-                    Margin="5 10">
+            </ToggleButton>
+
+            <!-- items -->
+            <ListView Grid.Row="2"
+                      ItemsSource="{Binding FilteredItems}"
+                      SelectedItem="{Binding SelectedItem}"
+                      SelectionMode="Single">
+                <ListView.Resources>
+                    <ContextMenu x:Key="ItemContextMenu">
+                        <MenuItem Header="Rename" Icon="{icons:PackIcon Rename}"
+                                  Command="{Binding Path=DataContext.RenameCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" />
+                        <MenuItem Header="Delete" Icon="{icons:PackIcon Delete}"
+                                  Command="{Binding Path=DataContext.DeleteCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" />
+                    </ContextMenu>
+
+
+                    <Style TargetType="GridViewColumnHeader">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                    </Style>
+                </ListView.Resources>
+
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}"
+                           BasedOn="{StaticResource MaterialDesignGridViewItem}">
+                        <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn DisplayMemberBinding="{Binding Name}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            </Grid>
+            <Grid Visibility="{Binding IsRepositoryListVisible, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                <StackPanel Margin="5 10">
                     <TextBlock HorizontalAlignment="Center" Text="oops, look's like there is no data available"
                                TextWrapping="Wrap" Margin="5 10" />
+                    <Button Command="{Binding NavigateToDataImportCommand}">Import data</Button>
                 </StackPanel>
-            </StackPanel>
-        </materialDesign:Card>
-    </StackPanel>
+            </Grid>
+        </Grid>
+    </materialDesign:Card>
 </UserControl>

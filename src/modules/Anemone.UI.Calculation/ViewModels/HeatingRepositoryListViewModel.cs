@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Anemone.Core.Common.Entities;
 using Anemone.Core.Persistence;
 using Anemone.Core.Persistence.HeatingSystem;
@@ -9,8 +10,11 @@ using Anemone.UI.Calculation.Models;
 using Anemone.UI.Core;
 using Anemone.UI.Core.Commands;
 using Anemone.UI.Core.Dialogs;
+using Anemone.UI.Core.Navigation;
+using Anemone.UI.Core.Navigation.Regions;
 using Anemone.UI.Core.Notifications;
 using Microsoft.Extensions.Logging;
+using Microsoft.Xaml.Behaviors.Core;
 using Prism.Events;
 using Prism.Services.Dialogs;
 using IDialogService = Anemone.UI.Core.Dialogs.IDialogService;
@@ -27,16 +31,18 @@ public class HeatingRepositoryListViewModel : ViewModelBase
 
     public HeatingRepositoryListViewModel(ILogger<HeatingRepositoryListViewModel> logger,
         IHeatingSystemRepository repository, IToastService toastService, IDialogService dialogService,
-        IEventAggregator eventAggregator)
+        IEventAggregator eventAggregator, INavigationManager navigationManager)
     {
         Logger = logger;
         Repository = repository;
         ToastService = toastService;
         DialogService = dialogService;
         EventAggregator = eventAggregator;
+        NavigationManager = navigationManager;
         FetchDataCommand = new ActionCommandAsync(ExecuteFetchDataCommand);
         RenameCommand = new ActionCommandAsync(ExecuteRenameCommand);
         DeleteCommand = new ActionCommandAsync(ExecuteDeleteCommand);
+        NavigateToDataImportCommand = new ActionCommand(ExecuteNavigateToDataImportCommand);
         FetchDataCommand.ExecuteAsync(null);
         FilteredItems = _itemsSource;
     }
@@ -83,6 +89,7 @@ public class HeatingRepositoryListViewModel : ViewModelBase
     public ICommandAsync FetchDataCommand { get; }
     public ICommandAsync RenameCommand { get; }
     public ICommandAsync DeleteCommand { get; }
+    public ICommand NavigateToDataImportCommand { get; }
 
 
     private ILogger<HeatingRepositoryListViewModel> Logger { get; }
@@ -90,6 +97,7 @@ public class HeatingRepositoryListViewModel : ViewModelBase
     private IToastService ToastService { get; }
     private IDialogService DialogService { get; }
     private IEventAggregator EventAggregator { get; }
+    private INavigationManager NavigationManager { get; }
 
 
     private void PublishCollectionChangedEvent(HeatingSystemNameDisplayModel? value)
@@ -216,9 +224,10 @@ public class HeatingRepositoryListViewModel : ViewModelBase
 
         await Repository.Delete(data);
         _itemsSource.Remove(SelectedItem);
+        FilterItems();
+        OrderItems();
         SelectedItem = null;
         RaisePropertyChanged(nameof(FilteredItems));
-        RaisePropertyChanged(nameof(IsRepositoryListVisible));
     }
 
 
@@ -233,5 +242,10 @@ public class HeatingRepositoryListViewModel : ViewModelBase
     {
         Logger.LogError(e, "There has been a problem while trying to access repository data");
         ToastService.Show("There has been a problem when trying to execute the action.");
+    }
+
+    private void ExecuteNavigateToDataImportCommand()
+    {
+        NavigationManager.Navigate(RegionNames.ContentRegion, NavigationNames.DataImport);
     }
 }

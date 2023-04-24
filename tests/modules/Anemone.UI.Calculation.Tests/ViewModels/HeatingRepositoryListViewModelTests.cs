@@ -7,6 +7,8 @@ using Anemone.Mocks.HeatingSystemData;
 using Anemone.UI.Calculation.Models;
 using Anemone.UI.Calculation.ViewModels;
 using Anemone.UI.Core.Dialogs;
+using Anemone.UI.Core.Navigation;
+using Anemone.UI.Core.Navigation.Regions;
 using Anemone.UI.Core.Notifications;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -24,6 +26,7 @@ public class HeatingRepositoryListViewModelTests
     private readonly Mock<ILogger<HeatingRepositoryListViewModel>> _loggerMock = new();
     private readonly HeatingSystemRepositoryMock _repositoryMock = new();
     private readonly Mock<IToastService> _toastMock = new();
+    private readonly Mock<INavigationManager> _navigationMock = new();
 
     public HeatingRepositoryListViewModelTests()
     {
@@ -35,6 +38,7 @@ public class HeatingRepositoryListViewModelTests
     private IToastService ToastService => _toastMock.Object;
     private IDialogService DialogService => _dialogMock.Object;
     private IEventAggregator EventAggregator => _eaMock.Object;
+    private INavigationManager NavigationManager => _navigationMock.Object;
 
 
     [Fact]
@@ -489,6 +493,20 @@ public class HeatingRepositoryListViewModelTests
         VerifyToastShowed(It.IsAny<string>, Times.Once);
     }
 
+    [Fact]
+    public void NavigateToDataImportCommand_Navigates()
+    {
+        // arrange
+        var vm = CreateViewModel(false);
+        
+        
+        // act
+        vm.NavigateToDataImportCommand.Execute(null);
+        
+        
+        // assert
+        _navigationMock.Verify(m => m.Navigate(RegionNames.ContentRegion, NavigationNames.DataImport), Times.Once);
+    }
 
     private void SetInitialMockSetup()
     {
@@ -499,7 +517,7 @@ public class HeatingRepositoryListViewModelTests
 
     private HeatingRepositoryListViewModel CreateViewModel(bool setSelectedItem)
     {
-        var vm = new HeatingRepositoryListViewModel(Logger, Repository, ToastService, DialogService, EventAggregator);
+        var vm = new HeatingRepositoryListViewModel(Logger, Repository, ToastService, DialogService, EventAggregator, NavigationManager);
 
         if (setSelectedItem)
             SetSelectedItem(vm);
