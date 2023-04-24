@@ -16,4 +16,6 @@ public enum PackIconKind
     Delete,
     Rename,
     HeatingSystemMatching,
+    OrderAlphabeticalAscending,
+    OrderAlphabeticalDescending,
 }

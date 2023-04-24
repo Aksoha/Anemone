@@ -72,6 +72,12 @@ internal static class PackIconDataFactory
 	c-0.4,0.6-0.1,1.1,0.6,1.1c0.4,0,0.8,0,1.2,0v0.8c0,0.5,0,1,0,1.5l0,0c0,1.3,0,2.6,0,3.9c0,0.6,0.3,0.8,0.8,0.8c0.6,0,1.2,0,1.7,0
 	c0.6,0,0.9-0.2,0.9-0.9c0-0.3,0-0.6,0-0.8c0,0,0-0.1,0-0.1c0-1.6,0-3.2,0-4.9V8.4c0.5,0,0.9,0,1.4,0C22.9,8.4,23.2,7.8,22.9,7.3"
             },
+            {
+              PackIconKind.OrderAlphabeticalAscending, "M12 5H22V7H12M12 19V17H22V19M12 11H22V13H12M9 13V15L5.67 19H9V21H3V19L6.33 15H3V13M7 3H5C3.9 3 3 3.9 3 5V11H5V9H7V11H9V5C9 3.9 8.11 3 7 3M7 7H5V5H7Z"  
+            },
+            {
+              PackIconKind.OrderAlphabeticalDescending, "M7 13H5C3.9 13 3 13.9 3 15V21H5V19H7V21H9V15C9 13.9 8.11 13 7 13M7 17H5V15H7M9 3V5L5.67 9H9V11H3V9L6.33 5H3V3M12 5H22V7H12M12 19V17H22V19M12 11H22V13H12Z"  
+            },
         };
     }
 }
